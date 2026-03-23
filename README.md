@@ -137,6 +137,8 @@ tests/                  # 293+ tests
 - **Runas vectoriales**: trazos Pillow sobre textura piedra procedural. Zero assets de fuentes.
 - **Marcadores custom `[[T]]` `[[C]]`**: en vez de `##` y `**` (que Sonnet usa inconsistentemente).
 - **NO retry manual**: el SDK de Anthropic ya reintenta 2x automaticamente.
+- **Adaptive thinking (Sonnet 4.6)**: `thinking: {"type": "adaptive"}` con effort configurable por modo (low/medium/high).
+- **Model string**: `claude-sonnet-4-6` (no el antiguo ID con fecha).
 
 ## Licencia
 
