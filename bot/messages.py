@@ -1,0 +1,23 @@
+"""Mensajes in-character del bot (tono Baphomet). Nunca técnicos."""
+
+LIMIT_MESSAGES = {
+    "daily_limit": "Ya has quemado tus tiradas de hoy. Vuelve mañana, que las cartas también descansan.",
+    "cooldown": "Tranquilo, que las runas no se van a ir a ningún sitio. Espera un poco.",
+    "empty_response": "Las cartas no tienen nada que decirte ahora. Será que no es el momento.",
+    "queue_timeout": "Hay cola en el oráculo. Inténtalo en un momento.",
+    "request_in_progress": "Aún estoy con tu consulta anterior. Paciencia.",
+    "truncated": "\n\n...El oráculo ha dicho lo que tenía que decir.",
+    "not_registered": "No te conozco. Usa /consulta para presentarte primero.",
+    "off_topic": "Eso pregúntaselo a Google. Yo leo las cartas, no hago recados.",
+    "admin_only": "Este comando es solo para el guardián de la taberna.",
+    "nominatim_down": "No puedo verificar esa ciudad ahora. Inténtalo en un rato o usa /cancelar.",
+    "dm_only_group": "Solo funciono en La Taberna de los Sortilegios. No hago consultas privadas.",
+    "api_error": "El oráculo está indispuesto. Inténtalo en un rato.",
+    "rate_limit": "Demasiadas consultas a la vez. Espera un momento.",
+    "already_registered": "Ya te conozco. Usa /consulta para una tirada.",
+    "onboarding_timeout": "Se te ha pasado el tiempo. Vuelve a empezar con /consulta cuando quieras.",
+    "cancelled": "Vale, lo dejamos aquí.",
+    "invalid_date": "Esa fecha no parece válida. Usa el formato DD/MM/AAAA.",
+    "invalid_time": "Esa hora no parece válida. Usa el formato HH:MM (24h).",
+    "unknown_guardian": "No conozco a ese guardián.",
+}
