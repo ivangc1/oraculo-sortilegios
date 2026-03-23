@@ -29,7 +29,7 @@ from service.models import DrawnItem, InterpretationRequest, UserProfile
 
 
 async def tarot_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Handler para /tarot — muestra menú de variantes."""
+    """Handler para /tarot — menu de variantes o smart selection con texto inline."""
     settings: Settings = context.bot_data["settings"]
     if not await middleware_check(update, context, settings):
         return
@@ -43,15 +43,45 @@ async def tarot_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
         )
         return
 
+    # Smart selection: /tarot pregunta directa
+    if context.args:
+        question = " ".join(context.args)
+        from service.smart_selector import select_variant, variant_label
+        variant = select_variant(question)
+        label = variant_label(variant)
+
+        # Verificar limites antes de ejecutar
+        if is_user_busy(user_id):
+            await update.message.reply_text(LIMIT_MESSAGES["request_in_progress"],
+                                            reply_to_message_id=update.message.message_id)
+            return
+        limit_key = await check_limits(user_id, "tarot", settings)
+        if limit_key:
+            await update.message.reply_text(LIMIT_MESSAGES[limit_key],
+                                            reply_to_message_id=update.message.message_id)
+            return
+
+        mark_user_busy(user_id)
+        try:
+            await update.message.reply_text(
+                f"🎯 El Pezuñento ha elegido: {label}",
+                reply_to_message_id=update.message.message_id,
+            )
+            await _execute_tarot_reading(update, context, user, variant, question, settings)
+        finally:
+            release_user(user_id)
+        return
+
     await update.message.reply_text(
-        "¿Qué tipo de tirada quieres?",
+        "Elige tu tirada:",
         reply_markup=tarot_keyboard(),
         reply_to_message_id=update.message.message_id,
     )
 
 
 async def tarot_callback(
-    update: Update, context: ContextTypes.DEFAULT_TYPE, variant: str
+    update: Update, context: ContextTypes.DEFAULT_TYPE, variant: str,
+    skip_question: bool = False,
 ) -> None:
     """Procesa callback de variante tarot. Flujo completo."""
     query = update.callback_query
@@ -71,10 +101,20 @@ async def tarot_callback(
         await query.edit_message_text(LIMIT_MESSAGES["request_in_progress"])
         return
 
-    # Límites
+    # Limites
     limit_key = await check_limits(user_id, "tarot", settings)
     if limit_key:
         await query.edit_message_text(LIMIT_MESSAGES[limit_key])
+        return
+
+    if skip_question:
+        # Tirada del dia: ejecutar sin pregunta
+        mark_user_busy(user_id)
+        try:
+            await query.edit_message_text("Tirando las cartas...")
+            await _execute_tarot_reading(update, context, user, variant, None, settings)
+        finally:
+            release_user(user_id)
         return
 
     mark_user_busy(user_id)
@@ -145,15 +185,30 @@ async def tarot_question_text(update: Update, context: ContextTypes.DEFAULT_TYPE
     variant = context.user_data.get("tarot_variant")
     user = context.user_data.get("tarot_user")
     question = update.message.text
+    is_smart = context.user_data.get("tarot_smart_mode", False)
 
-    if not variant or not user:
+    if not user:
         return
 
     context.user_data["tarot_awaiting_question"] = False
+    context.user_data.pop("tarot_smart_mode", None)
 
     # Sanitizar pregunta
     if question and len(question) > settings.MAX_QUESTION_LENGTH:
         question = question[:settings.MAX_QUESTION_LENGTH]
+
+    # Smart mode: seleccionar variante por keywords
+    if is_smart and question:
+        from service.smart_selector import select_variant, variant_label
+        variant = select_variant(question)
+        label = variant_label(variant)
+        await update.message.reply_text(
+            f"🎯 El Pezuñento ha elegido: {label}",
+            reply_to_message_id=update.message.message_id,
+        )
+
+    if not variant:
+        return
 
     await _execute_tarot_reading(update, context, user, variant, question, settings)
 
@@ -326,3 +381,40 @@ async def _execute_tarot_reading(
     context.user_data.pop("tarot_variant", None)
     context.user_data.pop("tarot_user", None)
     context.user_data.pop("tarot_awaiting_question", None)
+    context.user_data.pop("tarot_smart_mode", None)
+
+
+async def tarot_smart_callback(
+    update: Update, context: ContextTypes.DEFAULT_TYPE,
+) -> None:
+    """Callback para 'El Pezuñento elige'. Pide pregunta via ForceReply."""
+    query = update.callback_query
+    await query.answer()
+
+    settings: Settings = context.bot_data["settings"]
+    user_id = query.from_user.id
+
+    user = await db_users.get_user(user_id)
+    if not user or not user["onboarding_complete"]:
+        await query.edit_message_text(LIMIT_MESSAGES["not_registered"])
+        return
+
+    if is_user_busy(user_id):
+        await query.edit_message_text(LIMIT_MESSAGES["request_in_progress"])
+        return
+
+    limit_key = await check_limits(user_id, "tarot", settings)
+    if limit_key:
+        await query.edit_message_text(LIMIT_MESSAGES[limit_key])
+        return
+
+    await query.edit_message_text(
+        "Escribe tu pregunta y yo decido qué tirada te conviene:"
+    )
+    await query.message.reply_text(
+        "¿Qué quieres saber?",
+        reply_markup=ForceReply(selective=True),
+    )
+    context.user_data["tarot_awaiting_question"] = True
+    context.user_data["tarot_smart_mode"] = True
+    context.user_data["tarot_user"] = user

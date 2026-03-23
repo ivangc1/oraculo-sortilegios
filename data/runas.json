@@ -1,35 +1,248 @@
 {
   "runes": [
-    {"id": "fehu", "name": "Fehu", "letter": "F", "meaning": "Ganado, riqueza", "element": "Fuego", "aett": 1},
-    {"id": "uruz", "name": "Uruz", "letter": "U", "meaning": "Uro, fuerza primordial", "element": "Tierra", "aett": 1},
-    {"id": "thurisaz", "name": "Thurisaz", "letter": "Þ", "meaning": "Gigante, espina", "element": "Fuego", "aett": 1},
-    {"id": "ansuz", "name": "Ansuz", "letter": "A", "meaning": "Dios, comunicación divina", "element": "Aire", "aett": 1},
-    {"id": "raidho", "name": "Raidho", "letter": "R", "meaning": "Viaje, camino", "element": "Aire", "aett": 1},
-    {"id": "kenaz", "name": "Kenaz", "letter": "K", "meaning": "Antorcha, conocimiento", "element": "Fuego", "aett": 1},
-    {"id": "gebo", "name": "Gebo", "letter": "G", "meaning": "Don, intercambio", "element": "Aire", "aett": 1},
-    {"id": "wunjo", "name": "Wunjo", "letter": "W", "meaning": "Alegría, armonía", "element": "Tierra", "aett": 1},
-    {"id": "hagalaz", "name": "Hagalaz", "letter": "H", "meaning": "Granizo, destrucción", "element": "Agua", "aett": 2},
-    {"id": "nauthiz", "name": "Nauthiz", "letter": "N", "meaning": "Necesidad, restricción", "element": "Fuego", "aett": 2},
-    {"id": "isa", "name": "Isa", "letter": "I", "meaning": "Hielo, estancamiento", "element": "Agua", "aett": 2},
-    {"id": "jera", "name": "Jera", "letter": "J", "meaning": "Año, cosecha", "element": "Tierra", "aett": 2},
-    {"id": "eihwaz", "name": "Eihwaz", "letter": "Ï", "meaning": "Tejo, eje del mundo", "element": "Fuego", "aett": 2},
-    {"id": "perthro", "name": "Perthro", "letter": "P", "meaning": "Dado, misterio", "element": "Agua", "aett": 2},
-    {"id": "algiz", "name": "Algiz", "letter": "Z", "meaning": "Alce, protección", "element": "Aire", "aett": 2},
-    {"id": "sowilo", "name": "Sowilo", "letter": "S", "meaning": "Sol, victoria", "element": "Fuego", "aett": 2},
-    {"id": "tiwaz", "name": "Tiwaz", "letter": "T", "meaning": "Tyr, justicia", "element": "Aire", "aett": 3},
-    {"id": "berkano", "name": "Berkano", "letter": "B", "meaning": "Abedul, renacimiento", "element": "Tierra", "aett": 3},
-    {"id": "ehwaz", "name": "Ehwaz", "letter": "E", "meaning": "Caballo, movimiento", "element": "Tierra", "aett": 3},
-    {"id": "mannaz", "name": "Mannaz", "letter": "M", "meaning": "Ser humano, humanidad", "element": "Aire", "aett": 3},
-    {"id": "laguz", "name": "Laguz", "letter": "L", "meaning": "Agua, flujo", "element": "Agua", "aett": 3},
-    {"id": "ingwaz", "name": "Ingwaz", "letter": "Ŋ", "meaning": "Ing, fertilidad", "element": "Tierra", "aett": 3},
-    {"id": "dagaz", "name": "Dagaz", "letter": "D", "meaning": "Día, despertar", "element": "Fuego", "aett": 3},
-    {"id": "othala", "name": "Othala", "letter": "O", "meaning": "Herencia, hogar", "element": "Tierra", "aett": 3},
-    {"id": "wyrd", "name": "Wyrd", "letter": "", "meaning": "Destino, potencial puro", "element": "Éter", "aett": 0}
+    {
+      "id": "fehu",
+      "name": "Fehu",
+      "letter": "F",
+      "meaning": "Ganado, riqueza",
+      "element": "Fuego",
+      "aett": 1
+    },
+    {
+      "id": "uruz",
+      "name": "Uruz",
+      "letter": "U",
+      "meaning": "Uro, fuerza primordial",
+      "element": "Tierra",
+      "aett": 1
+    },
+    {
+      "id": "thurisaz",
+      "name": "Thurisaz",
+      "letter": "Þ",
+      "meaning": "Gigante, espina",
+      "element": "Fuego",
+      "aett": 1
+    },
+    {
+      "id": "ansuz",
+      "name": "Ansuz",
+      "letter": "A",
+      "meaning": "Dios, comunicación divina",
+      "element": "Aire",
+      "aett": 1
+    },
+    {
+      "id": "raidho",
+      "name": "Raidho",
+      "letter": "R",
+      "meaning": "Viaje, camino",
+      "element": "Aire",
+      "aett": 1
+    },
+    {
+      "id": "kenaz",
+      "name": "Kenaz",
+      "letter": "K",
+      "meaning": "Antorcha, conocimiento",
+      "element": "Fuego",
+      "aett": 1
+    },
+    {
+      "id": "gebo",
+      "name": "Gebo",
+      "letter": "G",
+      "meaning": "Don, intercambio",
+      "element": "Aire",
+      "aett": 1
+    },
+    {
+      "id": "wunjo",
+      "name": "Wunjo",
+      "letter": "W",
+      "meaning": "Alegría, armonía",
+      "element": "Tierra",
+      "aett": 1
+    },
+    {
+      "id": "hagalaz",
+      "name": "Hagalaz",
+      "letter": "H",
+      "meaning": "Granizo, destrucción",
+      "element": "Agua",
+      "aett": 2
+    },
+    {
+      "id": "nauthiz",
+      "name": "Nauthiz",
+      "letter": "N",
+      "meaning": "Necesidad, restricción",
+      "element": "Fuego",
+      "aett": 2
+    },
+    {
+      "id": "isa",
+      "name": "Isa",
+      "letter": "I",
+      "meaning": "Hielo, estancamiento",
+      "element": "Agua",
+      "aett": 2
+    },
+    {
+      "id": "jera",
+      "name": "Jera",
+      "letter": "J",
+      "meaning": "Año, cosecha",
+      "element": "Tierra",
+      "aett": 2
+    },
+    {
+      "id": "eihwaz",
+      "name": "Eihwaz",
+      "letter": "Ï",
+      "meaning": "Tejo, eje del mundo",
+      "element": "Fuego",
+      "aett": 2
+    },
+    {
+      "id": "perthro",
+      "name": "Perthro",
+      "letter": "P",
+      "meaning": "Dado, misterio",
+      "element": "Agua",
+      "aett": 2
+    },
+    {
+      "id": "algiz",
+      "name": "Algiz",
+      "letter": "Z",
+      "meaning": "Alce, protección",
+      "element": "Aire",
+      "aett": 2
+    },
+    {
+      "id": "sowilo",
+      "name": "Sowilo",
+      "letter": "S",
+      "meaning": "Sol, victoria",
+      "element": "Fuego",
+      "aett": 2
+    },
+    {
+      "id": "tiwaz",
+      "name": "Tiwaz",
+      "letter": "T",
+      "meaning": "Tyr, justicia",
+      "element": "Aire",
+      "aett": 3
+    },
+    {
+      "id": "berkano",
+      "name": "Berkano",
+      "letter": "B",
+      "meaning": "Abedul, renacimiento",
+      "element": "Tierra",
+      "aett": 3
+    },
+    {
+      "id": "ehwaz",
+      "name": "Ehwaz",
+      "letter": "E",
+      "meaning": "Caballo, movimiento",
+      "element": "Tierra",
+      "aett": 3
+    },
+    {
+      "id": "mannaz",
+      "name": "Mannaz",
+      "letter": "M",
+      "meaning": "Ser humano, humanidad",
+      "element": "Aire",
+      "aett": 3
+    },
+    {
+      "id": "laguz",
+      "name": "Laguz",
+      "letter": "L",
+      "meaning": "Agua, flujo",
+      "element": "Agua",
+      "aett": 3
+    },
+    {
+      "id": "ingwaz",
+      "name": "Ingwaz",
+      "letter": "Ŋ",
+      "meaning": "Ing, fertilidad",
+      "element": "Tierra",
+      "aett": 3
+    },
+    {
+      "id": "dagaz",
+      "name": "Dagaz",
+      "letter": "D",
+      "meaning": "Día, despertar",
+      "element": "Fuego",
+      "aett": 3
+    },
+    {
+      "id": "othala",
+      "name": "Othala",
+      "letter": "O",
+      "meaning": "Herencia, hogar",
+      "element": "Tierra",
+      "aett": 3
+    },
+    {
+      "id": "wyrd",
+      "name": "Wyrd",
+      "letter": "",
+      "meaning": "Destino, potencial puro",
+      "element": "Éter",
+      "aett": 0
+    }
   ],
-  "non_invertible": ["gebo", "hagalaz", "isa", "jera", "eihwaz", "sowilo", "ingwaz", "dagaz", "wyrd"],
+  "non_invertible": [
+    "gebo",
+    "hagalaz",
+    "isa",
+    "jera",
+    "eihwaz",
+    "sowilo",
+    "ingwaz",
+    "dagaz",
+    "wyrd"
+  ],
   "positions": {
-    "odin": ["Runa de Odín"],
-    "nornas": ["Urd (Pasado)", "Verdandi (Presente)", "Skuld (Futuro)"],
-    "cruz": ["Centro (Presente)", "Izquierda (Pasado)", "Derecha (Futuro)", "Arriba (Consciente)", "Abajo (Inconsciente)"]
+    "odin": [
+      "Runa de Odín"
+    ],
+    "nornas": [
+      "Urd (Pasado)",
+      "Verdandi (Presente)",
+      "Skuld (Futuro)"
+    ],
+    "cruz": [
+      "Centro (Presente)",
+      "Izquierda (Pasado)",
+      "Derecha (Futuro)",
+      "Arriba (Consciente)",
+      "Abajo (Inconsciente)"
+    ],
+    "cinco": [
+      "Situación",
+      "Desafío",
+      "Acción",
+      "Sacrificio",
+      "Resultado"
+    ],
+    "siete": [
+      "Pasado",
+      "Presente",
+      "Futuro",
+      "Consejo",
+      "Obstáculo",
+      "Ayuda",
+      "Resultado"
+    ]
   }
 }

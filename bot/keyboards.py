@@ -1,15 +1,27 @@
-"""Teclados inline y mapeo de callback data (≤64 bytes cada uno)."""
+"""Teclados inline y mapeo de callback data (<=64 bytes cada uno)."""
 
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
-# Mapeo callback_data → (mode, variant)
+# Mapeo callback_data -> (mode, variant)
 CALLBACKS = {
+    # Tarot (9 variantes + smart)
     "t:1": ("tarot", "1_carta"),
     "t:3": ("tarot", "3_cartas"),
     "t:cc": ("tarot", "cruz_celta"),
+    "t:hr": ("tarot", "herradura"),
+    "t:rl": ("tarot", "relacion"),
+    "t:es": ("tarot", "estrella"),
+    "t:cs": ("tarot", "cruz_simple"),
+    "t:sn": ("tarot", "si_no"),
+    "t:dd": ("tarot", "tirada_dia"),
+    "t:sm": ("tarot", "smart"),
+    # Runas (5 variantes)
     "r:1": ("runas", "odin"),
     "r:3": ("runas", "nornas"),
     "r:cr": ("runas", "cruz"),
+    "r:5": ("runas", "cinco"),
+    "r:7": ("runas", "siete"),
+    # Otros
     "ic": ("iching", "hexagrama"),
     "g:1": ("geomancia", "1_figura"),
     "g:e": ("geomancia", "escudo"),
@@ -29,14 +41,13 @@ CALLBACKS = {
     "a:bk": ("admins", "back"),
 }
 
-# Callbacks de admins se generan dinámicamente: "a:0" a "a:19"
+# Callbacks de admins se generan dinamicamente: "a:0" a "a:19"
 for i in range(20):
     CALLBACKS[f"a:{i}"] = ("admins", str(i))
 
 
 def parse_callback(data: str) -> tuple[str, str] | None:
-    """Parsea callback_data → (mode, variant) o None si no reconocido."""
-    # Feedback: "fb:p:123" o "fb:n:123"
+    """Parsea callback_data -> (mode, variant) o None si no reconocido."""
     if data.startswith("fb:"):
         return ("feedback", data)
     return CALLBACKS.get(data)
@@ -48,7 +59,20 @@ def tarot_keyboard() -> InlineKeyboardMarkup:
             InlineKeyboardButton("🃏 Una carta", callback_data="t:1"),
             InlineKeyboardButton("🃏 Tres cartas", callback_data="t:3"),
         ],
-        [InlineKeyboardButton("🃏 Cruz Celta", callback_data="t:cc")],
+        [
+            InlineKeyboardButton("🃏 Cruz Celta", callback_data="t:cc"),
+            InlineKeyboardButton("🃏 Sí/No", callback_data="t:sn"),
+        ],
+        [
+            InlineKeyboardButton("🃏 Herradura", callback_data="t:hr"),
+            InlineKeyboardButton("🃏 Relación", callback_data="t:rl"),
+        ],
+        [
+            InlineKeyboardButton("🃏 Estrella", callback_data="t:es"),
+            InlineKeyboardButton("🃏 Cruz Simple", callback_data="t:cs"),
+        ],
+        [InlineKeyboardButton("☀️ Tirada del día", callback_data="t:dd")],
+        [InlineKeyboardButton("🎯 El Pezuñento elige", callback_data="t:sm")],
     ])
 
 
@@ -58,7 +82,11 @@ def runas_keyboard() -> InlineKeyboardMarkup:
             InlineKeyboardButton("ᚱ Runa de Odín", callback_data="r:1"),
             InlineKeyboardButton("ᚱ Tres Nornas", callback_data="r:3"),
         ],
-        [InlineKeyboardButton("ᚱ Cruz Rúnica", callback_data="r:cr")],
+        [
+            InlineKeyboardButton("ᚱ Cruz Rúnica", callback_data="r:cr"),
+            InlineKeyboardButton("ᚱ Cinco Runas", callback_data="r:5"),
+        ],
+        [InlineKeyboardButton("ᚱ Siete Runas", callback_data="r:7")],
     ])
 
 

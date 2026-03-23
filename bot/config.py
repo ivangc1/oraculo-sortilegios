@@ -55,6 +55,14 @@ class Settings(BaseSettings):
     EFFORT_NUMEROLOGIA_COMPAT: str = "medium"
     EFFORT_NATAL_TROPICAL: str = "high"
     EFFORT_NATAL_VEDICA: str = "high"
+    EFFORT_TAROT_HERRADURA: str = "high"
+    EFFORT_TAROT_RELACION: str = "high"
+    EFFORT_TAROT_ESTRELLA: str = "high"
+    EFFORT_TAROT_CRUZ_SIMPLE: str = "medium"
+    EFFORT_TAROT_SINO: str = "medium"
+    EFFORT_TAROT_DIA: str = "low"
+    EFFORT_RUNAS_CINCO: str = "high"
+    EFFORT_RUNAS_SIETE: str = "high"
     EFFORT_ORACULO: str = "medium"
 
     # max_tokens por modo (configurables sin redeploy)
@@ -71,6 +79,14 @@ class Settings(BaseSettings):
     MAX_TOKENS_NUMEROLOGIA_COMPAT: int = 700
     MAX_TOKENS_NATAL_TROPICAL: int = 3000
     MAX_TOKENS_NATAL_VEDICA: int = 3000
+    MAX_TOKENS_TAROT_HERRADURA: int = 1500
+    MAX_TOKENS_TAROT_RELACION: int = 1200
+    MAX_TOKENS_TAROT_ESTRELLA: int = 1200
+    MAX_TOKENS_TAROT_CRUZ_SIMPLE: int = 1000
+    MAX_TOKENS_TAROT_SINO: int = 600
+    MAX_TOKENS_TAROT_DIA: int = 400
+    MAX_TOKENS_RUNAS_CINCO: int = 1000
+    MAX_TOKENS_RUNAS_SIETE: int = 1500
     MAX_TOKENS_ORACULO: int = 600
 
     def get_max_tokens(self, mode: str, variant: str) -> int:
@@ -79,9 +95,17 @@ class Settings(BaseSettings):
             ("tarot", "1_carta"): self.MAX_TOKENS_TAROT_1,
             ("tarot", "3_cartas"): self.MAX_TOKENS_TAROT_3,
             ("tarot", "cruz_celta"): self.MAX_TOKENS_TAROT_CRUZ,
+            ("tarot", "herradura"): self.MAX_TOKENS_TAROT_HERRADURA,
+            ("tarot", "relacion"): self.MAX_TOKENS_TAROT_RELACION,
+            ("tarot", "estrella"): self.MAX_TOKENS_TAROT_ESTRELLA,
+            ("tarot", "cruz_simple"): self.MAX_TOKENS_TAROT_CRUZ_SIMPLE,
+            ("tarot", "si_no"): self.MAX_TOKENS_TAROT_SINO,
+            ("tarot", "tirada_dia"): self.MAX_TOKENS_TAROT_DIA,
             ("runas", "odin"): self.MAX_TOKENS_RUNAS_1,
             ("runas", "nornas"): self.MAX_TOKENS_RUNAS_3,
             ("runas", "cruz"): self.MAX_TOKENS_RUNAS_CRUZ,
+            ("runas", "cinco"): self.MAX_TOKENS_RUNAS_CINCO,
+            ("runas", "siete"): self.MAX_TOKENS_RUNAS_SIETE,
             ("iching", "hexagrama"): self.MAX_TOKENS_ICHING,
             ("geomancia", "1_figura"): self.MAX_TOKENS_GEOMANCIA_1,
             ("geomancia", "escudo"): self.MAX_TOKENS_GEOMANCIA_ESCUDO,
@@ -99,9 +123,17 @@ class Settings(BaseSettings):
             ("tarot", "1_carta"): self.EFFORT_TAROT_1,
             ("tarot", "3_cartas"): self.EFFORT_TAROT_3,
             ("tarot", "cruz_celta"): self.EFFORT_TAROT_CRUZ,
+            ("tarot", "herradura"): self.EFFORT_TAROT_HERRADURA,
+            ("tarot", "relacion"): self.EFFORT_TAROT_RELACION,
+            ("tarot", "estrella"): self.EFFORT_TAROT_ESTRELLA,
+            ("tarot", "cruz_simple"): self.EFFORT_TAROT_CRUZ_SIMPLE,
+            ("tarot", "si_no"): self.EFFORT_TAROT_SINO,
+            ("tarot", "tirada_dia"): self.EFFORT_TAROT_DIA,
             ("runas", "odin"): self.EFFORT_RUNAS_1,
             ("runas", "nornas"): self.EFFORT_RUNAS_3,
             ("runas", "cruz"): self.EFFORT_RUNAS_CRUZ,
+            ("runas", "cinco"): self.EFFORT_RUNAS_CINCO,
+            ("runas", "siete"): self.EFFORT_RUNAS_SIETE,
             ("iching", "hexagrama"): self.EFFORT_ICHING,
             ("geomancia", "1_figura"): self.EFFORT_GEOMANCIA_1,
             ("geomancia", "escudo"): self.EFFORT_GEOMANCIA_ESCUDO,

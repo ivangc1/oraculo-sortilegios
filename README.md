@@ -8,8 +8,8 @@ Bot de Telegram para el grupo **La Taberna de los Sortilegios** (~2,600 miembros
 
 | Comando | Sistema | Variantes |
 |---|---|---|
-| `/tarot` | Tarot Rider-Waite | Una carta, Tres cartas, Cruz Celta |
-| `/runa` | Runas Elder Futhark | Runa de Odin, Tres Nornas, Cruz Runica |
+| `/tarot` | Tarot Rider-Waite | 1 carta, 3 cartas, Cruz Celta, Si/No, Herradura, Relacion, Estrella, Cruz Simple, Tirada del dia, Smart selector |
+| `/runa` | Runas Elder Futhark | Odin, Tres Nornas, Cruz Runica, Cinco Runas, Siete Runas |
 | `/iching` | I Ching (Wilhelm) | Hexagrama con/sin lineas mutables |
 | `/geomancia` | Geomancia | Una figura, Escudo completo |
 | `/numerologia` | Pitagorica | Informe completo, Compatibilidad |
@@ -123,7 +123,7 @@ generators/             # SystemRandom, sin repeticion
 images/                 # Pillow: tarot, runas, hexagramas, geomancia
 database/               # SQLite singleton, WAL, migraciones
 data/                   # JSONs + datos estaticos
-tests/                  # 314+ tests
+tests/                  # 361+ tests
 ```
 
 ## Limites de uso
@@ -169,6 +169,7 @@ Configurables via `EFFORT_*` en `.env` sin redeploy.
 - **System prompt estatico**: constante literal (no f-strings) para que el prompt caching funcione. Perfil del usuario se inyecta en el user message.
 - **Guardrails en system prompt**: rechazo in-character de preguntas fuera de contexto, jailbreak, preguntas sobre la naturaleza del bot, consejos medicos/legales/financieros.
 - **Personalidad Baphomet**: todos los mensajes del bot (no solo las interpretaciones) mantienen tono directo, humor seco, sin servilismo.
+- **Smart selector**: `/tarot <pregunta>` analiza keywords (coste cero, sin API) y elige la tirada mas apropiada. Tambien disponible como boton en el menu.
 
 ## Licencia
 

@@ -41,7 +41,8 @@
       "Bash(grep -n \"context.user_data.get.*user_id\\\\|context.user_data\\\\[.*user_id\\\\|context.user_data.*telegram_user_id\" /c/Users/ivang/projects/oraculo-sortilegios/.claude/worktrees/elated-satoshi/bot/handlers/*.py)",
       "Bash(grep -r \"os\\\\.system\\\\|subprocess\\\\|popen\\\\|shell=True\\\\|Popen\" --include=*.py /c/Users/ivang/projects/oraculo-sortilegios/.claude/worktrees/elated-satoshi/bot /c/Users/ivang/projects/oraculo-sortilegios/.claude/worktrees/elated-satoshi/service)",
       "Bash(find C:Usersivangprojectsoraculo-sortilegios.claudeworktreeselated-satoshitests -name test_*.py -type f)",
-      "Bash(xargs wc:*)"
+      "Bash(xargs wc:*)",
+      "Bash(python -m pytest tests/test_smart_selector.py -v --tb=short)"
     ]
   }
 }

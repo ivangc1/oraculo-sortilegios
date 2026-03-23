@@ -189,7 +189,7 @@ def main() -> None:
     app.add_handler(CommandHandler("admins", admins_command))
 
     # 4. Callback handlers para modos con menú inline
-    from bot.handlers.tarot import tarot_callback, tarot_question_callback, tarot_question_text
+    from bot.handlers.tarot import tarot_callback, tarot_question_callback, tarot_question_text, tarot_smart_callback
     from bot.handlers.runas import runas_execute
     from bot.handlers.iching import iching_execute
     from bot.handlers.geomancia import geomancia_execute
@@ -217,10 +217,23 @@ def main() -> None:
 
         # Tarot
         if data.startswith("t:"):
-            variant_map = {"t:1": "1_carta", "t:3": "3_cartas", "t:cc": "cruz_celta"}
+            variant_map = {
+                "t:1": "1_carta", "t:3": "3_cartas", "t:cc": "cruz_celta",
+                "t:hr": "herradura", "t:rl": "relacion", "t:es": "estrella",
+                "t:cs": "cruz_simple", "t:sn": "si_no",
+            }
             variant = variant_map.get(data)
             if variant:
                 await tarot_callback(update, context, variant)
+                return
+            # Tirada del dia (sin pregunta)
+            if data == "t:dd":
+                await tarot_callback(update, context, "tirada_dia", skip_question=True)
+                return
+            # Smart selector
+            if data == "t:sm":
+                await tarot_smart_callback(update, context)
+                return
             return
 
         # Pregunta si/no (para tarot y otros modos)
@@ -233,7 +246,7 @@ def main() -> None:
 
         # Runas
         if data.startswith("r:"):
-            variant_map = {"r:1": "odin", "r:3": "nornas", "r:cr": "cruz"}
+            variant_map = {"r:1": "odin", "r:3": "nornas", "r:cr": "cruz", "r:5": "cinco", "r:7": "siete"}
             variant = variant_map.get(data)
             if variant:
                 await runas_execute(update, context, variant)
