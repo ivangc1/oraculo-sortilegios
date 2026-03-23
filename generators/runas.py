@@ -45,6 +45,8 @@ def draw_runes(variant: str) -> list[dict]:
         "odin": 1,
         "nornas": 3,
         "cruz": 5,
+        "cinco": 5,
+        "siete": 7,
     }
     n = count_map.get(variant, 1)
     positions = get_positions(variant)
