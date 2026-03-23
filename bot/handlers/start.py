@@ -43,21 +43,19 @@ def _check_onboarding_rate_limit(user_id: int) -> bool:
     return True
 
 
-_INTRO_GROUP = """🔮 Soy El Pezuñento, el oráculo de La Taberna de los Sortilegios.
+_INTRO_GROUP = """🔮 Soy El Pezuñento, oráculo de La Taberna de los Sortilegios.
 
-Leo las cartas, las runas, los hexagramas y lo que haga falta. No endulzo las lecturas y no hago recados. Si preguntas en serio, te respondo en serio.
+Leo las cartas, las runas, los hexagramas y lo que haga falta. No endulzo y no hago recados. Si vienes con una pregunta de verdad, te respondo de verdad.
 
-Usa /consulta para presentarte y empezar. Si ya nos conocemos, escribe /tarot, /runa, /iching o lo que te apetezca."""
+Usa /consulta para presentarte. Si ya nos conocemos, /tarot, /runa, /iching o lo que te apetezca. /ayudaoraculo para ver todo."""
 
-_INTRO_GROUP_REGISTERED = """🔮 Ya nos conocemos, {alias}.
+_INTRO_GROUP_REGISTERED = """🔮 {alias}, ya nos conocemos.
 
-Usa /tarot, /runa, /iching, /geomancia, /numerologia, /natal, /vedica, /oraculo, /bibliomancia o /ayudaoraculo para ver todo lo que puedo hacer."""
+/tarot, /runa, /iching, /geomancia, /numerologia, /natal, /vedica, /oraculo, /bibliomancia — elige tu veneno. /ayudaoraculo si te pierdes."""
 
-_INTRO_DM = """🔮 Soy El Pezuñento, el oráculo de La Taberna de los Sortilegios.
+_INTRO_DM = """🔮 Soy El Pezuñento. Solo opero en La Taberna de los Sortilegios. No hago consultas a domicilio. Búscame en el grupo."""
 
-Solo funciono en el grupo. No hago consultas privadas. Búscame en La Taberna."""
-
-_DM_RATE_LIMITED = "Demasiados intentos de registro. Espera un rato."
+_DM_RATE_LIMITED = "Demasiados intentos. Espera un rato antes de volver."
 
 
 async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:

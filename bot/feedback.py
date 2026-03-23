@@ -40,12 +40,12 @@ async def handle_feedback(
             await query.edit_message_reply_markup(reply_markup=None)
         except BadRequest:
             pass  # Mensaje ya borrado
-        await query.answer("Esta lectura ya no existe.", show_alert=False)
+        await query.answer("Esa lectura ya no existe.", show_alert=False)
         return
 
     # Solo dueño
     if query.from_user.id != usage["user_id"]:
-        await query.answer("Este feedback no es tuyo.", show_alert=False)
+        await query.answer("Eso no es tuyo.", show_alert=False)
         return
 
     # Expiración
@@ -58,13 +58,13 @@ async def handle_feedback(
             await query.edit_message_reply_markup(reply_markup=None)
         except BadRequest:
             pass
-        await query.answer("Feedback expirado.", show_alert=False)
+        await query.answer("Ya pasó el tiempo para opinar.", show_alert=False)
         return
 
     # No doble
     existing = await db_feedback.get_feedback(usage_id)
     if existing:
-        await query.answer("Ya diste tu opinión.", show_alert=False)
+        await query.answer("Ya opinaste una vez.", show_alert=False)
         return
 
     # Guardar y limpiar botones
@@ -73,4 +73,4 @@ async def handle_feedback(
         await query.edit_message_reply_markup(reply_markup=None)
     except BadRequest:
         pass  # Tolerante a mensaje borrado
-    await query.answer("Gracias ✨")
+    await query.answer("Tomado en cuenta.")

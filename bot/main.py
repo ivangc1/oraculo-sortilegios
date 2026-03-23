@@ -103,7 +103,7 @@ async def error_handler(update: object, context) -> None:
     if isinstance(update, Update) and update.effective_message:
         try:
             await update.effective_message.reply_text(
-                "Ha habido un error interno. Inténtalo de nuevo.",
+                "Algo ha fallado por dentro. Inténtalo de nuevo.",
                 reply_to_message_id=update.effective_message.message_id,
             )
         except Exception:

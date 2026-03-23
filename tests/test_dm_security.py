@@ -1,13 +1,15 @@
-"""Tests de seguridad DM: whitelist, rate limit, anti-bypass."""
+"""Tests de seguridad DM: whitelist, rate limit, anti-bypass, SQL injection."""
 
 import time
-from unittest.mock import patch
+
+import pytest
 
 from bot.handlers.start import (
     _VALID_START_PARAMS,
     _check_onboarding_rate_limit,
     _onboarding_attempts,
 )
+from database.users import _ALLOWED_PROFILE_COLUMNS
 
 
 class TestDeepLinkWhitelist:
@@ -77,6 +79,33 @@ class TestOnboardingRateLimit:
             _check_onboarding_rate_limit(uid1)
         assert _check_onboarding_rate_limit(uid1) is False
         assert _check_onboarding_rate_limit(uid2) is True
+
+
+class TestProfileColumnWhitelist:
+    """update_profile solo acepta columnas de la whitelist."""
+
+    def test_whitelist_has_expected_columns(self):
+        expected = {"birth_time", "birth_city", "birth_lat", "birth_lon",
+                    "birth_timezone", "sun_sign", "moon_sign", "ascendant",
+                    "lunar_nakshatra", "life_path", "full_birth_name"}
+        assert _ALLOWED_PROFILE_COLUMNS == expected
+
+    def test_telegram_user_id_not_in_whitelist(self):
+        """Nunca se debe poder cambiar el user_id via update_profile."""
+        assert "telegram_user_id" not in _ALLOWED_PROFILE_COLUMNS
+
+    def test_username_not_in_whitelist(self):
+        assert "telegram_username" not in _ALLOWED_PROFILE_COLUMNS
+
+    def test_alias_not_in_whitelist(self):
+        """Alias se establece en onboarding, no via update_profile."""
+        assert "alias" not in _ALLOWED_PROFILE_COLUMNS
+
+    def test_onboarding_complete_not_in_whitelist(self):
+        assert "onboarding_complete" not in _ALLOWED_PROFILE_COLUMNS
+
+    def test_sql_injection_column_not_in_whitelist(self):
+        assert "birth_date = ?, telegram_user_id" not in _ALLOWED_PROFILE_COLUMNS
 
 
 class TestMiddlewareDM:
