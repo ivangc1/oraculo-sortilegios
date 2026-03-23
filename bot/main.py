@@ -215,6 +215,27 @@ def main() -> None:
             await handle_feedback(update, context, settings)
             return
 
+        # Tarot sub-menus (must be before t: prefix check)
+        if data.startswith("tm:"):
+            from bot.keyboards import (
+                tarot_keyboard, tarot_rapidas_keyboard,
+                tarot_completas_keyboard, tarot_especiales_keyboard,
+            )
+            sub_map = {
+                "tm:r": ("⚡ Tiradas rápidas:", tarot_rapidas_keyboard),
+                "tm:c": ("🔮 Tiradas completas:", tarot_completas_keyboard),
+                "tm:e": ("✨ Tiradas especiales:", tarot_especiales_keyboard),
+                "tm:bk": ("Elige tu tirada:", tarot_keyboard),
+            }
+            entry = sub_map.get(data)
+            if entry:
+                text, kb_fn = entry
+                try:
+                    await query.edit_message_text(text, reply_markup=kb_fn())
+                except Exception:
+                    pass
+            return
+
         # Tarot
         if data.startswith("t:"):
             variant_map = {

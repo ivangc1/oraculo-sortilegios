@@ -15,6 +15,11 @@ CALLBACKS = {
     "t:sn": ("tarot", "si_no"),
     "t:dd": ("tarot", "tirada_dia"),
     "t:sm": ("tarot", "smart"),
+    # Tarot sub-menus
+    "tm:r": ("tarot_menu", "rapidas"),
+    "tm:c": ("tarot_menu", "completas"),
+    "tm:e": ("tarot_menu", "especiales"),
+    "tm:bk": ("tarot_menu", "back"),
     # Runas (5 variantes)
     "r:1": ("runas", "odin"),
     "r:3": ("runas", "nornas"),
@@ -54,39 +59,66 @@ def parse_callback(data: str) -> tuple[str, str] | None:
 
 
 def tarot_keyboard() -> InlineKeyboardMarkup:
+    """Menu principal de tarot — 3 categorias."""
+    return InlineKeyboardMarkup([
+        [
+            InlineKeyboardButton("⚡ Rápidas", callback_data="tm:r"),
+            InlineKeyboardButton("🔮 Completas", callback_data="tm:c"),
+        ],
+        [InlineKeyboardButton("✨ Especiales", callback_data="tm:e")],
+    ])
+
+
+def tarot_rapidas_keyboard() -> InlineKeyboardMarkup:
+    """Sub-menu: tiradas rapidas (1-3 cartas)."""
     return InlineKeyboardMarkup([
         [
             InlineKeyboardButton("🃏 Una carta", callback_data="t:1"),
-            InlineKeyboardButton("🃏 Tres cartas", callback_data="t:3"),
-        ],
-        [
-            InlineKeyboardButton("🃏 Cruz Celta", callback_data="t:cc"),
             InlineKeyboardButton("🃏 Sí/No", callback_data="t:sn"),
+        ],
+        [InlineKeyboardButton("☀️ Tirada del día", callback_data="t:dd")],
+        [InlineKeyboardButton("← Volver", callback_data="tm:bk")],
+    ])
+
+
+def tarot_completas_keyboard() -> InlineKeyboardMarkup:
+    """Sub-menu: tiradas completas (3-10 cartas)."""
+    return InlineKeyboardMarkup([
+        [
+            InlineKeyboardButton("🃏 Tres cartas", callback_data="t:3"),
+            InlineKeyboardButton("🃏 Cruz Simple", callback_data="t:cs"),
         ],
         [
             InlineKeyboardButton("🃏 Herradura", callback_data="t:hr"),
-            InlineKeyboardButton("🃏 Relación", callback_data="t:rl"),
+            InlineKeyboardButton("🃏 Cruz Celta", callback_data="t:cc"),
         ],
+        [InlineKeyboardButton("← Volver", callback_data="tm:bk")],
+    ])
+
+
+def tarot_especiales_keyboard() -> InlineKeyboardMarkup:
+    """Sub-menu: tiradas especiales."""
+    return InlineKeyboardMarkup([
         [
+            InlineKeyboardButton("🃏 Relación", callback_data="t:rl"),
             InlineKeyboardButton("🃏 Estrella", callback_data="t:es"),
-            InlineKeyboardButton("🃏 Cruz Simple", callback_data="t:cs"),
         ],
-        [InlineKeyboardButton("☀️ Tirada del día", callback_data="t:dd")],
         [InlineKeyboardButton("🎯 El Pezuñento elige", callback_data="t:sm")],
+        [InlineKeyboardButton("← Volver", callback_data="tm:bk")],
     ])
 
 
 def runas_keyboard() -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup([
         [
-            InlineKeyboardButton("ᚱ Runa de Odín", callback_data="r:1"),
-            InlineKeyboardButton("ᚱ Tres Nornas", callback_data="r:3"),
+            InlineKeyboardButton("ᚱ Odín (1)", callback_data="r:1"),
+            InlineKeyboardButton("ᚱ Nornas (3)", callback_data="r:3"),
         ],
         [
-            InlineKeyboardButton("ᚱ Cruz Rúnica", callback_data="r:cr"),
-            InlineKeyboardButton("ᚱ Cinco Runas", callback_data="r:5"),
+            InlineKeyboardButton("ᚱ Cruz (5)", callback_data="r:cr"),
+            InlineKeyboardButton("ᚱ Cinco (5)", callback_data="r:5"),
         ],
-        [InlineKeyboardButton("ᚱ Siete Runas", callback_data="r:7")],
+        [InlineKeyboardButton("ᚱ Siete (7)", callback_data="r:7")],
     ])
 
 
