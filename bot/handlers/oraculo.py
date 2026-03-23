@@ -131,7 +131,7 @@ async def _execute_oraculo(
         if response.truncated:
             text += LIMIT_MESSAGES["truncated"]
 
-        chunks = format_and_split(text, use_blockquote=settings.USE_BLOCKQUOTE)
+        chunks = format_and_split(text, use_blockquote=False)
         text_msg = None
         for i, chunk in enumerate(chunks):
             text_msg = await context.bot.send_message(
