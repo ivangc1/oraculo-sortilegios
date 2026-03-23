@@ -9,7 +9,7 @@ from telegram.ext import ContextTypes
 
 from bot.concurrency import is_user_busy, mark_user_busy, release_user, get_semaphore
 from bot.config import Settings
-from bot.formatting import format_response, split_message
+from bot.formatting import format_and_split
 from bot.keyboards import feedback_keyboard
 from bot.limits import check_limits, record_cooldown
 from bot.messages import LIMIT_MESSAGES
@@ -131,8 +131,7 @@ async def _execute_oraculo(
         if response.truncated:
             text += LIMIT_MESSAGES["truncated"]
 
-        formatted = format_response(text)
-        chunks = split_message(formatted)
+        chunks = format_and_split(text, use_blockquote=settings.USE_BLOCKQUOTE)
         text_msg = None
         for i, chunk in enumerate(chunks):
             text_msg = await context.bot.send_message(
