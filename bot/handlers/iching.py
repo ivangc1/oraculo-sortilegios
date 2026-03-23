@@ -118,6 +118,7 @@ async def iching_execute(
             mode="iching", variant="hexagrama",
             question=question, user_profile=profile,
             max_tokens=settings.get_max_tokens("iching", "hexagrama"),
+            effort=settings.get_effort("iching", "hexagrama"),
             extra_data=extra,
         )
 

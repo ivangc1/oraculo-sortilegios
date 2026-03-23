@@ -41,6 +41,22 @@ class Settings(BaseSettings):
     # Concurrencia
     MAX_CONCURRENT_API: int = 3
 
+    # Thinking effort por modo (adaptive thinking Sonnet 4.6: low/medium/high)
+    EFFORT_TAROT_1: str = "low"
+    EFFORT_TAROT_3: str = "medium"
+    EFFORT_TAROT_CRUZ: str = "high"
+    EFFORT_RUNAS_1: str = "low"
+    EFFORT_RUNAS_3: str = "medium"
+    EFFORT_RUNAS_CRUZ: str = "high"
+    EFFORT_ICHING: str = "high"
+    EFFORT_GEOMANCIA_1: str = "low"
+    EFFORT_GEOMANCIA_ESCUDO: str = "high"
+    EFFORT_NUMEROLOGIA: str = "medium"
+    EFFORT_NUMEROLOGIA_COMPAT: str = "medium"
+    EFFORT_NATAL_TROPICAL: str = "high"
+    EFFORT_NATAL_VEDICA: str = "high"
+    EFFORT_ORACULO: str = "medium"
+
     # max_tokens por modo (configurables sin redeploy)
     MAX_TOKENS_TAROT_1: int = 400
     MAX_TOKENS_TAROT_3: int = 800
@@ -76,6 +92,26 @@ class Settings(BaseSettings):
             ("oraculo", "libre"): self.MAX_TOKENS_ORACULO,
         }
         return key_map.get((mode, variant), 600)
+
+    def get_effort(self, mode: str, variant: str) -> str:
+        """Devuelve thinking effort para un modo/variante (low/medium/high)."""
+        key_map = {
+            ("tarot", "1_carta"): self.EFFORT_TAROT_1,
+            ("tarot", "3_cartas"): self.EFFORT_TAROT_3,
+            ("tarot", "cruz_celta"): self.EFFORT_TAROT_CRUZ,
+            ("runas", "odin"): self.EFFORT_RUNAS_1,
+            ("runas", "nornas"): self.EFFORT_RUNAS_3,
+            ("runas", "cruz"): self.EFFORT_RUNAS_CRUZ,
+            ("iching", "hexagrama"): self.EFFORT_ICHING,
+            ("geomancia", "1_figura"): self.EFFORT_GEOMANCIA_1,
+            ("geomancia", "escudo"): self.EFFORT_GEOMANCIA_ESCUDO,
+            ("numerologia", "informe"): self.EFFORT_NUMEROLOGIA,
+            ("numerologia", "compatibilidad"): self.EFFORT_NUMEROLOGIA_COMPAT,
+            ("natal", "tropical"): self.EFFORT_NATAL_TROPICAL,
+            ("natal", "vedica"): self.EFFORT_NATAL_VEDICA,
+            ("oraculo", "libre"): self.EFFORT_ORACULO,
+        }
+        return key_map.get((mode, variant), "medium")
 
 
 def load_settings() -> Settings:

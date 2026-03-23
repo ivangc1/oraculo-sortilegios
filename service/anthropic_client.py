@@ -1,7 +1,7 @@
 """AsyncAnthropic singleton. Cache system fijo, version pinned, parseo seguro.
 
-CRÍTICO: NO añadir retries manuales. El SDK ya reintenta 2x (429, 500).
-SDK retries × manuales = hasta 9 intentos → posible ban.
+Sonnet 4.6: adaptive thinking con effort configurable por modo.
+CRITICO: NO anadir retries manuales. El SDK ya reintenta 2x (429, 500).
 """
 
 import anthropic
@@ -37,18 +37,22 @@ class AnthropicService:
             max_retries=2,
             timeout=30.0,
         )
-        self._model = "claude-sonnet-4-20250514"
+        self._model = "claude-sonnet-4-6"
 
     async def interpret(
         self,
         request: InterpretationRequest,
         user_message: str,
     ) -> InterpretationResponse:
-        """Envía petición a la API. System prompt cacheado, user message dinámico."""
+        """Envia peticion a la API. System prompt cacheado, adaptive thinking."""
         try:
             response = await self._client.messages.create(
                 model=self._model,
                 max_tokens=request.max_tokens,
+                thinking={
+                    "type": "adaptive",
+                    "effort": request.effort,
+                },
                 system=[
                     {
                         "type": "text",
@@ -68,9 +72,14 @@ class AnthropicService:
             logger.error(f"Anthropic API error: {e.status_code}")
             return InterpretationResponse(error="api_error")
 
-        # Parseo seguro — formato de respuesta puede cambiar
+        # Parseo seguro — con adaptive thinking, response.content puede tener
+        # bloques thinking + text. Extraer solo el texto.
         try:
-            text = response.content[0].text
+            text = ""
+            for block in response.content:
+                if block.type == "text":
+                    text = block.text
+                    break
             stop = response.stop_reason
             tokens_in = response.usage.input_tokens
             tokens_out = response.usage.output_tokens
@@ -91,6 +100,19 @@ class AnthropicService:
             truncated=(stop == "max_tokens"),
             error=None,
         )
+
+    async def count_tokens(self, text: str) -> int:
+        """Cuenta tokens exactos via API (gratis). Para verificar system prompt."""
+        try:
+            result = await self._client.messages.count_tokens(
+                model=self._model,
+                system=[{"type": "text", "text": text}],
+                messages=[{"role": "user", "content": "test"}],
+            )
+            return result.input_tokens
+        except Exception as e:
+            logger.warning(f"Token count failed: {e}")
+            return 0
 
     async def close(self):
         await self._client.close()
