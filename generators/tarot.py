@@ -53,6 +53,12 @@ def draw_tarot(variant: str) -> list[dict]:
         "1_carta": 1,
         "3_cartas": 3,
         "cruz_celta": 10,
+        "herradura": 7,
+        "relacion": 6,
+        "estrella": 7,
+        "cruz_simple": 5,
+        "si_no": 3,
+        "tirada_dia": 1,
     }
     n = count_map.get(variant, 1)
     positions = get_positions(variant)
