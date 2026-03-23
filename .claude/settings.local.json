@@ -36,7 +36,12 @@
       "Bash(GIT_SSH_COMMAND=\"ssh -i C:/Users/ivang/.ssh/id_github_pc -o StrictHostKeyChecking=no\" git ls-remote origin refs/pull/*/head)",
       "WebFetch(domain:github.com)",
       "Bash(python -m pytest tests/test_handlers_basic.py -q --tb=short)",
-      "Bash(python -m pytest tests/test_dm_security.py -v --tb=short)"
+      "Bash(python -m pytest tests/test_dm_security.py -v --tb=short)",
+      "Bash(grep -r \"message\\\\.text\\\\|update\\\\.message\\\\.text\\\\|query\\\\.data\" --include=\"*.py\" bot/handlers/*.py)",
+      "Bash(grep -n \"context.user_data.get.*user_id\\\\|context.user_data\\\\[.*user_id\\\\|context.user_data.*telegram_user_id\" /c/Users/ivang/projects/oraculo-sortilegios/.claude/worktrees/elated-satoshi/bot/handlers/*.py)",
+      "Bash(grep -r \"os\\\\.system\\\\|subprocess\\\\|popen\\\\|shell=True\\\\|Popen\" --include=*.py /c/Users/ivang/projects/oraculo-sortilegios/.claude/worktrees/elated-satoshi/bot /c/Users/ivang/projects/oraculo-sortilegios/.claude/worktrees/elated-satoshi/service)",
+      "Bash(find C:Usersivangprojectsoraculo-sortilegios.claudeworktreeselated-satoshitests -name test_*.py -type f)",
+      "Bash(xargs wc:*)"
     ]
   }
 }
