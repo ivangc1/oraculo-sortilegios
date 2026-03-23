@@ -238,14 +238,163 @@ def compose_celtic_cross(cards: list[dict]) -> BytesIO | None:
         return None
 
 
+def compose_two_rows(cards: list[dict], top_count: int) -> BytesIO | None:
+    """Composicion generica en 2 filas (top_count arriba, resto abajo centrado)."""
+    try:
+        images = []
+        for card in cards:
+            img = load_card_image(card["id"])
+            if card["inverted"]:
+                img = invert_card_image(img)
+            images.append(img)
+
+        cw, ch = images[0].size
+        # Escalar si hay muchas cartas
+        if top_count >= 4:
+            target_w = 200
+            scale = target_w / cw
+            cw_s, ch_s = target_w, int(ch * scale)
+            images = [img.resize((cw_s, ch_s), Image.LANCZOS) for img in images]
+        else:
+            cw_s, ch_s = cw, ch
+
+        gap = 20
+        padding = 30
+        label_h = 40
+        font = _get_label_font(18)
+
+        bottom_count = len(cards) - top_count
+        max_cols = max(top_count, bottom_count)
+        canvas_w = max_cols * cw_s + (max_cols - 1) * gap + padding * 2
+        canvas_h = ch_s * 2 + gap + padding * 2 + label_h * 2
+
+        canvas = Image.new("RGB", (canvas_w, canvas_h), color=(25, 20, 30))
+        draw = ImageDraw.Draw(canvas)
+
+        def draw_card(idx, x, y):
+            canvas.paste(images[idx], (x, y))
+            label = cards[idx].get("position", f"Carta {idx+1}")
+            if cards[idx]["inverted"]:
+                label += " ↓"
+            bbox = draw.textbbox((0, 0), label, font=font)
+            tw = bbox[2] - bbox[0]
+            lx = x + (cw_s - tw) // 2
+            draw.text((lx, y + ch_s + 5), label, fill=(200, 185, 150), font=font)
+
+        # Fila superior (centrada)
+        top_w = top_count * cw_s + (top_count - 1) * gap
+        top_offset = (canvas_w - top_w) // 2
+        for i in range(top_count):
+            x = top_offset + i * (cw_s + gap)
+            draw_card(i, x, padding)
+
+        # Fila inferior (centrada)
+        bot_w = bottom_count * cw_s + (bottom_count - 1) * gap
+        bot_offset = (canvas_w - bot_w) // 2
+        y2 = padding + ch_s + label_h + gap
+        for i in range(bottom_count):
+            x = bot_offset + i * (cw_s + gap)
+            draw_card(top_count + i, x, y2)
+
+        return compose_to_jpeg(canvas)
+    except Exception as e:
+        logger.error(f"Error composing two rows: {e}")
+        return None
+
+
+def compose_herradura(cards: list[dict]) -> BytesIO | None:
+    """Herradura: 7 cartas en 2 filas (4+3)."""
+    return compose_two_rows(cards, top_count=4)
+
+
+def compose_relacion(cards: list[dict]) -> BytesIO | None:
+    """Relacion: 6 cartas en 2 filas (3+3)."""
+    return compose_two_rows(cards, top_count=3)
+
+
+def compose_estrella(cards: list[dict]) -> BytesIO | None:
+    """Estrella: 7 cartas — 3 arriba, 1 centro, 3 abajo (hexagrama con sintesis)."""
+    return compose_two_rows(cards, top_count=4)  # 4+3 como herradura
+
+
+def compose_cruz_simple(cards: list[dict]) -> BytesIO | None:
+    """Cruz simple: 5 cartas en forma de cruz.
+
+    Layout:
+              [4]
+        [2]  [1]  [3]
+              [5]
+    """
+    try:
+        if len(cards) < 5:
+            return None
+
+        images = []
+        for card in cards:
+            img = load_card_image(card["id"])
+            if card["inverted"]:
+                img = invert_card_image(img)
+            images.append(img)
+
+        cw, ch = images[0].size
+        target_w = 220
+        scale = target_w / cw
+        cw_s, ch_s = target_w, int(ch * scale)
+        images = [img.resize((cw_s, ch_s), Image.LANCZOS) for img in images]
+
+        gap = 15
+        label_h = 30
+        font = _get_label_font(16)
+        cell_w = cw_s + gap
+        cell_h = ch_s + gap + label_h
+
+        canvas_w = cell_w * 3 + gap
+        canvas_h = cell_h * 3 + gap
+
+        canvas = Image.new("RGB", (canvas_w, canvas_h), color=(25, 20, 30))
+        draw = ImageDraw.Draw(canvas)
+
+        def draw_card(idx, col, row):
+            x = gap + col * cell_w
+            y = gap + row * cell_h
+            canvas.paste(images[idx], (x, y))
+            label = cards[idx].get("position", f"{idx+1}")
+            if cards[idx]["inverted"]:
+                label += " ↓"
+            bbox = draw.textbbox((0, 0), label, font=font)
+            tw = bbox[2] - bbox[0]
+            lx = x + (cw_s - tw) // 2
+            draw.text((lx, y + ch_s + 3), label, fill=(200, 185, 150), font=font)
+
+        # Posiciones: 1=centro, 2=izq, 3=der, 4=arriba, 5=abajo
+        draw_card(0, 1, 1)  # Centro
+        draw_card(1, 0, 1)  # Izquierda (Pasado)
+        draw_card(2, 2, 1)  # Derecha (Futuro)
+        draw_card(3, 1, 0)  # Arriba (Consciente)
+        draw_card(4, 1, 2)  # Abajo (Inconsciente)
+
+        return compose_to_jpeg(canvas)
+    except Exception as e:
+        logger.error(f"Error composing cruz simple: {e}")
+        return None
+
+
 def compose_tarot(variant: str, cards: list[dict]) -> BytesIO | None:
-    """Dispatcher de composiciones según variante."""
-    if variant == "1_carta":
-        return compose_single(cards)
-    elif variant == "3_cartas":
-        return compose_three(cards)
-    elif variant == "cruz_celta":
-        return compose_celtic_cross(cards)
+    """Dispatcher de composiciones segun variante."""
+    dispatchers = {
+        "1_carta": compose_single,
+        "3_cartas": compose_three,
+        "cruz_celta": compose_celtic_cross,
+        "herradura": compose_herradura,
+        "relacion": compose_relacion,
+        "estrella": compose_estrella,
+        "cruz_simple": compose_cruz_simple,
+        "si_no": compose_three,       # 3 cartas horizontal, mismo layout
+        "tirada_dia": compose_single,  # 1 carta, mismo layout
+    }
+    composer = dispatchers.get(variant)
+    if composer:
+        return composer(cards)
     return None
 
 
