@@ -147,10 +147,12 @@ def main() -> None:
     # 1. Migración grupo → supergrupo (máxima prioridad)
     app.add_handler(MessageHandler(filters.StatusUpdate.MIGRATE, handle_migration))
 
-    # 2. ConversationHandlers (onboarding + actualizar perfil)
+    # 2. ConversationHandlers (onboarding grupo + DM + actualizar perfil)
     from bot.handlers.onboarding import build_onboarding_handler
+    from bot.handlers.dm_onboarding import build_dm_onboarding_handler
     from bot.handlers.profile import build_update_profile_handler
-    app.add_handler(build_onboarding_handler())
+    app.add_handler(build_dm_onboarding_handler())  # DM primero (mas especifico)
+    app.add_handler(build_onboarding_handler())     # Grupo
     app.add_handler(build_update_profile_handler())
 
     # 3. Comandos simples
@@ -168,6 +170,7 @@ def main() -> None:
     from bot.handlers.bibliomancia import bibliomancia_command
     from bot.handlers.admins import admins_command
 
+    app.add_handler(CommandHandler("start", start_command))  # Deep links + DM
     app.add_handler(CommandHandler("startoraculo", start_command))
     app.add_handler(CommandHandler("ayudaoraculo", help_command))
     app.add_handler(CommandHandler("miperfil", miperfil_command))

@@ -111,19 +111,19 @@ async def actualizarperfil_command(update: Update, context: ContextTypes.DEFAULT
         )
         return ConversationHandler.END
 
-    context.user_data["upd_user_id"] = update.effective_user.id
-
+    # Redirigir a DM para privacidad
+    bot_username = (await context.bot.get_me()).username
     await update.message.reply_text(
-        "¿Qué quieres actualizar?",
+        "Vamos al privado para actualizar tus datos.",
         reply_markup=InlineKeyboardMarkup([
-            [
-                InlineKeyboardButton("Hora de nacimiento", callback_data="upd:time"),
-                InlineKeyboardButton("Ciudad de nacimiento", callback_data="upd:city"),
-            ],
+            [InlineKeyboardButton(
+                "✏️ Actualizar perfil",
+                url=f"https://t.me/{bot_username}?start=update_profile",
+            )],
         ]),
         reply_to_message_id=update.message.message_id,
     )
-    return UPD_CHOOSE
+    return ConversationHandler.END
 
 
 async def upd_choose_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:

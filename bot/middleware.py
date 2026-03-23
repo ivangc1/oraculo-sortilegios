@@ -47,11 +47,16 @@ async def middleware_check(update: Update, context: ContextTypes.DEFAULT_TYPE, s
 
     chat = update.effective_chat
 
-    # 3. DMs
+    # 3. DMs — solo permitir /start (deep links) y /cancelaroraculo
+    # Los flujos de datos personales (onboarding, update_profile, set_fullname)
+    # se manejan via ConversationHandler en DM. Todo lo demas se bloquea.
     if chat.type == "private":
-        # /start en DM responde in-character
-        if message.text and message.text.startswith("/startoraculo"):
-            return True  # El handler de /start decide qué responder
+        if message.text:
+            cmd = message.text.split()[0].split("@")[0]
+            # Comandos permitidos en DM
+            if cmd in ("/start", "/startoraculo", "/cancelaroraculo"):
+                return True
+        # Todo lo demas en DM → rechazo (tiradas, etc.)
         try:
             await message.reply_text(
                 "Solo funciono en La Taberna de los Sortilegios. No hago consultas privadas.",
