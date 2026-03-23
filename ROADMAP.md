@@ -798,7 +798,10 @@ CALLBACKS = {
 
 🛡 /admins — Guardianes de la taberna
 
+🆕 /consulta — Registrarte para empezar
 📋 /miperfil · ✏️ /actualizarperfil · 🗑 /borrarme
+❌ /cancelar — Cancelar operación en curso
+❓ /ayuda — Este mensaje
 
 Tienes 5 tiradas diarias + 3 consultas al oráculo.
 ```
@@ -1582,7 +1585,7 @@ Antes de lanzar, ejecutar manualmente y evaluar calidad narrativa:
 - [x] Etiquetas legibles en composiciones (NotoSans-Regular.ttf descargada)
 - [x] /stats, /version solo admin, no-admin → in-character (bot/handlers/admin.py)
 - [x] /start DM y grupo (bot/handlers/start.py, test_handlers_basic.py)
-- [x] /ayuda contenido completo (test_handlers_basic.py verifica 15 comandos)
+- [x] /ayuda contenido completo (test_handlers_basic.py verifica 16 comandos)
 - [x] Runas renderizadas correctamente (trazos vectoriales Pillow, test_runas_generator.py 24 runas)
 - [x] Cruz Celta carta 2 rotación + escala (images/tarot_composer.py, test_tarot_images.py)
 - [x] Graceful shutdown (post_shutdown cierra DB + Anthropic client)
@@ -1723,7 +1726,7 @@ Antes de lanzar, ejecutar manualmente y evaluar calidad narrativa:
 - [x] /start: presentación in-character (grupo vs DM, registrado vs no)
 - [x] /stats (top 5, solo admin, no-admin → in-character) + /version
 - [x] /miperfil + /borrarme
-- [x] /ayuda (contenido completo con 13 comandos)
+- [x] /ayuda (contenido completo con 16 comandos)
 - [x] Alertas throttled
 - [x] Mensajes in-character pulidos (tono Baphomet, sin lenguaje técnico, sin tono servil)
 
