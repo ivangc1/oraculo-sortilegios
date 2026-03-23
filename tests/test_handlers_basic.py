@@ -5,7 +5,7 @@ from bot.handlers.start import _INTRO_GROUP, _INTRO_DM, _INTRO_GROUP_REGISTERED
 from bot.messages import LIMIT_MESSAGES
 
 
-# === /start texts ===
+# === /startoraculo texts ===
 
 def test_start_group_text():
     assert "Pezuñento" in _INTRO_GROUP
@@ -22,17 +22,17 @@ def test_start_registered_has_alias():
     assert "TestUser" in text
 
 
-# === /ayuda content ===
+# === /ayudaoraculo content ===
 
 def test_help_has_all_commands():
-    """Verifica que /ayuda incluye todos los comandos del ROADMAP."""
+    """Verifica que /ayudaoraculo incluye todos los comandos."""
     commands = [
         "/consulta", "/tarot", "/runa", "/iching", "/geomancia", "/numerologia",
         "/natal", "/vedica", "/oraculo", "/bibliomancia", "/admins",
-        "/miperfil", "/actualizarperfil", "/borrarme", "/cancelar", "/ayuda",
+        "/miperfil", "/actualizarperfil", "/borrarme", "/cancelar", "/ayudaoraculo",
     ]
     for cmd in commands:
-        assert cmd in _HELP_TEXT, f"Falta {cmd} en /ayuda"
+        assert cmd in _HELP_TEXT, f"Falta {cmd} en /ayudaoraculo"
 
 
 def test_help_has_limits():

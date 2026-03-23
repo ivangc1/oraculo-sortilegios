@@ -19,7 +19,8 @@ Bot de Telegram para el grupo **La Taberna de los Sortilegios** (~2,600 miembros
 | `/bibliomancia` | Textos sagrados | Biblia, Coran, Gita, Evangelio de Tomas |
 | `/admins` | Directorio guardianes | Grid inline con bios |
 | `/consulta` | Registro | Onboarding (alias, fecha, hora, ciudad) |
-| `/ayuda` | Ayuda | Lista de todos los comandos |
+| `/startoraculo` | Presentacion | Intro del oraculo |
+| `/ayudaoraculo` | Ayuda | Lista de todos los comandos |
 | `/miperfil` | Perfil | Ver datos registrados |
 | `/actualizarperfil` | Perfil | Actualizar hora o ciudad |
 | `/borrarme` | Perfil | Eliminar perfil y historial |
