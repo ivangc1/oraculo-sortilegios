@@ -50,7 +50,7 @@ async def middleware_check(update: Update, context: ContextTypes.DEFAULT_TYPE, s
     # 3. DMs
     if chat.type == "private":
         # /start en DM responde in-character
-        if message.text and message.text.startswith("/start"):
+        if message.text and message.text.startswith("/startoraculo"):
             return True  # El handler de /start decide qué responder
         try:
             await message.reply_text(

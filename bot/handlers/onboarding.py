@@ -3,7 +3,7 @@
 Flujo: /consulta → alias → fecha nacimiento → hora (opcional) → ciudad (opcional)
 - ForceReply en TODOS los pasos que esperan texto libre
 - Timeout 5 min
-- /cancelar en cualquier paso
+- /cancelaroraculo en cualquier paso
 - Retomar desde SQLite si incompleto (post-restart)
 - PicklePersistence mantiene estado entre mensajes
 - Simultáneo: per_user=True (default de ConversationHandler)
@@ -361,7 +361,7 @@ async def _complete_onboarding(
 
 
 async def cancel_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    """/cancelar — cancela el onboarding."""
+    """/cancelaroraculo — cancela el onboarding."""
     await update.message.reply_text(
         LIMIT_MESSAGES["cancelled"],
         reply_to_message_id=update.message.message_id,
@@ -411,7 +411,7 @@ def build_onboarding_handler() -> ConversationHandler:
             ],
         },
         fallbacks=[
-            CommandHandler("cancelar", cancel_command),
+            CommandHandler("cancelaroraculo", cancel_command),
         ],
         conversation_timeout=300,  # 5 minutos
         name="onboarding",

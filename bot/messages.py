@@ -10,7 +10,7 @@ LIMIT_MESSAGES = {
     "not_registered": "No te conozco. Usa /consulta para presentarte primero.",
     "off_topic": "Eso pregúntaselo a Google. Yo leo las cartas, no hago recados.",
     "admin_only": "Este comando es solo para el guardián de la taberna.",
-    "nominatim_down": "No puedo verificar esa ciudad ahora. Inténtalo en un rato o usa /cancelar.",
+    "nominatim_down": "No puedo verificar esa ciudad ahora. Inténtalo en un rato o usa /cancelaroraculo.",
     "dm_only_group": "Solo funciono en La Taberna de los Sortilegios. No hago consultas privadas.",
     "api_error": "El oráculo está indispuesto. Inténtalo en un rato.",
     "rate_limit": "Demasiadas consultas a la vez. Espera un momento.",

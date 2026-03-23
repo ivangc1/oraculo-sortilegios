@@ -18,6 +18,13 @@ Bot de Telegram para el grupo **La Taberna de los Sortilegios** (~2,600 miembros
 | `/oraculo` | Pregunta libre | Sonnet interpreta directamente |
 | `/bibliomancia` | Textos sagrados | Biblia, Coran, Gita, Evangelio de Tomas |
 | `/admins` | Directorio guardianes | Grid inline con bios |
+| `/consulta` | Registro | Onboarding (alias, fecha, hora, ciudad) |
+| `/startoraculo` | Presentacion | Intro del oraculo |
+| `/ayudaoraculo` | Ayuda | Lista de todos los comandos |
+| `/miperfil` | Perfil | Ver datos registrados |
+| `/actualizarperfil` | Perfil | Actualizar hora o ciudad |
+| `/borrarme` | Perfil | Eliminar perfil y historial |
+| `/cancelaroraculo` | Control | Cancelar operacion en curso |
 
 ## Stack tecnico
 

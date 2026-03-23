@@ -725,7 +725,7 @@ LIMIT_MESSAGES = {
     "not_registered": "No te conozco. Usa /consulta para presentarte primero.",
     "off_topic": "Eso pregúntaselo a Google. Yo leo las cartas, no hago recados.",
     "admin_only": "Este comando es solo para el guardián de la taberna.",
-    "nominatim_down": "No puedo verificar esa ciudad ahora. Inténtalo en un rato o usa /cancelar.",
+    "nominatim_down": "No puedo verificar esa ciudad ahora. Inténtalo en un rato o usa /cancelaroraculo.",
 }
 ```
 
@@ -798,7 +798,10 @@ CALLBACKS = {
 
 🛡 /admins — Guardianes de la taberna
 
+🆕 /consulta — Registrarte para empezar
 📋 /miperfil · ✏️ /actualizarperfil · 🗑 /borrarme
+❌ /cancelaroraculo — Cancelar operación en curso
+❓ /ayudaoraculo — Este mensaje
 
 Tienes 5 tiradas diarias + 3 consultas al oráculo.
 ```
@@ -929,7 +932,7 @@ app = ApplicationBuilder().token(TOKEN).persistence(persistence).build()
 
 Añadir `bot_persistence.pickle` a `.gitignore` y al backup.
 
-### 11.10 /cancelar, timeout 5 min
+### 11.10 /cancelaroraculo, timeout 5 min
 
 ### 11.11 Feedback: expiración 7d + tolerancia a mensajes borrados
 
@@ -1010,7 +1013,7 @@ if result is None:
     await update.message.reply_text(
         "No puedo verificar esa ciudad ahora. Puedes:\n"
         "• Intentarlo de nuevo en unos minutos\n"
-        "• Usar /cancelar y completar después con /actualizarperfil"
+        "• Usar /cancelaroraculo y completar después con /actualizarperfil"
     )
     return  # Se queda en el mismo paso, puede reintentar o cancelar
 ```
@@ -1572,7 +1575,7 @@ Antes de lanzar, ejecutar manualmente y evaluar calidad narrativa:
 - [x] Msg >4096 (bot/formatting.py split_message, test_formatting.py)
 - [x] Ciudad homónima → "escríbelo más completo" (onboarding.py confirm_city_callback)
 - [x] Fecha/hora inválida → mensaje amigable (test_validators.py, nunca técnico)
-- [x] /cancelar todos los flujos (ConversationHandler fallbacks)
+- [x] /cancelaroraculo todos los flujos (ConversationHandler fallbacks)
 - [x] Concurrencia (_active_requests + semaphore, test_queue_timeout.py)
 - [x] DMs, otros grupos, edits, fotos, stickers → ignorados (bot/middleware.py)
 - [x] Feedback: solo dueño, no doble, expirado, otro usuario, mensaje borrado (bot/feedback.py)
@@ -1582,7 +1585,7 @@ Antes de lanzar, ejecutar manualmente y evaluar calidad narrativa:
 - [x] Etiquetas legibles en composiciones (NotoSans-Regular.ttf descargada)
 - [x] /stats, /version solo admin, no-admin → in-character (bot/handlers/admin.py)
 - [x] /start DM y grupo (bot/handlers/start.py, test_handlers_basic.py)
-- [x] /ayuda contenido completo (test_handlers_basic.py verifica 15 comandos)
+- [x] /ayuda contenido completo (test_handlers_basic.py verifica 16 comandos)
 - [x] Runas renderizadas correctamente (trazos vectoriales Pillow, test_runas_generator.py 24 runas)
 - [x] Cruz Celta carta 2 rotación + escala (images/tarot_composer.py, test_tarot_images.py)
 - [x] Graceful shutdown (post_shutdown cierra DB + Anthropic client)
@@ -1666,7 +1669,7 @@ Antes de lanzar, ejecutar manualmente y evaluar calidad narrativa:
 - [x] JobQueue (limpieza caché, resumen semanal)
 - [x] Alertas throttled
 - [x] SystemRandom
-- [x] ConversationHandler onboarding completo (bot/handlers/onboarding.py: alias→fecha→hora→ciudad, ForceReply, timeout 5min, /cancelar, retomar SQLite, PicklePersistence)
+- [x] ConversationHandler onboarding completo (bot/handlers/onboarding.py: alias→fecha→hora→ciudad, ForceReply, timeout 5min, /cancelaroraculo, retomar SQLite, PicklePersistence)
 
 **Día 3-4: Tarot** — COMPLETADO (51 tests)
 - [x] tarot_cards.json nombres español (Hierofante, Bastos, Sota, Caballero)
@@ -1723,7 +1726,7 @@ Antes de lanzar, ejecutar manualmente y evaluar calidad narrativa:
 - [x] /start: presentación in-character (grupo vs DM, registrado vs no)
 - [x] /stats (top 5, solo admin, no-admin → in-character) + /version
 - [x] /miperfil + /borrarme
-- [x] /ayuda (contenido completo con 13 comandos)
+- [x] /ayuda (contenido completo con 16 comandos)
 - [x] Alertas throttled
 - [x] Mensajes in-character pulidos (tono Baphomet, sin lenguaje técnico, sin tono servil)
 
