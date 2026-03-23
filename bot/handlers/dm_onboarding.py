@@ -404,14 +404,13 @@ async def dm_upd_time(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int
         )
         return DM_UPD_TIME
 
-    user_id = context.user_data.get("upd_user_id", update.effective_user.id)
+    user_id = update.effective_user.id  # Siempre ID real
     new_time = f"{hour:02d}:{minute:02d}"
     await db_users.update_profile(user_id, birth_time=new_time)
 
     await update.message.reply_text(
         f"✅ Hora actualizada a {new_time}. Vuelve a La Taberna."
     )
-    context.user_data.pop("upd_user_id", None)
     return ConversationHandler.END
 
 
@@ -468,7 +467,6 @@ async def dm_upd_confirm_city(update: Update, context: ContextTypes.DEFAULT_TYPE
             await query.edit_message_text("✅ Ciudad actualizada. Vuelve a La Taberna.")
         except Exception:
             pass
-        context.user_data.pop("upd_user_id", None)
         context.user_data.pop("upd_city_result", None)
         return ConversationHandler.END
 
@@ -537,7 +535,7 @@ async def dm_cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """/cancelaroraculo en DM."""
     await update.message.reply_text(LIMIT_MESSAGES["cancelled"])
     for key in ("onb_alias", "onb_date", "onb_time", "onb_city_result",
-                "upd_user_id", "upd_city_result", "dm_deep_link"):
+                "upd_city_result", "dm_deep_link"):
         context.user_data.pop(key, None)
     return ConversationHandler.END
 
@@ -553,7 +551,7 @@ async def dm_timeout(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
         except Exception:
             pass
     for key in ("onb_alias", "onb_date", "onb_time", "onb_city_result",
-                "upd_user_id", "upd_city_result", "dm_deep_link"):
+                "upd_city_result", "dm_deep_link"):
         context.user_data.pop(key, None)
     return ConversationHandler.END
 

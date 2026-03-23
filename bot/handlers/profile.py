@@ -184,7 +184,6 @@ async def upd_time(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
         f"Hora actualizada a {new_time}.",
         reply_to_message_id=update.message.message_id,
     )
-    context.user_data.pop("upd_user_id", None)
     return ConversationHandler.END
 
 
@@ -242,7 +241,6 @@ async def upd_confirm_city(update: Update, context: ContextTypes.DEFAULT_TYPE) -
             await query.edit_message_text("Ciudad actualizada.")
         except Exception:
             pass
-        context.user_data.pop("upd_user_id", None)
         context.user_data.pop("upd_city_result", None)
         return ConversationHandler.END
 
@@ -264,7 +262,6 @@ async def upd_cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
         LIMIT_MESSAGES["cancelled"],
         reply_to_message_id=update.message.message_id,
     )
-    context.user_data.pop("upd_user_id", None)
     context.user_data.pop("upd_city_result", None)
     return ConversationHandler.END
 
