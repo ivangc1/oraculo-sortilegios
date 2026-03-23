@@ -18,11 +18,11 @@ Bot de Telegram para el grupo **La Taberna de los Sortilegios** (~2,600 miembros
 | `/oraculo` | Pregunta libre | Sonnet interpreta directamente |
 | `/bibliomancia` | Textos sagrados | Biblia, Coran, Gita, Evangelio de Tomas |
 | `/admins` | Directorio guardianes | Grid inline con bios |
-| `/consulta` | Registro | Onboarding (alias, fecha, hora, ciudad) |
-| `/startoraculo` | Presentacion | Intro del oraculo |
+| `/consulta` | Registro | Redirige a DM para onboarding privado |
+| `/startoraculo` | Presentacion | Intro del oraculo en grupo |
 | `/ayudaoraculo` | Ayuda | Lista de todos los comandos |
 | `/miperfil` | Perfil | Ver datos registrados |
-| `/actualizarperfil` | Perfil | Actualizar hora o ciudad |
+| `/actualizarperfil` | Perfil | Redirige a DM para actualizar hora/ciudad |
 | `/borrarme` | Perfil | Eliminar perfil y historial |
 | `/cancelaroraculo` | Control | Cancelar operacion en curso |
 
@@ -33,6 +33,7 @@ Bot de Telegram para el grupo **La Taberna de los Sortilegios** (~2,600 miembros
 | Lenguaje | Python 3.12+ |
 | Framework Telegram | python-telegram-bot 22.7 |
 | IA | Anthropic API (Claude Sonnet 4.6) via AsyncAnthropic |
+| Modelo | `claude-sonnet-4-6` con adaptive thinking |
 | Validacion | pydantic 2.12 + pydantic-settings 2.13 |
 | Base de datos | SQLite3 + aiosqlite 0.22 (WAL mode) |
 | Astrologia | kerykeion 5.12 (tropical + sidereal Lahiri nativo) |
@@ -80,13 +81,16 @@ cp data/admins_private.example.json data/admins_private.json
 
 Variables obligatorias en `.env`: `BOT_TOKEN`, `ANTHROPIC_API_KEY`, `ALLOWED_CHAT_ID`, `ADMIN_USER_ID`.
 
+Todas las demas variables tienen defaults razonables. Ver `.env.example` para la lista completa (47 variables incluyendo EFFORT_* y MAX_TOKENS_* por modo).
+
 ### Setup BotFather
 
 1. Crear bot en BotFather, obtener token
 2. `/setjoingroups` off
-3. `/setcommands` con la lista de comandos
+3. `/setcommands` con la lista de `data/botfather_commands.txt`
 4. **NO tocar `/setprivacy`** (dejar privacy mode ON; ForceReply lo maneja)
 5. Anadir bot al grupo, obtener chat_id via getUpdates
+6. Permiso recomendado: "Delete messages" (para borrar datos sensibles que se escriban en grupo por error)
 
 ### Ejecucion
 
@@ -107,19 +111,19 @@ Tests de natales con kerykeion se saltan en Windows (necesitan pyswisseph compil
 
 ```
 bot/                    # Capa 1: Telegram
-  handlers/             # Handlers por modo
+  handlers/             # Handlers por modo (+ dm_onboarding.py para flujos DM)
   main.py               # Entry point, signals, persistence
-  config.py             # Settings (pydantic-settings)
-  middleware.py          # Edits, DM, chat_id, membresia, migracion
+  config.py             # Settings (pydantic-settings, 47 variables)
+  middleware.py          # Edits, DM whitelist, chat_id, membresia, migracion
 service/                # Capa 2: Interpretacion
-  anthropic_client.py   # AsyncAnthropic singleton, cache, coste real
+  anthropic_client.py   # AsyncAnthropic singleton, adaptive thinking, cache
   prompts/              # System + sub-prompts por modo
   calculators/          # Geocoding, timezone, natal, numerologia
 generators/             # SystemRandom, sin repeticion
 images/                 # Pillow: tarot, runas, hexagramas, geomancia
 database/               # SQLite singleton, WAL, migraciones
 data/                   # JSONs + datos estaticos
-tests/                  # 293+ tests
+tests/                  # 314+ tests
 ```
 
 ## Limites de uso
@@ -129,6 +133,31 @@ tests/                  # 293+ tests
 - 60s cooldown entre consultas
 - 200 chars max por pregunta
 - Spending limit $25/mes
+- 3 semaforo concurrente API (configurable)
+
+## Privacidad y seguridad
+
+- **Onboarding en DM**: `/consulta` en grupo redirige a DM via deep link (`t.me/bot?start=onboarding`). Datos personales (fecha, hora, ciudad, nombre) se recogen en privado.
+- **Deep link whitelist**: solo 3 parametros validos (`onboarding`, `update_profile`, `set_fullname`). Set estricto, no regex. Cualquier otro parametro se ignora.
+- **Rate limit DM**: max 3 intentos de onboarding por user_id por hora.
+- **Middleware DM**: solo `/start`, `/startoraculo`, `/cancelaroraculo` permitidos en DM. Tiradas bloqueadas en privado.
+- **Anti-command injection**: comandos de tirada durante flujo DM se ignoran con mensaje "termina primero".
+- **SQL column whitelist**: `update_profile()` solo acepta 11 columnas predefinidas (`frozenset`). Rechaza cualquier otra con `ValueError`.
+- **User ID real**: toda operacion de identidad usa `update.effective_user.id` o `query.from_user.id`, nunca `user_data`.
+- **SQL parameterizado**: todas las queries usan `?` placeholders. Zero concatenacion de strings.
+- **Sin secrets en logs**: errores de API solo loguean `status_code`, nunca API keys ni excepciones completas.
+
+## Adaptive thinking (Sonnet 4.6)
+
+El modelo usa `thinking: {"type": "adaptive", "effort": effort}` con effort configurable por modo:
+
+| Effort | Modos |
+|---|---|
+| `low` | tarot 1 carta, runas Odin, geomancia 1 figura |
+| `medium` | tarot 3 cartas, runas Nornas, numerologia, oraculo |
+| `high` | Cruz Celta, runas Cruz, I Ching, escudo, natales |
+
+Configurables via `EFFORT_*` en `.env` sin redeploy.
 
 ## Decisiones de implementacion
 
@@ -137,8 +166,9 @@ tests/                  # 293+ tests
 - **Runas vectoriales**: trazos Pillow sobre textura piedra procedural. Zero assets de fuentes.
 - **Marcadores custom `[[T]]` `[[C]]`**: en vez de `##` y `**` (que Sonnet usa inconsistentemente).
 - **NO retry manual**: el SDK de Anthropic ya reintenta 2x automaticamente.
-- **Adaptive thinking (Sonnet 4.6)**: `thinking: {"type": "adaptive"}` con effort configurable por modo (low/medium/high).
-- **Model string**: `claude-sonnet-4-6` (no el antiguo ID con fecha).
+- **System prompt estatico**: constante literal (no f-strings) para que el prompt caching funcione. Perfil del usuario se inyecta en el user message.
+- **Guardrails en system prompt**: rechazo in-character de preguntas fuera de contexto, jailbreak, preguntas sobre la naturaleza del bot, consejos medicos/legales/financieros.
+- **Personalidad Baphomet**: todos los mensajes del bot (no solo las interpretaciones) mantienen tono directo, humor seco, sin servilismo.
 
 ## Licencia
 

@@ -79,10 +79,21 @@ async def update_full_birth_name(user_id: int, name: str) -> None:
     await db.commit()
 
 
+_ALLOWED_PROFILE_COLUMNS = frozenset({
+    "birth_time", "birth_city", "birth_lat", "birth_lon",
+    "birth_timezone", "sun_sign", "moon_sign", "ascendant",
+    "lunar_nakshatra", "life_path", "full_birth_name",
+})
+
+
 async def update_profile(user_id: int, **fields) -> None:
-    """Actualiza campos arbitrarios del perfil."""
+    """Actualiza campos del perfil. Solo columnas de la whitelist."""
     if not fields:
         return
+    # Rechazar columnas no permitidas (previene SQL injection via nombres de columna)
+    invalid = set(fields.keys()) - _ALLOWED_PROFILE_COLUMNS
+    if invalid:
+        raise ValueError(f"Columnas no permitidas: {invalid}")
     db = await Database.get()
     set_clause = ", ".join(f"{k} = ?" for k in fields)
     values = list(fields.values()) + [user_id]
