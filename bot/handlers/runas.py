@@ -135,6 +135,7 @@ async def runas_execute(
             mode="runas", variant=variant, drawn_items=drawn_items,
             question=question, user_profile=profile,
             max_tokens=settings.get_max_tokens("runas", variant),
+            effort=settings.get_effort("runas", variant),
         )
 
         interpreter: InterpreterService = context.bot_data["interpreter_service"]

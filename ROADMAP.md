@@ -287,12 +287,27 @@ class AnthropicService:
 
 **CRÍTICO — NO hacer double retry:** El SDK ya reintenta automáticamente (2 veces para 429 y 500). Si además añadimos retries manuales en nuestro código, el resultado es SDK retries × nuestros retries = hasta 9 intentos. Puede convertir un 429 temporal en un ban por bombardear la API. **Confiar en los retries del SDK. No añadir propios.**
 
+### Adaptive Thinking (Sonnet 4.6)
+
+Sonnet 4.6 usa `thinking: {"type": "adaptive", "effort": "low"|"medium"|"high"}`. El viejo `thinking: {"type": "enabled"}` con `budget_tokens` esta deprecated. Effort configurable por modo/variante desde `.env`:
+- **low**: tarot 1 carta, runas Odin, geomancia 1 figura
+- **medium**: tarot 3 cartas, runas Nornas, numerologia, oraculo
+- **high**: Cruz Celta, runas Cruz, I Ching, geomancia escudo, natales
+
+### Token Count API
+
+`client.messages.count_tokens()` es gratis y da conteo exacto de tokens. Se usa en tests para verificar que el system prompt tiene >=1024 tokens (requiere API key).
+
 ```python
     async def interpret(self, request: InterpretationRequest) -> InterpretationResponse:
         try:
             response = await self._client.messages.create(
-                model="claude-sonnet-4-20250514",
+                model="claude-sonnet-4-6",
                 max_tokens=request.max_tokens,
+                thinking={
+                    "type": "adaptive",
+                    "effort": request.effort,
+                },
                 system=[{
                     "type": "text",
                     "text": MASTER_SYSTEM_PROMPT,

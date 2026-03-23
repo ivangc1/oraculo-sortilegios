@@ -232,6 +232,7 @@ async def _execute_tarot_reading(
             question=question,
             user_profile=profile,
             max_tokens=settings.get_max_tokens("tarot", variant),
+            effort=settings.get_effort("tarot", variant),
         )
 
         # 5. Interpretar con typing + timeout global

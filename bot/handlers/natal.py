@@ -167,6 +167,7 @@ async def _execute_natal(
             mode="natal", variant=mode_variant,
             user_profile=profile,
             max_tokens=settings.get_max_tokens("natal", mode_variant),
+            effort=settings.get_effort("natal", mode_variant),
             extra_data=extra_data,
         )
 
