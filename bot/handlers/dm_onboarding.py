@@ -47,7 +47,7 @@ async def start_dm_onboarding(update: Update, context: ContextTypes.DEFAULT_TYPE
     user = await db_users.get_user(user_id)
     if user and user["onboarding_complete"]:
         await update.message.reply_text(
-            f"Ya te conozco, {user['alias']}. Vuelve a La Taberna y usa /tarot o lo que quieras."
+            f"Ya te tengo fichado, {user['alias']}. Vuelve a La Taberna y pide lo que quieras."
         )
         return ConversationHandler.END
 
@@ -65,8 +65,8 @@ async def start_dm_onboarding(update: Update, context: ContextTypes.DEFAULT_TYPE
         return DM_ASK_TIME
 
     await update.message.reply_text(
-        "Vamos a conocernos. Esto queda entre tú y yo.\n"
-        "¿Cómo quieres que te llame? (alias, apodo, lo que uses)",
+        "Vamos a conocernos. Esto queda entre tú y yo, aquí nadie mira.\n"
+        "¿Cómo quieres que te llame?",
         reply_markup=ForceReply(selective=True),
     )
     return DM_ASK_ALIAS
@@ -339,11 +339,10 @@ async def start_dm_update_profile(update: Update, context: ContextTypes.DEFAULT_
     user = await db_users.get_user(user_id)
     if not user or not user["onboarding_complete"]:
         await update.message.reply_text(
-            "No te tengo registrado. Usa /consulta en La Taberna primero."
+            "No te tengo fichado. Usa /consulta en La Taberna primero."
         )
         return ConversationHandler.END
 
-    context.user_data["upd_user_id"] = user_id
     await update.message.reply_text(
         "¿Qué quieres actualizar?",
         reply_markup=InlineKeyboardMarkup([
@@ -457,7 +456,7 @@ async def dm_upd_confirm_city(update: Update, context: ContextTypes.DEFAULT_TYPE
 
     if query.data == "dmupd:city_yes":
         city = context.user_data.get("upd_city_result", {})
-        user_id = context.user_data.get("upd_user_id", query.from_user.id)
+        user_id = query.from_user.id  # Siempre usar el ID real, nunca de user_data
         await db_users.update_profile(
             user_id,
             birth_city=city.get("city_name"),
@@ -497,13 +496,13 @@ async def start_dm_set_fullname(update: Update, context: ContextTypes.DEFAULT_TY
     user = await db_users.get_user(user_id)
     if not user or not user["onboarding_complete"]:
         await update.message.reply_text(
-            "No te tengo registrado. Usa /consulta en La Taberna primero."
+            "No te tengo fichado. Usa /consulta en La Taberna primero."
         )
         return ConversationHandler.END
 
     await update.message.reply_text(
-        "¿Cuál es tu nombre completo de nacimiento? (tal como aparece en tu certificado)\n"
-        "Este dato se usa para numerología y queda en privado.",
+        "¿Cuál es tu nombre completo de nacimiento? El de verdad, el de la partida.\n"
+        "Se usa para numerología y queda entre nosotros.",
         reply_markup=ForceReply(selective=True),
     )
     return DM_ASK_FULLNAME

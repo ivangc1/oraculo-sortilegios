@@ -56,7 +56,7 @@ async def consulta_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -
     user = await db_users.get_user(user_id)
     if user and user["onboarding_complete"]:
         await update.message.reply_text(
-            f"Ya te conozco, {user['alias']}. Usa /tarot, /runa, /iching o lo que te apetezca.",
+            f"Ya te tengo fichado, {user['alias']}. Usa /tarot, /runa, /iching o lo que quieras.",
             reply_to_message_id=update.message.message_id,
         )
         return ConversationHandler.END
@@ -79,7 +79,7 @@ async def consulta_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -
     # Nuevo onboarding → redirigir a DM para privacidad
     bot_username = (await context.bot.get_me()).username
     await update.message.reply_text(
-        "Necesito conocerte primero. Vamos al privado para que tus datos no queden aquí.",
+        "No te conozco, forastero. Vamos al privado para que tus datos no anden por aquí.",
         reply_markup=InlineKeyboardMarkup([
             [InlineKeyboardButton(
                 "📝 Registrarme",
