@@ -1,6 +1,9 @@
-"""Tests de formateo: marcadores custom + html.escape + split."""
+"""Tests de formateo: marcadores custom + html.escape + split + spoiler."""
 
-from bot.formatting import format_response, split_message
+from bot.formatting import (
+    format_response, split_message, wrap_spoiler,
+    wrap_blockquote, format_and_split,
+)
 
 
 def test_format_markers():
@@ -54,3 +57,46 @@ def test_split_preserves_content():
     assert "Párrafo 1" in joined
     assert "Párrafo 2" in joined
     assert "Párrafo 3" in joined
+
+
+# === Spoiler + Blockquote ===
+
+def test_wrap_spoiler():
+    """Spoiler envuelve en tg-spoiler."""
+    result = wrap_spoiler("Texto secreto")
+    assert result == "<tg-spoiler>Texto secreto</tg-spoiler>"
+
+
+def test_wrap_blockquote():
+    """Blockquote expandible."""
+    result = wrap_blockquote("Texto largo")
+    assert result == "<blockquote expandable>Texto largo</blockquote>"
+
+
+def test_format_and_split_with_spoiler():
+    """format_and_split aplica spoiler a cada chunk."""
+    raw = "[[T]]Titulo[[/T]]\nTexto de prueba"
+    chunks = format_and_split(raw, spoiler=True)
+    assert len(chunks) == 1
+    assert "<tg-spoiler>" in chunks[0]
+    assert "<b>Titulo</b>" in chunks[0]
+
+
+def test_format_and_split_without_spoiler():
+    """format_and_split sin spoiler devuelve HTML limpio."""
+    raw = "[[T]]Titulo[[/T]]\nTexto"
+    chunks = format_and_split(raw, spoiler=False)
+    assert len(chunks) == 1
+    assert "<tg-spoiler>" not in chunks[0]
+    assert "<b>Titulo</b>" in chunks[0]
+
+
+def test_format_and_split_long_text_spoiler():
+    """Texto largo con spoiler: cada chunk tiene su propio spoiler."""
+    para = "A" * 2000
+    raw = f"{para}\n\n{para}\n\n{para}"
+    chunks = format_and_split(raw, spoiler=True)
+    assert len(chunks) >= 2
+    for chunk in chunks:
+        assert chunk.startswith("<tg-spoiler>")
+        assert chunk.endswith("</tg-spoiler>")
