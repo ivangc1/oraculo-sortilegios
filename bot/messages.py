@@ -20,4 +20,7 @@ LIMIT_MESSAGES = {
     "invalid_date": "Esa fecha no parece válida. Usa el formato DD/MM/AAAA.",
     "invalid_time": "Esa hora no parece válida. Usa el formato HH:MM (24h).",
     "unknown_guardian": "No conozco a ese guardián.",
+    "dm_onboarding_redirect": "Vamos al privado para que tus datos no queden aquí.",
+    "dm_rate_limited": "Demasiados intentos de registro. Espera un rato.",
+    "dm_mid_flow": "Estamos a mitad de algo. Termina esto primero o usa /cancelaroraculo.",
 }

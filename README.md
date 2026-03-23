@@ -119,7 +119,7 @@ generators/             # SystemRandom, sin repeticion
 images/                 # Pillow: tarot, runas, hexagramas, geomancia
 database/               # SQLite singleton, WAL, migraciones
 data/                   # JSONs + datos estaticos
-tests/                  # 293+ tests
+tests/                  # 308+ tests
 ```
 
 ## Limites de uso
@@ -139,6 +139,9 @@ tests/                  # 293+ tests
 - **NO retry manual**: el SDK de Anthropic ya reintenta 2x automaticamente.
 - **Adaptive thinking (Sonnet 4.6)**: `thinking: {"type": "adaptive"}` con effort configurable por modo (low/medium/high).
 - **Model string**: `claude-sonnet-4-6` (no el antiguo ID con fecha).
+- **Onboarding en DM**: datos personales se recogen en privado (deep links), nunca en el grupo.
+- **Anti-bypass DM**: whitelist estricta de parametros de deep link, rate limit 3/hora, comandos de tirada bloqueados en DM.
+- **Guardrails en system prompt**: rechazo in-character de preguntas fuera de contexto, jailbreak, preguntas sobre la naturaleza del bot.
 
 ## Licencia
 

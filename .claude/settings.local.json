@@ -35,7 +35,8 @@
       "Bash(gh auth:*)",
       "Bash(GIT_SSH_COMMAND=\"ssh -i C:/Users/ivang/.ssh/id_github_pc -o StrictHostKeyChecking=no\" git ls-remote origin refs/pull/*/head)",
       "WebFetch(domain:github.com)",
-      "Bash(python -m pytest tests/test_handlers_basic.py -q --tb=short)"
+      "Bash(python -m pytest tests/test_handlers_basic.py -q --tb=short)",
+      "Bash(python -m pytest tests/test_dm_security.py -v --tb=short)"
     ]
   }
 }
