@@ -24,7 +24,7 @@ Bot de Telegram para el grupo **La Taberna de los Sortilegios** (~2,600 miembros
 | `/miperfil` | Perfil | Ver datos registrados |
 | `/actualizarperfil` | Perfil | Actualizar hora o ciudad |
 | `/borrarme` | Perfil | Eliminar perfil y historial |
-| `/cancelar` | Control | Cancelar operacion en curso |
+| `/cancelaroraculo` | Control | Cancelar operacion en curso |
 
 ## Stack tecnico
 
