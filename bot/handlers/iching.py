@@ -150,7 +150,7 @@ async def iching_execute(
         if response.truncated:
             text += LIMIT_MESSAGES["truncated"]
 
-        chunks = format_and_split(text, spoiler=settings.USE_SPOILER)
+        chunks = format_and_split(text, use_blockquote=settings.USE_BLOCKQUOTE)
         text_msg = None
         for i, chunk in enumerate(chunks):
             reply_to = photo_msg.message_id if i == 0 else (text_msg.message_id if text_msg else None)

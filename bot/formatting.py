@@ -28,25 +28,28 @@ def wrap_blockquote(text: str) -> str:
     return f"<blockquote expandable>{text}</blockquote>"
 
 
-_SPOILER_INTRO = "👁 <i>Pulsa el texto oculto para revelar la lectura</i>\n\n"
+# Lecturas >= este umbral usan blockquote expandible
+_BLOCKQUOTE_THRESHOLD = 1000
 
 
-def format_and_split(raw_text: str, spoiler: bool = True) -> list[str]:
-    """Pipeline completo: format -> split -> wrap cada chunk.
+def format_and_split(raw_text: str, use_blockquote: bool = True) -> list[str]:
+    """Pipeline completo: format -> split -> blockquote si largo.
 
     Args:
         raw_text: texto crudo del LLM con marcadores [[T]] [[C]]
-        spoiler: si True, cada chunk se envuelve en spoiler (tap to reveal)
+        use_blockquote: si True, chunks largos (>=1000 chars) se envuelven
+            en blockquote expandible (colapsado en el chat)
 
     Returns:
         Lista de chunks HTML listos para enviar con parse_mode="HTML"
     """
     formatted = format_response(raw_text)
     chunks = split_message(formatted)
-    if spoiler:
-        chunks = [wrap_spoiler(c) for c in chunks]
-        # Prepend intro al primer chunk
-        chunks[0] = _SPOILER_INTRO + chunks[0]
+    if use_blockquote:
+        chunks = [
+            wrap_blockquote(c) if len(c) >= _BLOCKQUOTE_THRESHOLD else c
+            for c in chunks
+        ]
     return chunks
 
 

@@ -39,7 +39,7 @@ class Settings(BaseSettings):
     MAX_QUESTION_LENGTH: int = 200
 
     # UX
-    USE_SPOILER: bool = True  # Interpretaciones ocultas (tap to reveal)
+    USE_BLOCKQUOTE: bool = True  # Blockquote expandible en lecturas largas
 
     # Concurrencia
     MAX_CONCURRENT_API: int = 3
