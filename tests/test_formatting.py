@@ -73,35 +73,38 @@ def test_wrap_blockquote():
     assert result == "<blockquote expandable>Texto largo</blockquote>"
 
 
-def test_format_and_split_with_spoiler():
-    """format_and_split aplica spoiler con intro."""
-    raw = "[[T]]Titulo[[/T]]\nTexto de prueba"
-    chunks = format_and_split(raw, spoiler=True)
+def test_format_and_split_short_no_blockquote():
+    """Texto corto (<1000 chars) no se envuelve en blockquote."""
+    raw = "[[T]]Titulo[[/T]]\nTexto corto"
+    chunks = format_and_split(raw, use_blockquote=True)
     assert len(chunks) == 1
-    assert "<tg-spoiler>" in chunks[0]
-    assert "<b>Titulo</b>" in chunks[0]
-    assert "Pulsa" in chunks[0]  # Intro visible antes del spoiler
-
-
-def test_format_and_split_without_spoiler():
-    """format_and_split sin spoiler devuelve HTML limpio."""
-    raw = "[[T]]Titulo[[/T]]\nTexto"
-    chunks = format_and_split(raw, spoiler=False)
-    assert len(chunks) == 1
-    assert "<tg-spoiler>" not in chunks[0]
+    assert "<blockquote" not in chunks[0]
     assert "<b>Titulo</b>" in chunks[0]
 
 
-def test_format_and_split_long_text_spoiler():
-    """Texto largo con spoiler: cada chunk tiene spoiler, intro solo en el primero."""
-    para = "A" * 2000
-    raw = f"{para}\n\n{para}\n\n{para}"
-    chunks = format_and_split(raw, spoiler=True)
-    assert len(chunks) >= 2
-    # Primer chunk tiene intro + spoiler
-    assert "Pulsa" in chunks[0]
-    assert "<tg-spoiler>" in chunks[0]
-    # Resto solo spoiler
-    for chunk in chunks[1:]:
-        assert "<tg-spoiler>" in chunk
-        assert "Pulsa" not in chunk
+def test_format_and_split_long_gets_blockquote():
+    """Texto largo (>=1000 chars) se envuelve en blockquote expandible."""
+    raw = "A" * 1200
+    chunks = format_and_split(raw, use_blockquote=True)
+    assert len(chunks) == 1
+    assert "<blockquote expandable>" in chunks[0]
+    assert "</blockquote>" in chunks[0]
+
+
+def test_format_and_split_blockquote_disabled():
+    """Con use_blockquote=False, texto largo va directo."""
+    raw = "A" * 1200
+    chunks = format_and_split(raw, use_blockquote=False)
+    assert len(chunks) == 1
+    assert "<blockquote" not in chunks[0]
+
+
+def test_format_and_split_mixed_chunks():
+    """Multi-chunk: solo los largos se envuelven."""
+    short = "B" * 500
+    long_para = "A" * 1500
+    raw = f"{short}\n\n{long_para}"
+    chunks = format_and_split(raw, use_blockquote=True)
+    # El chunk corto no tiene blockquote, el largo si
+    has_bq = [("<blockquote" in c) for c in chunks]
+    assert any(has_bq)  # Al menos uno tiene blockquote
