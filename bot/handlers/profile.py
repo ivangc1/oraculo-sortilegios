@@ -290,7 +290,7 @@ def build_update_profile_handler() -> ConversationHandler:
             ],
         },
         fallbacks=[
-            CommandHandler("cancelar", upd_cancel),
+            CommandHandler("cancelaroraculo", upd_cancel),
         ],
         conversation_timeout=300,
         name="update_profile",

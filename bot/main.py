@@ -168,8 +168,8 @@ def main() -> None:
     from bot.handlers.bibliomancia import bibliomancia_command
     from bot.handlers.admins import admins_command
 
-    app.add_handler(CommandHandler("start", start_command))
-    app.add_handler(CommandHandler("ayuda", help_command))
+    app.add_handler(CommandHandler("startoraculo", start_command))
+    app.add_handler(CommandHandler("ayudaoraculo", help_command))
     app.add_handler(CommandHandler("miperfil", miperfil_command))
     app.add_handler(CommandHandler("borrarme", borrarme_command))
     app.add_handler(CommandHandler("stats", stats_command))
