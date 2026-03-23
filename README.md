@@ -123,7 +123,7 @@ generators/             # SystemRandom, sin repeticion
 images/                 # Pillow: tarot, runas, hexagramas, geomancia
 database/               # SQLite singleton, WAL, migraciones
 data/                   # JSONs + datos estaticos
-tests/                  # 361+ tests
+tests/                  # 367+ tests
 ```
 
 ## Limites de uso
@@ -153,9 +153,9 @@ El modelo usa `thinking: {"type": "adaptive", "effort": effort}` con effort conf
 
 | Effort | Modos |
 |---|---|
-| `low` | tarot 1 carta, runas Odin, geomancia 1 figura |
-| `medium` | tarot 3 cartas, runas Nornas, numerologia, oraculo |
-| `high` | Cruz Celta, runas Cruz, I Ching, escudo, natales |
+| `low` | tarot 1 carta, tirada dia, runas Odin, geomancia 1 figura |
+| `medium` | tarot 3 cartas, si/no, cruz simple, runas Nornas, numerologia, oraculo |
+| `high` | Cruz Celta, herradura, relacion, estrella, runas Cruz/Cinco/Siete, I Ching, escudo, natales |
 
 Configurables via `EFFORT_*` en `.env` sin redeploy.
 
@@ -170,7 +170,7 @@ Configurables via `EFFORT_*` en `.env` sin redeploy.
 - **Guardrails en system prompt**: rechazo in-character de preguntas fuera de contexto, jailbreak, preguntas sobre la naturaleza del bot, consejos medicos/legales/financieros.
 - **Personalidad Baphomet**: todos los mensajes del bot (no solo las interpretaciones) mantienen tono directo, humor seco, sin servilismo.
 - **Smart selector**: `/tarot <pregunta>` analiza keywords (coste cero, sin API) y elige la tirada mas apropiada. Tambien disponible como boton en el menu.
-- **Blockquote expandible**: lecturas largas (>=1000 chars, ej: Cruz Celta, natales) se muestran colapsadas con "Mostrar mas". Lecturas cortas van directas. Desactivable con `USE_BLOCKQUOTE=false`.
+- **Blockquote expandible por variante**: lecturas largas (Cruz Celta, herradura, estrella, relacion, natales, 7 runas, escudo, I Ching) se muestran colapsadas con "Mostrar mas". Lecturas cortas van texto directo. Controlado por `frozenset` en config, desactivable globalmente con `USE_BLOCKQUOTE=false`.
 - **Menu tarot con sub-categorias**: Rapidas / Completas / Especiales. Edita el mismo mensaje, sin spam en el chat.
 
 ## Licencia
