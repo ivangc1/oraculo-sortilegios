@@ -1,0 +1,16 @@
+consulta - Registrarte o empezar una consulta
+tarot - Consulta las cartas del Tarot
+runa - Consulta las runas del Elder Futhark
+iching - Consulta el I Ching
+geomancia - Consulta las figuras geomanticas
+numerologia - Tu mapa numerologico
+natal - Carta natal tropical
+vedica - Carta natal vedica (Jyotish)
+oraculo - Pregunta libre al oraculo
+bibliomancia - Fragmento de texto sagrado
+admins - Guardianes de la taberna
+ayuda - Modos disponibles y comandos
+miperfil - Ver tu perfil
+actualizarperfil - Actualizar hora o ciudad
+borrarme - Eliminar tu perfil
+cancelar - Cancelar operacion en curso

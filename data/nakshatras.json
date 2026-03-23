@@ -1,0 +1,31 @@
+{
+  "nakshatras": [
+    {"number": 1, "name": "Ashwini", "ruler": "Ketu", "start": 0.0, "end": 13.3333},
+    {"number": 2, "name": "Bharani", "ruler": "Venus", "start": 13.3333, "end": 26.6667},
+    {"number": 3, "name": "Krittika", "ruler": "Sol", "start": 26.6667, "end": 40.0},
+    {"number": 4, "name": "Rohini", "ruler": "Luna", "start": 40.0, "end": 53.3333},
+    {"number": 5, "name": "Mrigashira", "ruler": "Marte", "start": 53.3333, "end": 66.6667},
+    {"number": 6, "name": "Ardra", "ruler": "Rahu", "start": 66.6667, "end": 80.0},
+    {"number": 7, "name": "Punarvasu", "ruler": "Júpiter", "start": 80.0, "end": 93.3333},
+    {"number": 8, "name": "Pushya", "ruler": "Saturno", "start": 93.3333, "end": 106.6667},
+    {"number": 9, "name": "Ashlesha", "ruler": "Mercurio", "start": 106.6667, "end": 120.0},
+    {"number": 10, "name": "Magha", "ruler": "Ketu", "start": 120.0, "end": 133.3333},
+    {"number": 11, "name": "Purva Phalguni", "ruler": "Venus", "start": 133.3333, "end": 146.6667},
+    {"number": 12, "name": "Uttara Phalguni", "ruler": "Sol", "start": 146.6667, "end": 160.0},
+    {"number": 13, "name": "Hasta", "ruler": "Luna", "start": 160.0, "end": 173.3333},
+    {"number": 14, "name": "Chitra", "ruler": "Marte", "start": 173.3333, "end": 186.6667},
+    {"number": 15, "name": "Swati", "ruler": "Rahu", "start": 186.6667, "end": 200.0},
+    {"number": 16, "name": "Vishakha", "ruler": "Júpiter", "start": 200.0, "end": 213.3333},
+    {"number": 17, "name": "Anuradha", "ruler": "Saturno", "start": 213.3333, "end": 226.6667},
+    {"number": 18, "name": "Jyeshtha", "ruler": "Mercurio", "start": 226.6667, "end": 240.0},
+    {"number": 19, "name": "Mula", "ruler": "Ketu", "start": 240.0, "end": 253.3333},
+    {"number": 20, "name": "Purva Ashadha", "ruler": "Venus", "start": 253.3333, "end": 266.6667},
+    {"number": 21, "name": "Uttara Ashadha", "ruler": "Sol", "start": 266.6667, "end": 280.0},
+    {"number": 22, "name": "Shravana", "ruler": "Luna", "start": 280.0, "end": 293.3333},
+    {"number": 23, "name": "Dhanishta", "ruler": "Marte", "start": 293.3333, "end": 306.6667},
+    {"number": 24, "name": "Shatabhisha", "ruler": "Rahu", "start": 306.6667, "end": 320.0},
+    {"number": 25, "name": "Purva Bhadrapada", "ruler": "Júpiter", "start": 320.0, "end": 333.3333},
+    {"number": 26, "name": "Uttara Bhadrapada", "ruler": "Saturno", "start": 333.3333, "end": 346.6667},
+    {"number": 27, "name": "Revati", "ruler": "Mercurio", "start": 346.6667, "end": 360.0}
+  ]
+}
