@@ -10,7 +10,7 @@ from telegram.ext import ContextTypes
 from bot.concurrency import is_user_busy, mark_user_busy, release_user, get_semaphore
 from bot.config import Settings
 from bot.feedback import handle_feedback
-from bot.formatting import format_response, split_message
+from bot.formatting import format_and_split
 from bot.keyboards import (
     feedback_keyboard,
     question_keyboard,
@@ -331,8 +331,7 @@ async def _execute_tarot_reading(
         if response.truncated:
             text += LIMIT_MESSAGES["truncated"]
 
-        formatted = format_response(text)
-        chunks = split_message(formatted)
+        chunks = format_and_split(text)
 
         text_msg = None
         for i, chunk in enumerate(chunks):
