@@ -1989,7 +1989,7 @@ ephe/
 
 ## 21. Mejoras futuras
 
-Memoria entre tiradas, compatibilidad tarot, tránsitos, sinastría, revolución solar, fases lunares, modo educativo, canal premium, dashboard web, migración modelo, foto tirada → interpretación, Marsella, oráculo historial, avisos lunaciones, webhook (si long polling), retención datos, múltiples resultados geocoding como botones, /frase (frases aleatorias de bot externo — pendiente datos).
+Más tipos de tiradas (tarot: Herradura, Relación, Árbol de la Vida; runas: Yggdrasil, 9 mundos), memoria entre tiradas, compatibilidad tarot, tránsitos, sinastría, revolución solar, fases lunares, modo educativo, dashboard web, migración modelo, foto tirada → interpretación, Marsella, oráculo historial, avisos lunaciones, webhook (si long polling), retención datos, múltiples resultados geocoding como botones.
 
 ---
 
