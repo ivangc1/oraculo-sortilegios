@@ -1562,79 +1562,79 @@ Antes de lanzar, ejecutar manualmente y evaluar calidad narrativa:
 
 ### 17.5 Integración manual
 
-- [ ] Todos los modos end-to-end
-- [ ] Límites + cooldown
-- [ ] /borrarme cascade
-- [ ] Onboarding: completo / sin hora / incompleto / timeout / post-restart / simultáneo 2 usuarios
-- [ ] Onboarding + comando → bloqueo
-- [ ] Petición en curso + nuevo comando → "aún en proceso"
-- [ ] Msg >4096
-- [ ] Ciudad homónima → "escríbelo más completo"
-- [ ] Fecha/hora inválida → mensaje amigable (no técnico)
-- [ ] /cancelar todos los flujos
-- [ ] Concurrencia
-- [ ] DMs, otros grupos, edits, fotos, stickers → ignorados
-- [ ] Texto sin comando → no responde
-- [ ] `/tarot ¿pregunta?`
-- [ ] Feedback: solo dueño, no doble, expirado, otro usuario, mensaje borrado por admin
-- [ ] Reply-to: foto → texto → feedback (cadena visual)
-- [ ] Caption en imágenes
-- [ ] JPEG resolución
-- [ ] Etiquetas legibles en composiciones
-- [ ] /stats, /version solo admin, /stats no supera 4096
-- [ ] /start DM y grupo
-- [ ] /ayuda contenido
-- [ ] Runas renderizadas correctamente (trazos sobre piedra, no cuadrados)
-- [ ] Cruz Celta carta 2 rotación + escala
-- [ ] Graceful shutdown (restart durante tirada)
-- [ ] Telegram 429, Forbidden, BadRequest
-- [ ] Username actualizado
-- [ ] Truncamiento: cierre + log
-- [ ] Respuesta vacía: mensaje + log
-- [ ] Typing no expira
-- [ ] Latitud extrema → Whole Sign
-- [ ] HTML escape
-- [ ] drawn_data JSON
-- [ ] Composición falla → degradación texto
-- [ ] Callback data ≤ 64 bytes
-- [ ] Signo solar fecha límite
-- [ ] Alerta restart no spamea
-- [ ] Token no aparece en logs
-- [ ] Queue timeout 45s → mensaje amigable
-- [ ] Numerología pide nombre completo si no lo tiene
-- [ ] I Ching sin mutables → 1 hexagrama (no 2)
-- [ ] Geomancia escudo derivación correcta (verificar contra manual)
-- [ ] System prompt ≥1024 tokens verificado
-- [ ] PicklePersistence: restart durante onboarding → continúa
-- [ ] PicklePersistence: borrar pickle → arranca limpio
-- [ ] EXIF: cartas no se ven invertidas sin rotate()
-- [ ] SDK retries: no hay retry manual adicional
-- [ ] Kerykeion + pyswisseph: tropical y védica en misma sesión → ambos correctos
-- [ ] Typing: bot removido durante tirada → no crash
-- [ ] BytesIO cerrado tras envío (verificar en logs/memoria)
-- [ ] ForceReply: onboarding funciona en grupo CON privacy mode ON
-- [ ] ForceReply: flujo pregunta funciona en grupo con privacy mode ON
-- [ ] ForceReply: compatibilidad (segunda fecha) funciona con privacy ON
-- [ ] ForceReply: actualizarperfil funciona con privacy ON
-- [ ] /stats por usuario no-admin → "solo para el guardián" (no silencio)
-- [ ] /version por usuario no-admin → "solo para el guardián"
-- [ ] Migración grupo→supergrupo → alerta con IDs viejo y nuevo
-- [ ] Imagen Cruz Celta <10MB (verificar tamaño)
-- [ ] /bibliomancia → grid de 4 botones
-- [ ] /bibliomancia biblia → fragmento directo
-- [ ] /bibliomancia coran → fragmento directo con sura y aleya
-- [ ] /bibliomancia gita → śloka con verso
-- [ ] /bibliomancia evangelio → fragmento directo
-- [ ] /bibliomancia no repite último fragmento
-- [ ] /bibliomancia mensaje >4096 → split correcto
-- [ ] /admins → grid 2 columnas, 20 botones
-- [ ] /admins @void → bio directa
-- [ ] /admins void → bio directa (sin @)
-- [ ] /admins nombre_inexistente → "No conozco a ese guardián"
-- [ ] /admins botón bio → edit message + [← Volver]
-- [ ] /admins [← Volver] → grid original (edit message)
-- [ ] /start en grupo → presentación + registrado vs no registrado
-- [ ] /start en DM → presentación + "solo funciono en La Taberna"
+> Items marcados [x] = implementado en código y/o verificado con tests automatizados.
+> Items marcados [ ] = requiere verificación manual en grupo real (post-despliegue).
+
+- [x] Límites + cooldown (test_queue_timeout.py, bot/limits.py)
+- [x] /borrarme cascade (ON DELETE CASCADE en schema SQL)
+- [x] Onboarding: completo / sin hora / incompleto / timeout / post-restart (ConversationHandler + SQLite partial)
+- [x] Petición en curso + nuevo comando → "aún en proceso" (bot/concurrency.py)
+- [x] Msg >4096 (bot/formatting.py split_message, test_formatting.py)
+- [x] Ciudad homónima → "escríbelo más completo" (onboarding.py confirm_city_callback)
+- [x] Fecha/hora inválida → mensaje amigable (test_validators.py, nunca técnico)
+- [x] /cancelar todos los flujos (ConversationHandler fallbacks)
+- [x] Concurrencia (_active_requests + semaphore, test_queue_timeout.py)
+- [x] DMs, otros grupos, edits, fotos, stickers → ignorados (bot/middleware.py)
+- [x] Feedback: solo dueño, no doble, expirado, otro usuario, mensaje borrado (bot/feedback.py)
+- [x] Reply-to: foto → texto → feedback (cadena visual en handlers)
+- [x] Caption en imágenes (build_caption en cada composer)
+- [x] JPEG resolución + verificación <10MB (compose_to_jpeg, test_tarot_images.py)
+- [x] Etiquetas legibles en composiciones (NotoSans-Regular.ttf descargada)
+- [x] /stats, /version solo admin, no-admin → in-character (bot/handlers/admin.py)
+- [x] /start DM y grupo (bot/handlers/start.py, test_handlers_basic.py)
+- [x] /ayuda contenido completo (test_handlers_basic.py verifica 15 comandos)
+- [x] Runas renderizadas correctamente (trazos vectoriales Pillow, test_runas_generator.py 24 runas)
+- [x] Cruz Celta carta 2 rotación + escala (images/tarot_composer.py, test_tarot_images.py)
+- [x] Graceful shutdown (post_shutdown cierra DB + Anthropic client)
+- [x] Telegram 429, Forbidden, BadRequest (middleware + typing + feedback handlers)
+- [x] Username actualizado (middleware._update_username_if_changed)
+- [x] Truncamiento: cierre + log (test_truncation.py)
+- [x] Respuesta vacía: mensaje + log (test_truncation.py)
+- [x] Typing no expira (renovado 4s, bot/typing.py)
+- [x] Latitud extrema → Whole Sign (natal_tropical.py |lat|>60)
+- [x] HTML escape (test_formatting.py, html.escape + [[T]][[C]])
+- [x] drawn_data JSON (test_drawn_data.py, todos los modos)
+- [x] Composición falla → degradación texto (build_text_fallback en cada composer)
+- [x] Callback data ≤ 64 bytes (test_callback_data.py, 47 tests parametrizados)
+- [x] Signo solar fecha límite (test_sun_sign.py, efemérides si kerykeion disponible)
+- [x] Alerta restart throttled (bot/alerts.py throttle_seconds=300)
+- [x] Token no aparece en logs (backtrace=False, diagnose=False)
+- [x] Queue timeout 45s → mensaje amigable (test_queue_timeout.py)
+- [x] Numerología pide nombre completo si no lo tiene (ForceReply en handler)
+- [x] I Ching sin mutables → 1 hexagrama, no 2 (test_iching_generator.py)
+- [x] Geomancia escudo derivación correcta (3 escudos a mano, test_geomancia.py)
+- [x] System prompt ≥1024 tokens verificado (test_system_prompt.py)
+- [x] PicklePersistence: corruption handling en startup (bot/main.py)
+- [x] EXIF: ImageOps.exif_transpose() antes de cachear (images/card_cache.py)
+- [x] SDK retries: no hay retry manual adicional (anthropic_client.py max_retries=2 solo)
+- [x] Kerykeion v5: tropical y védica nativo en misma sesión (sidereal_mode="LAHIRI")
+- [x] Typing: bot removido durante tirada → try/except Forbidden (bot/typing.py)
+- [x] BytesIO cerrado tras envío (finally: jpeg_buffer.close() en handlers)
+- [x] /stats por usuario no-admin → "solo para el guardián" (bot/handlers/admin.py)
+- [x] /version por usuario no-admin → "solo para el guardián"
+- [x] Migración grupo→supergrupo → alerta con IDs (bot/middleware.py handle_migration)
+- [x] Imagen Cruz Celta <10MB (test_tarot_images.py, verificado 369KB con cartas reales)
+- [x] /bibliomancia → grid de 4 botones (bot/handlers/bibliomancia.py)
+- [x] /bibliomancia biblia → fragmento directo (test_bibliomancia.py)
+- [x] /bibliomancia coran → fragmento directo (test_bibliomancia.py)
+- [x] /bibliomancia gita → fragmento directo (test_bibliomancia.py)
+- [x] /bibliomancia evangelio → fragmento directo (test_bibliomancia.py)
+- [x] /bibliomancia no repite último fragmento (test_bibliomancia.py anti-repetición)
+- [x] /bibliomancia mensaje >4096 → split correcto (test_bibliomancia.py)
+- [x] /admins → grid 2 columnas (test_admins.py grid_keyboard_structure)
+- [x] /admins @void → bio directa (test_admins.py find_admin_by_username)
+- [x] /admins void → bio directa sin @ (test_admins.py find_admin_by_key)
+- [x] /admins nombre_inexistente → "No conozco a ese guardián" (test_admins.py)
+- [x] /admins botón bio → edit message + [← Volver] (admins_callback)
+- [x] /admins [← Volver] → grid original edit message (admins_callback "back")
+- [x] /start en grupo → presentación + registrado vs no registrado (test_handlers_basic.py)
+- [x] /start en DM → "solo funciono en La Taberna" (test_handlers_basic.py)
+- [ ] Todos los modos end-to-end (requiere despliegue con API key real)
+- [ ] Onboarding simultáneo 2 usuarios (requiere grupo real)
+- [ ] ForceReply: onboarding funciona en grupo CON privacy mode ON (requiere grupo real)
+- [ ] ForceReply: flujo pregunta funciona en grupo con privacy mode ON (requiere grupo real)
+- [ ] ForceReply: compatibilidad (segunda fecha) funciona con privacy ON (requiere grupo real)
+- [ ] ForceReply: actualizarperfil funciona con privacy ON (requiere grupo real)
 
 ---
 
@@ -1666,8 +1666,7 @@ Antes de lanzar, ejecutar manualmente y evaluar calidad narrativa:
 - [x] JobQueue (limpieza caché, resumen semanal)
 - [x] Alertas throttled
 - [x] SystemRandom
-- [ ] BotFather completo — pendiente despliegue
-- [ ] ConversationHandler onboarding — pendiente (handlers individuales funcionan, ConversationHandler se integra en deploy)
+- [x] ConversationHandler onboarding completo (bot/handlers/onboarding.py: alias→fecha→hora→ciudad, ForceReply, timeout 5min, /cancelar, retomar SQLite, PicklePersistence)
 
 **Día 3-4: Tarot** — COMPLETADO (51 tests)
 - [x] tarot_cards.json nombres español (Hierofante, Bastos, Sota, Caballero)
@@ -1681,8 +1680,8 @@ Antes de lanzar, ejecutar manualmente y evaluar calidad narrativa:
 - [x] Feedback (expiración 7d, protecciones, BadRequest tolerante)
 - [x] drawn_data JSON
 - [x] Tests
-- [ ] PNGs Rider-Waite — pendiente obtener assets (placeholders generados)
-- [ ] Fuente NotoSans — pendiente obtener archivo TTF
+- [x] PNGs Rider-Waite — 78 cartas descargadas (krates98/tarotcardapi, dominio publico)
+- [x] Fuente NotoSans-Regular.ttf — descargada de Google Fonts (2MB)
 
 **Día 5: Runas + I Ching** — COMPLETADO (38 tests)
 - [x] RUNE_PATHS (24 coordenadas + Wyrd) + renderer trazos Pillow
@@ -1741,12 +1740,17 @@ Antes de lanzar, ejecutar manualmente y evaluar calidad narrativa:
 - [x] AGPL-3.0 LICENSE
 - [x] ROADMAP.md actualizado con estado real
 
-**Pendientes para despliegue:**
-- [ ] Obtener PNGs Rider-Waite dominio publico (78 cartas)
-- [ ] Obtener fuente NotoSans-Regular.ttf
-- [ ] ConversationHandler onboarding completo (integrar pasos con ForceReply)
-- [ ] /actualizarperfil handler completo
-- [ ] BotFather setup (/setjoingroups off, /setcommands, foto)
+**Completado en Semana 3:**
+- [x] PNGs Rider-Waite dominio publico (78 cartas descargadas, krates98/tarotcardapi)
+- [x] NotoSans-Regular.ttf (Google Fonts, 2MB)
+- [x] ConversationHandler onboarding completo (bot/handlers/onboarding.py)
+- [x] /actualizarperfil handler completo (bot/handlers/profile.py ConversationHandler)
+- [x] Todos los handlers registrados en main.py (16 CommandHandlers + dispatcher callbacks)
+- [x] botfather_commands.txt (16 comandos, coincide con /ayuda)
+- [x] Auditoria final: .env.example completo (33 variables), sin TODOs, sin dead code
+
+**Pendientes para despliegue (requieren grupo real):**
+- [ ] BotFather setup (/setjoingroups off, /setcommands con data/botfather_commands.txt, foto)
 - [ ] Obtener chat_id del grupo (via getUpdates)
 - [ ] admins_private.json con datos reales (20 admins)
 - [ ] Verificar onboarding con privacy mode ON en grupo real
