@@ -95,17 +95,13 @@ async def _process_tarot(
     query = update.callback_query
     chat_id = query.message.chat_id
 
-    # Preguntar si tiene pregunta
+    # Preguntar si tiene pregunta (q:y / q:n → tarot_question_callback)
     await query.edit_message_text(
         "¿Tienes alguna pregunta para las cartas?",
         reply_markup=question_keyboard(),
     )
 
-    # La pregunta se maneja por ConversationHandler o por callback.
-    # Por ahora, procesamos sin pregunta para el flujo base.
-    # TODO: Integrar con ConversationHandler para preguntas
-
-    # Guardamos datos en context.user_data para el flujo de pregunta
+    # Guardar datos para el flujo de pregunta (callback + ForceReply)
     context.user_data["tarot_variant"] = variant
     context.user_data["tarot_user"] = user
 

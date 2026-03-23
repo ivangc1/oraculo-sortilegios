@@ -64,7 +64,6 @@ async def runas_execute(
         if query:
             await query.edit_message_text(msg)
         return
-        return
 
     if is_user_busy(user_id):
         if query:
