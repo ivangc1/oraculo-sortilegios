@@ -170,6 +170,8 @@ Configurables via `EFFORT_*` en `.env` sin redeploy.
 - **Guardrails en system prompt**: rechazo in-character de preguntas fuera de contexto, jailbreak, preguntas sobre la naturaleza del bot, consejos medicos/legales/financieros.
 - **Personalidad Baphomet**: todos los mensajes del bot (no solo las interpretaciones) mantienen tono directo, humor seco, sin servilismo.
 - **Smart selector**: `/tarot <pregunta>` analiza keywords (coste cero, sin API) y elige la tirada mas apropiada. Tambien disponible como boton en el menu.
+- **Blockquote expandible**: lecturas largas (>=1000 chars, ej: Cruz Celta, natales) se muestran colapsadas con "Mostrar mas". Lecturas cortas van directas. Desactivable con `USE_BLOCKQUOTE=false`.
+- **Menu tarot con sub-categorias**: Rapidas / Completas / Especiales. Edita el mismo mensaje, sin spam en el chat.
 
 ## Licencia
 
