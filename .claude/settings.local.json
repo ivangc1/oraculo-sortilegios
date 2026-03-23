@@ -1,0 +1,41 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -m pytest tests/ -v)",
+      "Bash(pip install:*)",
+      "Bash(python -c \":*)",
+      "Bash(python -m pip install --upgrade pip)",
+      "Bash(pip list:*)",
+      "Bash(pip show:*)",
+      "Bash(pip index:*)",
+      "Bash(python -m pytest tests/test_geomancia.py tests/test_numerologia.py -v)",
+      "WebSearch",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:pypi.org)",
+      "WebFetch(domain:www.kerykeion.net)",
+      "Bash(python -m pytest tests/test_bibliomancia.py tests/test_admins.py tests/test_handlers_basic.py -v)",
+      "Bash(python -m pytest tests/ -v --tb=short)",
+      "Bash(python -m pytest tests/test_drawn_data.py tests/test_validators.py tests/test_truncation.py tests/test_queue_timeout.py tests/test_callback_data.py -v)",
+      "Bash(python -m pytest tests/ --tb=short -q)",
+      "Bash(curl -sL \"https://github.com/google/fonts/raw/main/ofl/notosans/NotoSans%5Bwdth%2Cwght%5D.ttf\" -o assets/fonts/NotoSans-Regular.ttf)",
+      "Bash(python -m pytest tests/ -q --tb=short)",
+      "Bash(curl -sL \"https://api.github.com/search/repositories?q=rider+waite+tarot+cards+images&sort=stars&per_page=5\")",
+      "Bash(curl -sL \"https://api.github.com/search/repositories?q=tarot+rider+waite+png+deck&sort=stars&per_page=5\")",
+      "Bash(curl -sL \"https://api.github.com/search/repositories?q=tarot+cards+images&sort=stars&per_page=10\")",
+      "Bash(curl -sL \"https://api.github.com/repos/krates98/tarotcardapi/contents/\")",
+      "Bash(curl -sL \"https://api.github.com/repos/krates98/tarotcardapi/contents/images\")",
+      "Bash(grep -r \"^import\\\\|^from\" /c/Users/ivang/projects/oraculo-sortilegios/.claude/worktrees/elated-satoshi/bot/*.py)",
+      "Bash(grep -n \"^def start_command\\\\|^def help_command\\\\|^def miperfil_command\\\\|^def borrarme_command\\\\|^def stats_command\\\\|^def version_command\" /c/Users/ivang/projects/oraculo-sortilegios/.claude/worktrees/elated-satoshi/bot/handlers/*.py)",
+      "Bash(grep -n \"^def tarot_command\\\\|^def runas_command\\\\|^def iching_command\\\\|^def geomancia_command\\\\|^def numerologia_command\\\\|^def natal_command\\\\|^def vedica_command\\\\|^def oraculo_command\\\\|^def bibliomancia_command\\\\|^def admins_command\" /c/Users/ivang/projects/oraculo-sortilegios/.claude/worktrees/elated-satoshi/bot/handlers/*.py)",
+      "Bash(__NEW_LINE_651d1efe457bb6a8__ for:*)",
+      "Bash(do)",
+      "Bash(grep -n \"^async def $cmd\\\\|^def $cmd\" /c/Users/ivang/projects/oraculo-sortilegios/.claude/worktrees/elated-satoshi/bot/handlers/*.py)",
+      "Bash(done)",
+      "Bash(grep -rn \"^from\\\\|^import\" /c/Users/ivang/projects/oraculo-sortilegios/.claude/worktrees/elated-satoshi/bot/handlers/*.py)",
+      "Bash(gh auth:*)",
+      "Bash(GIT_SSH_COMMAND=\"ssh -i C:/Users/ivang/.ssh/id_github_pc -o StrictHostKeyChecking=no\" git ls-remote origin refs/pull/*/head)",
+      "WebFetch(domain:github.com)",
+      "Bash(python -m pytest tests/test_handlers_basic.py -q --tb=short)"
+    ]
+  }
+}

@@ -29,7 +29,7 @@ def test_help_has_all_commands():
     commands = [
         "/consulta", "/tarot", "/runa", "/iching", "/geomancia", "/numerologia",
         "/natal", "/vedica", "/oraculo", "/bibliomancia", "/admins",
-        "/miperfil", "/actualizarperfil", "/borrarme", "/cancelar", "/ayudaoraculo",
+        "/miperfil", "/actualizarperfil", "/borrarme", "/cancelaroraculo", "/ayudaoraculo",
     ]
     for cmd in commands:
         assert cmd in _HELP_TEXT, f"Falta {cmd} en /ayudaoraculo"

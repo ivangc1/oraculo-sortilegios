@@ -35,7 +35,7 @@ _HELP_TEXT = """🔮 Modos disponibles:
 
 🆕 /consulta — Registrarte para empezar
 📋 /miperfil · ✏️ /actualizarperfil · 🗑 /borrarme
-❌ /cancelar — Cancelar operación en curso
+❌ /cancelaroraculo — Cancelar operación en curso
 ❓ /ayudaoraculo — Este mensaje
 
 Tienes 5 tiradas diarias + 3 consultas al oráculo."""
