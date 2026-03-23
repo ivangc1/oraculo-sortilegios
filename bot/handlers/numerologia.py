@@ -132,6 +132,7 @@ async def _execute_informe(
             mode="numerologia", variant="informe",
             user_profile=profile,
             max_tokens=settings.get_max_tokens("numerologia", "informe"),
+            effort=settings.get_effort("numerologia", "informe"),
             extra_data=extra_data,
         )
 
@@ -265,6 +266,7 @@ async def numerologia_compat_date_text(update: Update, context: ContextTypes.DEF
             mode="numerologia", variant="compatibilidad",
             user_profile=profile,
             max_tokens=settings.get_max_tokens("numerologia", "compatibilidad"),
+            effort=settings.get_effort("numerologia", "compatibilidad"),
             extra_data=extra_data,
         )
 

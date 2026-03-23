@@ -45,6 +45,7 @@ class InterpretationRequest(BaseModel):
     question: str | None = None
     user_profile: UserProfile
     max_tokens: int = 600
+    effort: str = "medium"  # adaptive thinking: low/medium/high
     extra_data: dict | None = None
 
     @field_validator("question")

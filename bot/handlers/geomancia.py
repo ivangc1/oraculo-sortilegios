@@ -125,6 +125,7 @@ async def geomancia_execute(
             mode="geomancia", variant=variant, drawn_items=drawn_items,
             question=question, user_profile=profile,
             max_tokens=settings.get_max_tokens("geomancia", variant),
+            effort=settings.get_effort("geomancia", variant),
             extra_data=extra_data,
         )
 

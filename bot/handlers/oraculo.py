@@ -101,6 +101,7 @@ async def _execute_oraculo(
             mode="oraculo", variant="libre",
             question=question, user_profile=profile,
             max_tokens=settings.get_max_tokens("oraculo", "libre"),
+            effort=settings.get_effort("oraculo", "libre"),
         )
 
         interpreter: InterpreterService = context.bot_data["interpreter_service"]
