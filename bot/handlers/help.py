@@ -1,4 +1,4 @@
-"""Handler de /ayuda: contenido definido con todos los comandos."""
+"""Handler de /ayudaoraculo: contenido definido con todos los comandos."""
 
 from telegram import Update
 from telegram.ext import ContextTypes
@@ -36,13 +36,13 @@ _HELP_TEXT = """🔮 Modos disponibles:
 🆕 /consulta — Registrarte para empezar
 📋 /miperfil · ✏️ /actualizarperfil · 🗑 /borrarme
 ❌ /cancelar — Cancelar operación en curso
-❓ /ayuda — Este mensaje
+❓ /ayudaoraculo — Este mensaje
 
 Tienes 5 tiradas diarias + 3 consultas al oráculo."""
 
 
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Handler para /ayuda."""
+    """Handler para /ayudaoraculo."""
     settings: Settings = context.bot_data["settings"]
     if not await middleware_check(update, context, settings):
         return

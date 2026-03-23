@@ -801,7 +801,7 @@ CALLBACKS = {
 🆕 /consulta — Registrarte para empezar
 📋 /miperfil · ✏️ /actualizarperfil · 🗑 /borrarme
 ❌ /cancelar — Cancelar operación en curso
-❓ /ayuda — Este mensaje
+❓ /ayudaoraculo — Este mensaje
 
 Tienes 5 tiradas diarias + 3 consultas al oráculo.
 ```
