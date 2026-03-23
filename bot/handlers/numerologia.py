@@ -7,7 +7,7 @@ Compatibilidad solo pide segunda fecha (camino de vida), no nombre.
 import asyncio
 
 from loguru import logger
-from telegram import ForceReply, Update
+from telegram import ForceReply, InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.error import BadRequest, Forbidden
 from telegram.ext import ContextTypes
 
@@ -54,15 +54,19 @@ async def numerologia_informe_callback(
         await query.edit_message_text(LIMIT_MESSAGES["not_registered"])
         return
 
-    # ¿Tiene full_birth_name?
+    # ¿Tiene full_birth_name? → redirigir a DM para privacidad
     if not user.get("full_birth_name"):
-        # Pedir nombre completo (ForceReply)
-        await query.edit_message_text("Para el informe numerológico necesito tu nombre completo de nacimiento.")
-        await query.message.reply_text(
-            "Escribe tu nombre completo de nacimiento (como aparece en tu partida):",
-            reply_markup=ForceReply(selective=True),
+        bot_username = (await context.bot.get_me()).username
+        await query.edit_message_text(
+            "Para el informe numerológico necesito tu nombre completo de nacimiento.\n"
+            "Vamos al privado para que no quede aquí.",
+            reply_markup=InlineKeyboardMarkup([
+                [InlineKeyboardButton(
+                    "📝 Registrar nombre",
+                    url=f"https://t.me/{bot_username}?start=set_fullname",
+                )],
+            ]),
         )
-        context.user_data["numerologia_awaiting_name"] = True
         return
 
     # Ya tiene nombre → ejecutar

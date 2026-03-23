@@ -83,14 +83,14 @@ async def borrarme_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -
     user = await db_users.get_user(update.effective_user.id)
     if not user:
         await update.message.reply_text(
-            "No tienes perfil que borrar.",
+            "No tienes perfil que borrar, forastero.",
             reply_to_message_id=update.message.message_id,
         )
         return
 
     await db_users.delete_user(update.effective_user.id)
     await update.message.reply_text(
-        "Tu perfil y todo tu historial han sido eliminados. Si vuelves, usa /consulta.",
+        "Borrado. Como si nunca hubieras pasado por aquí. Si vuelves, /consulta.",
         reply_to_message_id=update.message.message_id,
     )
 
@@ -111,19 +111,19 @@ async def actualizarperfil_command(update: Update, context: ContextTypes.DEFAULT
         )
         return ConversationHandler.END
 
-    context.user_data["upd_user_id"] = update.effective_user.id
-
+    # Redirigir a DM para privacidad
+    bot_username = (await context.bot.get_me()).username
     await update.message.reply_text(
-        "¿Qué quieres actualizar?",
+        "Vamos al privado. Tus datos no tienen que andar por aquí.",
         reply_markup=InlineKeyboardMarkup([
-            [
-                InlineKeyboardButton("Hora de nacimiento", callback_data="upd:time"),
-                InlineKeyboardButton("Ciudad de nacimiento", callback_data="upd:city"),
-            ],
+            [InlineKeyboardButton(
+                "✏️ Actualizar perfil",
+                url=f"https://t.me/{bot_username}?start=update_profile",
+            )],
         ]),
         reply_to_message_id=update.message.message_id,
     )
-    return UPD_CHOOSE
+    return ConversationHandler.END
 
 
 async def upd_choose_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
@@ -176,7 +176,7 @@ async def upd_time(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
         )
         return UPD_TIME
 
-    user_id = context.user_data.get("upd_user_id", update.effective_user.id)
+    user_id = update.effective_user.id  # Siempre ID real
     new_time = f"{hour:02d}:{minute:02d}"
     await db_users.update_profile(user_id, birth_time=new_time)
 
@@ -184,7 +184,6 @@ async def upd_time(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
         f"Hora actualizada a {new_time}.",
         reply_to_message_id=update.message.message_id,
     )
-    context.user_data.pop("upd_user_id", None)
     return ConversationHandler.END
 
 
@@ -230,7 +229,7 @@ async def upd_confirm_city(update: Update, context: ContextTypes.DEFAULT_TYPE) -
 
     if query.data == "upd:city_yes":
         city = context.user_data.get("upd_city_result", {})
-        user_id = context.user_data.get("upd_user_id", query.from_user.id)
+        user_id = query.from_user.id  # Siempre ID real
         await db_users.update_profile(
             user_id,
             birth_city=city.get("city_name"),
@@ -242,7 +241,6 @@ async def upd_confirm_city(update: Update, context: ContextTypes.DEFAULT_TYPE) -
             await query.edit_message_text("Ciudad actualizada.")
         except Exception:
             pass
-        context.user_data.pop("upd_user_id", None)
         context.user_data.pop("upd_city_result", None)
         return ConversationHandler.END
 
@@ -264,7 +262,6 @@ async def upd_cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
         LIMIT_MESSAGES["cancelled"],
         reply_to_message_id=update.message.message_id,
     )
-    context.user_data.pop("upd_user_id", None)
     context.user_data.pop("upd_city_result", None)
     return ConversationHandler.END
 
