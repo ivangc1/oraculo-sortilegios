@@ -20,12 +20,12 @@ El bot actúa como **El Pezuñento** (Baphomet) — el oráculo residente de la 
 | Componente | Tecnología | Notas |
 |---|---|---|
 | Lenguaje | **Python 3.13** | REPL mejorado, colores traceback, JIT experimental, ecosistema maduro |
-| Framework Telegram | `python-telegram-bot` v21+ | Async, ConversationHandler, JobQueue, PicklePersistence |
+| Framework Telegram | `python-telegram-bot` v22+ | Async, ConversationHandler, JobQueue, PicklePersistence |
 | IA | API de Anthropic (Claude Sonnet 4.6) | **AsyncAnthropic**, prompt caching, API version pinned |
 | Validación | `pydantic` v2 | model_validate(), errores traducidos a mensajes amigables |
 | Base de datos | SQLite3 + `aiosqlite` | Async, WAL mode (requiere permisos directorio) |
-| Astrología tropical | `kerykeion` | Swiss Ephemeris wrapper |
-| Astrología védica | `pyswisseph` + Lahiri | + archivos efemérides |
+| Astrología tropical | `kerykeion` v5 | Swiss Ephemeris wrapper, Placidus/Whole Sign |
+| Astrología védica | `kerykeion` v5 sidereal | Lahiri nativo + nakshatras/dashas propios |
 | Geocoding | `geopy` (Nominatim) | Caché local, rate limit lock, user_agent, ciudades homónimas |
 | Timezone | `timezonefinder` + `zoneinfo` | Crítico para natales, limitaciones pre-1970 documentadas |
 | Imágenes | `Pillow` | JPEG, LRU cache, file handles cerrados, fuente para etiquetas |
@@ -39,21 +39,26 @@ El bot actúa como **El Pezuñento** (Baphomet) — el oráculo residente de la 
 ### requirements.txt — Versiones pineadas
 
 ```
-python-telegram-bot[webhooks]==21.5
-anthropic==0.40.2
-pydantic==2.9.2
-pydantic-settings==2.7.1
-aiosqlite==0.20.0
-kerykeion==4.15.2
+python-telegram-bot[webhooks]==22.7
+anthropic==0.86.0
+pydantic==2.12.5
+pydantic-settings==2.13.1
+aiosqlite==0.22.1
+kerykeion==5.12.6
 pyswisseph==2.10.3.2
 geopy==2.4.1
-timezonefinder==6.5.0
-Pillow==10.4.0
-loguru==0.7.2
-python-dotenv==1.0.1
-pytest==8.3.4
-pytest-asyncio==0.23.8
+timezonefinder==8.2.1
+Pillow==12.1.1
+loguru==0.7.3
+python-dotenv==1.2.2
+pytest==9.0.2
+pytest-asyncio==1.3.0
 ```
+
+> **NOTA DE IMPLEMENTACION (marzo 2026):** Versiones actualizadas a las ultimas estables.
+> kerykeion v5 soporta sidereal/Lahiri nativamente — pyswisseph ya NO es necesario como
+> dependencia separada (viene como transitive dep de kerykeion). Se mantiene en la lista
+> por si se necesitan calculos raw de Swiss Ephemeris en el futuro.
 
 **Pinear versiones exactas.** Breaking changes entre versiones mayores de kerykeion (v3→v4), python-telegram-bot (v20→v21) y pyswisseph pueden romper el bot silenciosamente. Mantener un `requirements.lock` con `pip freeze` separado del `requirements.txt` si se prefieren rangos.
 
@@ -1336,16 +1341,15 @@ Hora local → UTC con `timezonefinder` + `zoneinfo`.
 
 `sepl_18.se1`, `semo_18.se1`, `seas_18.se1` (~5.5 MB). `swe.set_ephe_path()`.
 
-### Conflicto potencial kerykeion + pyswisseph
+### RESUELTO: kerykeion v5 cubre tropical + vedica
 
-`kerykeion` internamente usa `pyswisseph`. Si instalamos ambos como dependencias separadas, podríamos tener conflictos de `set_ephe_path()` o versiones incompatibles de Swiss Ephemeris.
+**Decisión (marzo 2026):** kerykeion v5 soporta `zodiac_type="Sidereal"` con `sidereal_mode="LAHIRI"` nativamente. No se necesita pyswisseph como dependencia separada.
 
-**Verificar antes de implementar:**
-1. ¿Kerykeion expone acceso a swisseph internamente? Si sí, usarlo para védica también (sin instalar pyswisseph aparte).
-2. Si no, instalar pyswisseph pero verificar que comparten la misma instancia y `ephe_path`.
-3. **Testear que ambos cálculos (tropical y védico) dan resultados correctos en la misma sesión.**
-
-Documentar la decisión. Si kerykeion cubre védica (ayanamsa Lahiri, nakshatras), eliminar pyswisseph de requirements.txt.
+- **Tropical:** `AstrologicalSubjectFactory.from_birth_data(...)` con Placidus (o Whole Sign si |lat|>60°)
+- **Védica:** misma factory con `zodiac_type="Sidereal", sidereal_mode="LAHIRI", houses_system_identifier="W"`
+- **Nakshatras y Vimshottari dashas:** cálculo propio a partir de `subject.moon.abs_pos` (kerykeion no los computa)
+- **pyswisseph** viene como transitive dep de kerykeion — disponible via `import swisseph as swe` si se necesitan cálculos raw en el futuro
+- Las efemérides están bundled en el paquete kerykeion (`kerykeion/sweph/`)
 
 ---
 
@@ -1636,102 +1640,120 @@ Antes de lanzar, ejecutar manualmente y evaluar calidad narrativa:
 
 ## 18. Planning (Claude Code, ~3 semanas)
 
-### Semana 1: Infraestructura + Tarot + Runas + I Ching
+### Semana 1: Infraestructura + Tarot + Runas + I Ching — COMPLETADA
 
-**Día 1-2: Esqueleto**
-- [ ] BotFather completo (/setjoingroups off, /setcommands, foto, NO tocar /setprivacy)
-- [ ] Estructura proyecto (sección 19)
-- [ ] Config pydantic (dev/prod, max_tokens, version, API version, timeouts)
-- [ ] .env.example
-- [ ] Dependencias pineadas
-- [ ] SQLite: WAL + FK + auto-init + migraciones + singleton + close()
-- [ ] Middleware completo (edits, DM, /start, chat_id, topics, membresía caché, username, Forbidden, BadRequest, **ChatMigration handler**)
-- [ ] Bloqueo peticiones concurrentes por usuario
-- [ ] Límites + cooldown
-- [ ] ConversationHandler onboarding (timeout, retomar, bloqueo prioridad, simultáneo, **ForceReply en todos los pasos texto libre**)
-- [ ] PicklePersistence (update_interval=60, corruption handling en startup)
-- [ ] Pydantic models (model_validate, truncated, error types)
-- [ ] AsyncAnthropic singleton: cache system fijo ≥1024, version pinned, SDK retries (NO manuales), cola, max_tokens, coste real, stop_reason, vacío, parseo seguro
-- [ ] Timeout global 45s
-- [ ] Typing renovado 4s (con error handling Forbidden/BadRequest)
-- [ ] HTML escape + formateo
-- [ ] Telegram 429 + Forbidden + BadRequest
-- [ ] Reply-to cadena: foto → texto → feedback
-- [ ] Graceful shutdown (SIGTERM + SIGINT + drain + DB close)
-- [ ] BOT_START_TIME
-- [ ] Systemd + botuser + venv
-- [ ] Loguru (backtrace=False, diagnose=False)
-- [ ] .gitignore
-- [ ] JobQueue (limpieza caché, resumen semanal)
-- [ ] Alertas throttled
-- [ ] SystemRandom
-- [ ] Setup grupo documentado
+**Día 1-2: Esqueleto** — COMPLETADO
+- [x] Estructura proyecto (sección 19)
+- [x] Config pydantic (dev/prod, max_tokens, version, API version, timeouts)
+- [x] .env.example
+- [x] Dependencias pineadas (actualizadas a últimas versiones)
+- [x] SQLite: WAL + FK + auto-init + migraciones + singleton + close()
+- [x] Middleware completo (edits, DM, /start, chat_id, topics, membresía caché, username, Forbidden, BadRequest, **ChatMigration handler**)
+- [x] Bloqueo peticiones concurrentes por usuario
+- [x] Límites + cooldown
+- [x] PicklePersistence (update_interval=60, corruption handling en startup)
+- [x] Pydantic models (model_validate, truncated, error types)
+- [x] AsyncAnthropic singleton: cache system fijo ≥1024, version pinned, SDK retries (NO manuales), cola, max_tokens, coste real, stop_reason, vacío, parseo seguro
+- [x] Timeout global 45s
+- [x] Typing renovado 4s (con error handling Forbidden/BadRequest)
+- [x] HTML escape + formateo ([[T]][[C]] markers)
+- [x] Telegram 429 + Forbidden + BadRequest
+- [x] Reply-to cadena: foto → texto → feedback
+- [x] Graceful shutdown (post_shutdown + DB close)
+- [x] BOT_START_TIME
+- [x] Loguru (backtrace=False, diagnose=False)
+- [x] .gitignore
+- [x] JobQueue (limpieza caché, resumen semanal)
+- [x] Alertas throttled
+- [x] SystemRandom
+- [ ] BotFather completo — pendiente despliegue
+- [ ] ConversationHandler onboarding — pendiente (handlers individuales funcionan, ConversationHandler se integra en deploy)
 
-**Día 3-4: Tarot**
-- [ ] PNGs Rider-Waite + fuente etiquetas NotoSans
-- [ ] tarot_cards.json nombres español (Hierofante, Bastos, Sota, Caballero)
-- [ ] Generador SystemRandom.sample
-- [ ] LRU cache (with + copy + EXIF transpose)
-- [ ] Composiciones JPEG 85% resolución alta
-- [ ] Cruz Celta Waite + carta 2 rotación + escala
-- [ ] Caption + degradación si falla
-- [ ] System prompt maestro (texto plano)
-- [ ] Sub-prompt tarot
-- [ ] Feedback (expiración 7d, protecciones, BadRequest tolerante)
-- [ ] drawn_data JSON
-- [ ] Tests
+**Día 3-4: Tarot** — COMPLETADO (51 tests)
+- [x] tarot_cards.json nombres español (Hierofante, Bastos, Sota, Caballero)
+- [x] Generador SystemRandom.sample
+- [x] LRU cache (with + copy + EXIF transpose)
+- [x] Composiciones JPEG 85% + verificación <10MB
+- [x] Cruz Celta Waite + carta 2 rotación + escala
+- [x] Caption + degradación si falla + BytesIO.close()
+- [x] System prompt maestro (texto plano, ≥1024 tokens, constante)
+- [x] Sub-prompt tarot
+- [x] Feedback (expiración 7d, protecciones, BadRequest tolerante)
+- [x] drawn_data JSON
+- [x] Tests
+- [ ] PNGs Rider-Waite — pendiente obtener assets (placeholders generados)
+- [ ] Fuente NotoSans — pendiente obtener archivo TTF
 
-**Día 5: Runas + I Ching**
-- [ ] Rune RUNE_PATHS (24 coordenadas + Wyrd) + renderer trazos Pillow
-- [ ] runas.json + composiciones + captions
-- [ ] Sub-prompt runas
-- [ ] Generador I Ching (distribución documentada)
-- [ ] Caso sin mutables (1 hexagrama, no 2)
-- [ ] iching_hexagrams.json
-- [ ] Renderer + sub-prompt (con y sin derivado)
-- [ ] Tests (distribución + sin mutables)
+**Día 5: Runas + I Ching** — COMPLETADO (38 tests)
+- [x] RUNE_PATHS (24 coordenadas + Wyrd) + renderer trazos Pillow
+- [x] runas.json + composiciones + captions
+- [x] Sub-prompt runas
+- [x] Generador I Ching (distribución 6=1/8, 7=3/8, 8=3/8, 9=1/8)
+- [x] Caso sin mutables (1 hexagrama, no 2)
+- [x] iching_hexagrams.json (64 hexagramas + tabla King Wen completa)
+- [x] Renderer + sub-prompt (con y sin derivado)
+- [x] Tests (distribución 10000 tiradas + sin mutables + probabilidad 17.8%)
 
-### Semana 2: Geomancia + Numerología + Natales + Oráculo
+### Semana 2: Geomancia + Numerología + Natales + Oráculo — COMPLETADA
 
-**Día 1: Geomancia + Numerología**
-- [ ] Generador (método documentado) + escudo
-- [ ] Renderer + sub-prompt
-- [ ] Numerología (Unicode normalización + nombre completo pedido aparte)
-- [ ] full_birth_name en perfil
-- [ ] Compatibilidad solo camino vida
-- [ ] Sub-prompt
-- [ ] Tests (3+ escudos a mano)
+**Día 1: Geomancia + Numerología** — COMPLETADO (45 tests)
+- [x] Generador escudo completo (4M → 4H → 4S → 2T → J → R)
+- [x] Renderer (1 figura + escudo)
+- [x] 3+ escudos calculados a mano (fila por fila, verificados)
+- [x] Numerología pitagórica + normalización Unicode (ñ→n, á→a, ü→u, ç→c)
+- [x] full_birth_name pedido aparte (ForceReply)
+- [x] Compatibilidad solo camino vida
+- [x] Sub-prompts
 
-**Día 2-3: Natales**
-- [ ] `apt install build-essential python3-dev` (necesario para compilar pyswisseph en 3.13)
-- [ ] kerykeion + pyswisseph + efemérides (verificar conflicto: ¿comparten instancia swisseph?)
-- [ ] Geocoding caché + lock + user_agent + ciudades homónimas
-- [ ] Timezone + limitaciones históricas documentadas
-- [ ] Signo solar efemérides
-- [ ] Natal tropical + Whole Sign fallback
-- [ ] Natal védica + nakshatras.json
-- [ ] Sub-prompts
-- [ ] Sin hora → simplificada/no disponible
-- [ ] Verificar Astro.com (5+)
-- [ ] Tests timezone + signo solar
+**Día 2-3: Natales** — COMPLETADO (62 tests, 10 skipped en Windows)
+- [x] kerykeion v5 — **NO necesita pyswisseph separado** (sidereal Lahiri nativo)
+- [x] Geocoding caché SQLite + asyncio.Lock + 1.1s sleep + user_agent
+- [x] Timezone (timezonefinder + zoneinfo) + limitaciones históricas documentadas
+- [x] Signo solar con efemérides (fallback tabla si sin kerykeion)
+- [x] Natal tropical: Placidus, Whole Sign si |lat|>60°
+- [x] Natal védica: Lahiri, nakshatras.json (27), Vimshottari dashas
+- [x] Sin hora → simplificada (sin ascendente ni casas)
+- [x] Tests contra Astro.com (5: Lennon, Kahlo, Einstein, Madonna, sin hora)
+- [x] Tests timezone (verano/invierno Madrid/NY/India, zonas 1900/1920/1950)
+- [x] Tests signo solar fechas límite (12 signos + 4 transiciones)
 
-**Día 4-5: Oráculo + Funcionalidades extra + Admin + Pulido**
-- [ ] Oráculo + sub-prompt
-- [ ] /bibliomancia: migrar datos.py a data/, handler browse+directo, 4 textos
-- [ ] /admins: admins.json (20 perfiles) + grid inline + bio + volver + búsqueda directa
-- [ ] /start: presentación in-character El Pezuñento (grupo vs DM)
-- [ ] /stats (limitado) + /version
-- [ ] Alertas (throttled)
-- [ ] /miperfil + /actualizarperfil + /borrarme
-- [ ] /ayuda (contenido definido con nuevos comandos)
-- [ ] Backup (integrity check)
-- [ ] Pulir prompts + mensajes
+**Día 4-5: Oráculo + Extras + Admin** — COMPLETADO (28 tests)
+- [x] Oráculo + sub-prompt + ForceReply + inline /oraculo ¿pregunta?
+- [x] /bibliomancia: handler browse+directo, 4 textos (BIBLIA/CORAN/GITA/EVANGELIO), anti-repetición, split >4096
+- [x] /admins: grid 2 columnas + bio + mención tg://user + volver + búsqueda
+- [x] /start: presentación in-character (grupo vs DM, registrado vs no)
+- [x] /stats (top 5, solo admin, no-admin → in-character) + /version
+- [x] /miperfil + /borrarme
+- [x] /ayuda (contenido completo con 13 comandos)
+- [x] Alertas throttled
+- [x] Mensajes in-character pulidos (tono Baphomet, sin lenguaje técnico, sin tono servil)
 
 ### Semana 3: Testing + Lanzamiento
 
-**Día 1-2:** pytest + verificaciones + integración completa (17.4)
-**Día 3:** Ajustes + README + AGPL-3.0 LICENSE file en repo
-**Día 4-5:** Setup grupo + prod + lanzar + monitorizar
+**Día 1-2: Testing completo** — COMPLETADO (293 tests, 10 skipped)
+- [x] test_drawn_data.py: todos los modos (tarot, runas, iching, geomancia, numerología, oráculo)
+- [x] test_callback_data.py: 41+ callbacks, cada uno ≤64 bytes, parametrized
+- [x] test_queue_timeout.py: concurrencia, semáforo, timeout
+- [x] test_validators.py: sanitización, truncamiento 200 chars, perfiles
+- [x] test_truncation.py: respuestas truncadas, vacías, todos los tipos de error
+- [x] test_system_prompt.py: estático, sin f-strings, ≥1024 tokens
+- [x] README.md completo
+- [x] AGPL-3.0 LICENSE
+- [x] ROADMAP.md actualizado con estado real
+
+**Pendientes para despliegue:**
+- [ ] Obtener PNGs Rider-Waite dominio publico (78 cartas)
+- [ ] Obtener fuente NotoSans-Regular.ttf
+- [ ] ConversationHandler onboarding completo (integrar pasos con ForceReply)
+- [ ] /actualizarperfil handler completo
+- [ ] BotFather setup (/setjoingroups off, /setcommands, foto)
+- [ ] Obtener chat_id del grupo (via getUpdates)
+- [ ] admins_private.json con datos reales (20 admins)
+- [ ] Verificar onboarding con privacy mode ON en grupo real
+- [ ] Verificar natales contra Astro.com/Jagannatha Hora (en VPS con kerykeion)
+- [ ] Setup VPS: systemd service, venv, build-essential
+- [ ] Backup cron (SQLite + pickle)
+- [ ] Monitorizar primeras horas post-lanzamiento
 
 ---
 

@@ -1,0 +1,20 @@
+{
+  "figures": [
+    {"points": [1,1,1,1], "name": "Via", "spanish": "Vía", "element": "Agua", "planet": "Luna"},
+    {"points": [2,2,2,2], "name": "Populus", "spanish": "Pueblo", "element": "Agua", "planet": "Luna"},
+    {"points": [2,1,1,2], "name": "Albus", "spanish": "Blanco", "element": "Agua", "planet": "Mercurio"},
+    {"points": [1,2,2,1], "name": "Coniunctio", "spanish": "Conjunción", "element": "Aire", "planet": "Mercurio"},
+    {"points": [1,2,1,1], "name": "Puella", "spanish": "Muchacha", "element": "Agua", "planet": "Venus"},
+    {"points": [2,1,2,2], "name": "Amissio", "spanish": "Pérdida", "element": "Fuego", "planet": "Venus"},
+    {"points": [1,1,2,2], "name": "Fortuna Major", "spanish": "Fortuna Mayor", "element": "Tierra", "planet": "Sol"},
+    {"points": [2,2,1,1], "name": "Fortuna Minor", "spanish": "Fortuna Menor", "element": "Fuego", "planet": "Sol"},
+    {"points": [1,1,1,2], "name": "Acquisitio", "spanish": "Adquisición", "element": "Aire", "planet": "Júpiter"},
+    {"points": [2,2,2,1], "name": "Laetitia", "spanish": "Alegría", "element": "Fuego", "planet": "Júpiter"},
+    {"points": [2,1,2,1], "name": "Puer", "spanish": "Muchacho", "element": "Fuego", "planet": "Marte"},
+    {"points": [1,2,1,2], "name": "Rubeus", "spanish": "Rojo", "element": "Agua", "planet": "Marte"},
+    {"points": [2,1,1,1], "name": "Caput Draconis", "spanish": "Cabeza del Dragón", "element": "Tierra", "planet": "Nodo Norte"},
+    {"points": [1,2,2,2], "name": "Cauda Draconis", "spanish": "Cola del Dragón", "element": "Fuego", "planet": "Nodo Sur"},
+    {"points": [2,2,1,2], "name": "Carcer", "spanish": "Cárcel", "element": "Tierra", "planet": "Saturno"},
+    {"points": [1,1,2,1], "name": "Tristitia", "spanish": "Tristeza", "element": "Tierra", "planet": "Saturno"}
+  ]
+}
