@@ -197,7 +197,7 @@ async def _execute_natal(
         if response.truncated:
             text += LIMIT_MESSAGES["truncated"]
 
-        chunks = format_and_split(text, use_blockquote=settings.USE_BLOCKQUOTE)
+        chunks = format_and_split(text, use_blockquote=settings.use_blockquote_for("natal", mode_variant))
         text_msg = None
         for i, chunk in enumerate(chunks):
             reply_to = summary_msg.message_id if i == 0 else (text_msg.message_id if text_msg else None)
