@@ -420,16 +420,7 @@ Código existente migrado desde `/opt/evangelio/` (evangeliobot.py + datos.py ~6
 
 **Migración:** Mover `datos.py` a `data/bibliomancia_datos.py`. Adaptar import path. Eliminar bot standalone.
 
-### 7.11 /frase — Frases aleatorias (€0 API)
-
-Frases aleatorias de un JSON propio.
-
-- `/frase` → Frase aleatoria
-- Anti-repetición: no repetir última frase
-- NO consume API de Anthropic
-- **PENDIENTE: Iván sube el JSON de frases**
-
-### 7.12 /admins — Directorio de guardianes de la taberna (€0 API)
+### 7.11 /admins — Directorio de guardianes de la taberna (€0 API)
 
 20 admins con sus bios. Dos vías de acceso:
 
@@ -445,15 +436,50 @@ Frases aleatorias de un JSON propio.
   [Frater Lead]   [Ink 𒀭]
   [LilaAzul]      [Yhennefer]
   ```
-- `/admins @void` o `/admins void` → Bio directa de ese admin
+- `/admins @void` o `/admins void` → Bio directa + **mención por user_id** (notifica al admin)
 - Si no matchea: "No conozco a ese guardián."
 - Botón `[← Volver]` tras ver una bio → vuelve al grid
 - Un solo mensaje que se edita (zero spam)
 
-**Datos:** JSON estático con 20 admins. Campos: nombre_display, username, bio.
+**Mención por user_id (no por username):** Los usernames cambian, los IDs no. La mención se hace con HTML:
+```html
+<a href="tg://user?id=123456789">Void</a>
+```
+Esto genera notificación al admin aunque cambie de username.
+
+**Datos PRIVADOS — IDs fuera del repo:**
+- `admins_private.json` → Archivo real con IDs + bios. **En `.gitignore`.**
+- `admins_private.example.json` → En el repo, con datos fake para que se sepa el formato.
+
+```json
+// admins_private.example.json (en repo)
+[
+  {
+    "key": "tam",
+    "telegram_user_id": 000000000,
+    "display_name": "Tam ☥∆Ωπ",
+    "username": "Tam170717",
+    "bio": "Bio del admin aquí..."
+  }
+]
+
+// admins_private.json (en .gitignore, NUNCA en repo)
+[
+  {
+    "key": "tam",
+    "telegram_user_id": 915056450,
+    "display_name": "Tam ☥∆Ωπ",
+    "username": "Tam170717",
+    "bio": "Iniciada practicante en Magia Hermética & Rosacruz..."
+  }
+]
+```
+
+**Auto-captura fallback:** Si un admin no tiene `telegram_user_id` en el JSON (valor 0 o null), cuando escriba en el grupo el bot captura su user_id por username match y lo loguea. El admin del bot puede actualizarlo manualmente en el JSON.
+
 **NO consume API de Anthropic.**
 
-### 7.13 /start — Presentación in-character (€0 API)
+### 7.12 /start — Presentación in-character (€0 API)
 
 - **En grupo:** El Pezuñento se presenta brevemente. Si el usuario ya está registrado → "Usa /consulta".
 - **En DM:** Mismo texto + "Solo funciono en La Taberna."
@@ -765,7 +791,6 @@ CALLBACKS = {
 📖 /bibliomancia — Fragmento de texto sagrado
    Biblia · Corán · Gita · Evangelio de Tomás
 
-💬 /frase — Frase aleatoria
 🛡 /admins — Guardianes de la taberna
 
 📋 /miperfil · ✏️ /actualizarperfil · 🗑 /borrarme
@@ -1598,7 +1623,6 @@ Antes de lanzar, ejecutar manualmente y evaluar calidad narrativa:
 - [ ] /bibliomancia evangelio → fragmento directo
 - [ ] /bibliomancia no repite último fragmento
 - [ ] /bibliomancia mensaje >4096 → split correcto
-- [ ] /frase → frase aleatoria (cuando JSON disponible)
 - [ ] /admins → grid 2 columnas, 20 botones
 - [ ] /admins @void → bio directa
 - [ ] /admins void → bio directa (sin @)
@@ -1694,7 +1718,6 @@ Antes de lanzar, ejecutar manualmente y evaluar calidad narrativa:
 **Día 4-5: Oráculo + Funcionalidades extra + Admin + Pulido**
 - [ ] Oráculo + sub-prompt
 - [ ] /bibliomancia: migrar datos.py a data/, handler browse+directo, 4 textos
-- [ ] /frase: handler + JSON (PENDIENTE archivo de Iván)
 - [ ] /admins: admins.json (20 perfiles) + grid inline + bio + volver + búsqueda directa
 - [ ] /start: presentación in-character El Pezuñento (grupo vs DM)
 - [ ] /stats (limitado) + /version
@@ -1735,7 +1758,6 @@ bot-taberna/
 │   │   ├── vedica.py
 │   │   ├── oraculo.py
 │   │   ├── bibliomancia.py            # Browse + directo, datos en memoria, €0 API
-│   │   ├── frase.py                   # JSON estático, €0 API
 │   │   ├── admins.py                  # Grid inline + bio + volver, edit_message, €0 API
 │   │   ├── profile.py
 │   │   ├── admin.py                   # /stats, /version, alertas, no-admin → in-character
@@ -1808,8 +1830,8 @@ bot-taberna/
 │   ├── iching_hexagrams.json          # 64 hexagramas
 │   ├── nakshatras.json                # Natales védicas
 │   ├── bibliomancia_datos.py          # ~6MB, CORAN/EVANGELIO/BIBLIA/GITA
-│   ├── frases.json                    # PENDIENTE: JSON de frases de Iván
-│   └── admins.json                    # 20 admins: nombre, username, bio
+│   ├── admins_private.json            # IDs reales + bios. EN .GITIGNORE.
+│   └── admins_private.example.json    # En repo, datos fake, formato referencia
 ├── tests/                              # + conftest, queue_timeout, drawn_data, sun_sign
 │
 ├── .env / .env.example / .gitignore / requirements.txt / README.md
@@ -1855,6 +1877,7 @@ bot-taberna.db
 bot-taberna.db-wal
 bot-taberna.db-shm
 bot_persistence.pickle
+admins_private.json
 __pycache__/
 *.pyc
 .venv/
@@ -1937,7 +1960,7 @@ ephe/
 
 ## 21. Mejoras futuras
 
-Memoria entre tiradas, compatibilidad tarot, tránsitos, sinastría, revolución solar, fases lunares, modo educativo, canal premium, dashboard web, migración modelo, foto tirada → interpretación, Marsella, oráculo historial, avisos lunaciones, webhook (si long polling), retención datos, múltiples resultados geocoding como botones.
+Memoria entre tiradas, compatibilidad tarot, tránsitos, sinastría, revolución solar, fases lunares, modo educativo, canal premium, dashboard web, migración modelo, foto tirada → interpretación, Marsella, oráculo historial, avisos lunaciones, webhook (si long polling), retención datos, múltiples resultados geocoding como botones, /frase (frases aleatorias de bot externo — pendiente datos).
 
 ---
 
