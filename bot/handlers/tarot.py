@@ -331,7 +331,7 @@ async def _execute_tarot_reading(
         if response.truncated:
             text += LIMIT_MESSAGES["truncated"]
 
-        chunks = format_and_split(text)
+        chunks = format_and_split(text, spoiler=settings.USE_SPOILER)
 
         text_msg = None
         for i, chunk in enumerate(chunks):

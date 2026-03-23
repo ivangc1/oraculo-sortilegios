@@ -74,12 +74,13 @@ def test_wrap_blockquote():
 
 
 def test_format_and_split_with_spoiler():
-    """format_and_split aplica spoiler a cada chunk."""
+    """format_and_split aplica spoiler con intro."""
     raw = "[[T]]Titulo[[/T]]\nTexto de prueba"
     chunks = format_and_split(raw, spoiler=True)
     assert len(chunks) == 1
     assert "<tg-spoiler>" in chunks[0]
     assert "<b>Titulo</b>" in chunks[0]
+    assert "Pulsa" in chunks[0]  # Intro visible antes del spoiler
 
 
 def test_format_and_split_without_spoiler():
@@ -92,11 +93,15 @@ def test_format_and_split_without_spoiler():
 
 
 def test_format_and_split_long_text_spoiler():
-    """Texto largo con spoiler: cada chunk tiene su propio spoiler."""
+    """Texto largo con spoiler: cada chunk tiene spoiler, intro solo en el primero."""
     para = "A" * 2000
     raw = f"{para}\n\n{para}\n\n{para}"
     chunks = format_and_split(raw, spoiler=True)
     assert len(chunks) >= 2
-    for chunk in chunks:
-        assert chunk.startswith("<tg-spoiler>")
-        assert chunk.endswith("</tg-spoiler>")
+    # Primer chunk tiene intro + spoiler
+    assert "Pulsa" in chunks[0]
+    assert "<tg-spoiler>" in chunks[0]
+    # Resto solo spoiler
+    for chunk in chunks[1:]:
+        assert "<tg-spoiler>" in chunk
+        assert "Pulsa" not in chunk

@@ -38,6 +38,9 @@ class Settings(BaseSettings):
     COOLDOWN_SECONDS: int = 60
     MAX_QUESTION_LENGTH: int = 200
 
+    # UX
+    USE_SPOILER: bool = True  # Interpretaciones ocultas (tap to reveal)
+
     # Concurrencia
     MAX_CONCURRENT_API: int = 3
 

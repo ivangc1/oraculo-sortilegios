@@ -28,6 +28,9 @@ def wrap_blockquote(text: str) -> str:
     return f"<blockquote expandable>{text}</blockquote>"
 
 
+_SPOILER_INTRO = "👁 <i>Pulsa el texto oculto para revelar la lectura</i>\n\n"
+
+
 def format_and_split(raw_text: str, spoiler: bool = True) -> list[str]:
     """Pipeline completo: format -> split -> wrap cada chunk.
 
@@ -42,6 +45,8 @@ def format_and_split(raw_text: str, spoiler: bool = True) -> list[str]:
     chunks = split_message(formatted)
     if spoiler:
         chunks = [wrap_spoiler(c) for c in chunks]
+        # Prepend intro al primer chunk
+        chunks[0] = _SPOILER_INTRO + chunks[0]
     return chunks
 
 
