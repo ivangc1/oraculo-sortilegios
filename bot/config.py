@@ -39,7 +39,7 @@ class Settings(BaseSettings):
     MAX_QUESTION_LENGTH: int = 200
 
     # UX
-    USE_BLOCKQUOTE: bool = True  # Blockquote expandible en lecturas largas
+    USE_BLOCKQUOTE: bool = True  # Blockquote expandible en lecturas largas (por variante)
 
     # Concurrencia
     MAX_CONCURRENT_API: int = 3
@@ -147,6 +147,25 @@ class Settings(BaseSettings):
             ("oraculo", "libre"): self.EFFORT_ORACULO,
         }
         return key_map.get((mode, variant), "medium")
+
+    # Variantes que usan blockquote expandible (lecturas largas)
+    _BLOCKQUOTE_VARIANTS = frozenset({
+        ("tarot", "cruz_celta"),
+        ("tarot", "herradura"),
+        ("tarot", "estrella"),
+        ("tarot", "relacion"),
+        ("natal", "tropical"),
+        ("natal", "vedica"),
+        ("runas", "siete"),
+        ("geomancia", "escudo"),
+        ("iching", "hexagrama"),
+    })
+
+    def use_blockquote_for(self, mode: str, variant: str) -> bool:
+        """True si esta variante debe usar blockquote expandible."""
+        if not self.USE_BLOCKQUOTE:
+            return False
+        return (mode, variant) in self._BLOCKQUOTE_VARIANTS
 
 
 def load_settings() -> Settings:

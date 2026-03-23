@@ -28,17 +28,14 @@ def wrap_blockquote(text: str) -> str:
     return f"<blockquote expandable>{text}</blockquote>"
 
 
-# Lecturas >= este umbral usan blockquote expandible
-_BLOCKQUOTE_THRESHOLD = 1000
-
-
-def format_and_split(raw_text: str, use_blockquote: bool = True) -> list[str]:
-    """Pipeline completo: format -> split -> blockquote si largo.
+def format_and_split(raw_text: str, use_blockquote: bool = False) -> list[str]:
+    """Pipeline completo: format -> split -> blockquote opcional.
 
     Args:
         raw_text: texto crudo del LLM con marcadores [[T]] [[C]]
-        use_blockquote: si True, chunks largos (>=1000 chars) se envuelven
-            en blockquote expandible (colapsado en el chat)
+        use_blockquote: si True, TODOS los chunks se envuelven en
+            blockquote expandible (colapsado en el chat).
+            Activar solo para variantes largas (cruz_celta, natales, etc.)
 
     Returns:
         Lista de chunks HTML listos para enviar con parse_mode="HTML"
@@ -46,10 +43,7 @@ def format_and_split(raw_text: str, use_blockquote: bool = True) -> list[str]:
     formatted = format_response(raw_text)
     chunks = split_message(formatted)
     if use_blockquote:
-        chunks = [
-            wrap_blockquote(c) if len(c) >= _BLOCKQUOTE_THRESHOLD else c
-            for c in chunks
-        ]
+        chunks = [wrap_blockquote(c) for c in chunks]
     return chunks
 
 
