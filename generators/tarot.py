@@ -55,7 +55,7 @@ def draw_tarot(variant: str) -> list[dict]:
         "cruz_celta": 10,
         "herradura": 7,
         "relacion": 6,
-        "estrella": 6,
+        "estrella": 7,
         "cruz_simple": 5,
         "si_no": 3,
         "tirada_dia": 1,

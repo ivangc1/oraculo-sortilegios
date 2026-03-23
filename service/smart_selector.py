@@ -97,7 +97,7 @@ _VARIANT_LABELS = {
     "cruz_celta": "Cruz Celta (10 cartas)",
     "herradura": "Herradura (7 cartas)",
     "relacion": "Relación (6 cartas)",
-    "estrella": "Estrella (6 cartas)",
+    "estrella": "Estrella (7 cartas)",
     "cruz_simple": "Cruz Simple (5 cartas)",
     "si_no": "Sí/No reforzado (3 cartas)",
     "tirada_dia": "Tirada del día (1 carta)",

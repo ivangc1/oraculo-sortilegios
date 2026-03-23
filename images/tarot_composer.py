@@ -313,8 +313,8 @@ def compose_relacion(cards: list[dict]) -> BytesIO | None:
 
 
 def compose_estrella(cards: list[dict]) -> BytesIO | None:
-    """Estrella: 6 cartas en 2 filas (3+3) con etiquetas de hexagrama."""
-    return compose_two_rows(cards, top_count=3)
+    """Estrella: 7 cartas — 3 arriba, 1 centro, 3 abajo (hexagrama con sintesis)."""
+    return compose_two_rows(cards, top_count=4)  # 4+3 como herradura
 
 
 def compose_cruz_simple(cards: list[dict]) -> BytesIO | None:

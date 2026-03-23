@@ -8,7 +8,7 @@ Bot de Telegram para el grupo **La Taberna de los Sortilegios** (~2,600 miembros
 
 | Comando | Sistema | Variantes |
 |---|---|---|
-| `/tarot` | Tarot Rider-Waite | 1 carta, 3 cartas, Cruz Celta, Si/No, Herradura, Relacion, Estrella, Cruz Simple, Tirada del dia, Smart selector |
+| `/tarot` | Tarot Rider-Waite | 1 carta, 3 cartas, Cruz Celta, Si/No, Herradura (7), Relacion (6), Estrella (7), Cruz Simple (5), Tirada del dia, Smart selector |
 | `/runa` | Runas Elder Futhark | Odin, Tres Nornas, Cruz Runica, Cinco Runas, Siete Runas |
 | `/iching` | I Ching (Wilhelm) | Hexagrama con/sin lineas mutables |
 | `/geomancia` | Geomancia | Una figura, Escudo completo |

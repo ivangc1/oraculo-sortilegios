@@ -66,16 +66,17 @@ Tirada de 6 cartas centrada en la dinamica entre dos personas. Posiciones:
 
 Enfocate en la dinamica relacional. Sé directo sobre tensiones y fortalezas."""
 
-_SUB_ESTRELLA = """MODO: Tarot — Estrella (6 cartas).
-Tirada en forma de hexagrama (estrella de seis puntas). Posiciones:
+_SUB_ESTRELLA = """MODO: Tarot — Estrella (7 cartas).
+Tirada en forma de hexagrama (estrella de seis puntas) con carta central de sintesis. Posiciones:
 1. Deseo — lo que el consultante quiere realmente
 2. Obstaculo — lo que se interpone
 3. Pasado — influencia de lo que fue
 4. Futuro — hacia donde apunta la energia
 5. Consciente — lo que el consultante sabe o reconoce
 6. Inconsciente — lo que no ve, lo oculto, la sombra
+7. Sintesis — la carta que integra todo, el mensaje central
 
-Explora las capas conscientes e inconscientes. La estrella revela lo que esta debajo de la superficie."""
+Explora las capas conscientes e inconscientes. La carta de Sintesis cierra la lectura unificando los opuestos."""
 
 _SUB_CRUZ_SIMPLE = """MODO: Tarot — Cruz Simple (5 cartas).
 Tirada en forma de cruz con 5 cartas del Tarot Rider-Waite. Posiciones:
