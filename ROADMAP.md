@@ -2004,7 +2004,18 @@ ephe/
 
 ## 21. Mejoras futuras
 
-Más tipos de tiradas (tarot: Herradura, Relación, Árbol de la Vida; runas: Yggdrasil, 9 mundos), memoria entre tiradas, compatibilidad tarot, tránsitos, sinastría, revolución solar, fases lunares, modo educativo, dashboard web, migración modelo, foto tirada → interpretación, Marsella, oráculo historial, avisos lunaciones, webhook (si long polling), retención datos, múltiples resultados geocoding como botones.
+### Ya implementado (Semana 4)
+- Tarot: Herradura (7), Relación (6), Estrella (7), Cruz Simple (5), Sí/No reforzado (3), Tirada del día (1) — total 9 variantes
+- Runas: Cinco Runas (5), Siete Runas (7) — total 5 variantes
+- Smart selector: `/tarot <pregunta>` analiza keywords y elige la tirada (coste cero)
+- Menú tarot con sub-categorías (Rápidas / Completas / Especiales)
+- Blockquote expandible por variante para lecturas largas
+- Onboarding en DM con deep links
+- Seguridad: SQL column whitelist, user ID real, rate limit DM, anti-bypass
+- Adaptive thinking Sonnet 4.6 con effort por variante
+
+### Pendiente (mejoras futuras)
+Memoria entre tiradas, compatibilidad tarot, tránsitos, sinastría, revolución solar, fases lunares, modo educativo, dashboard web, migración modelo, foto tirada → interpretación, Marsella, oráculo historial, avisos lunaciones, webhook (si long polling), retención datos, múltiples resultados geocoding como botones, Telegram Mini App para UI visual.
 
 ---
 
