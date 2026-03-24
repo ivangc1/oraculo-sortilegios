@@ -54,12 +54,20 @@ logger.add(
 
 
 def create_persistence() -> PicklePersistence:
-    """Crea PicklePersistence con protección contra corrupción."""
+    """Crea PicklePersistence con protección contra corrupción.
+
+    CRÍTICO: bot_data contiene servicios no serializables (AsyncAnthropic con RLock).
+    Excluir bot_data de la persistencia con store_data.
+    """
+    from telegram.ext import PersistenceInput
+
     pickle_path = "bot_persistence.pickle"
+    store = PersistenceInput(bot_data=False)
     try:
         persistence = PicklePersistence(
             filepath=pickle_path,
             update_interval=60,
+            store_data=store,
         )
     except (pickle.UnpicklingError, EOFError, FileNotFoundError, Exception):
         logger.warning("Persistence corrupted or missing, starting fresh")
@@ -67,6 +75,7 @@ def create_persistence() -> PicklePersistence:
         persistence = PicklePersistence(
             filepath=pickle_path,
             update_interval=60,
+            store_data=store,
         )
     return persistence
 
