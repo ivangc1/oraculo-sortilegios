@@ -44,13 +44,16 @@ class AnthropicService:
         request: InterpretationRequest,
         user_message: str,
     ) -> InterpretationResponse:
-        """Envia peticion a la API. System prompt cacheado, adaptive thinking."""
+        """Envia peticion a la API. System prompt cacheado.
+
+        TODO: reactivar adaptive thinking cuando la API sea estable.
+        Por ahora, llamada directa sin thinking para evitar empty responses
+        y errores 400 con effort/output_config.
+        """
         try:
             response = await self._client.messages.create(
                 model=self._model,
                 max_tokens=request.max_tokens,
-                thinking={"type": "adaptive"},
-                output_config={"effort": request.effort},
                 system=[
                     {
                         "type": "text",
@@ -66,37 +69,12 @@ class AnthropicService:
         except anthropic.RateLimitError:
             logger.warning("Anthropic rate limit")
             return InterpretationResponse(error="rate_limit")
-        except anthropic.BadRequestError as e:
-            # 400: puede ser thinking incompatible — reintentar sin thinking
-            logger.warning(f"Anthropic 400, retrying without thinking: {e.message}")
-            try:
-                response = await self._client.messages.create(
-                    model=self._model,
-                    max_tokens=request.max_tokens,
-                    system=[
-                        {
-                            "type": "text",
-                            "text": MASTER_SYSTEM_PROMPT,
-                            "cache_control": {"type": "ephemeral"},
-                        }
-                    ],
-                    messages=[{"role": "user", "content": user_message}],
-                )
-            except anthropic.APIError as e2:
-                logger.error(f"Anthropic API error (fallback): {e2.status_code}")
-                return InterpretationResponse(error="api_error")
         except anthropic.APIError as e:
             logger.error(f"Anthropic API error: {e.status_code}")
             return InterpretationResponse(error="api_error")
 
-        # Parseo seguro — con adaptive thinking, response.content puede tener
-        # bloques thinking + text. Extraer solo el texto.
         try:
-            text = ""
-            for block in response.content:
-                if block.type == "text":
-                    text = block.text
-                    break
+            text = response.content[0].text
             stop = response.stop_reason
             tokens_in = response.usage.input_tokens
             tokens_out = response.usage.output_tokens
