@@ -49,10 +49,8 @@ class AnthropicService:
             response = await self._client.messages.create(
                 model=self._model,
                 max_tokens=request.max_tokens,
-                thinking={
-                    "type": "adaptive",
-                    "effort": request.effort,
-                },
+                thinking={"type": "adaptive"},
+                output_config={"effort": request.effort},
                 system=[
                     {
                         "type": "text",
