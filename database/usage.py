@@ -24,7 +24,7 @@ async def record_usage(
 
     # Asegurar que el usuario existe (guests pueden no tener fila en users)
     await db.execute(
-        """INSERT OR IGNORE INTO users (telegram_user_id, alias, birth_date, onboarding_complete, created_at)
+        """INSERT OR IGNORE INTO users (telegram_user_id, alias, birth_date, onboarding_complete, registered_at)
            VALUES (?, ?, ?, 0, ?)""",
         (user_id, f"guest_{user_id}", "1900-01-01", now),
     )
