@@ -47,7 +47,7 @@ async def start_dm_onboarding(update: Update, context: ContextTypes.DEFAULT_TYPE
     user = await db_users.get_user(user_id)
     if user and user["onboarding_complete"]:
         await update.message.reply_text(
-            f"Ya te tengo fichado, {user['alias']}. Vuelve a La Taberna y pide lo que quieras."
+            f"Ya estás registrado, {user['alias']}. Vuelve a La Taberna y usa /tirartarot o lo que quieras."
         )
         return ConversationHandler.END
 
@@ -339,7 +339,7 @@ async def start_dm_update_profile(update: Update, context: ContextTypes.DEFAULT_
     user = await db_users.get_user(user_id)
     if not user or not user["onboarding_complete"]:
         await update.message.reply_text(
-            "No te tengo fichado. Usa /consulta en La Taberna primero."
+            "Necesitas registrarte primero. Usa /consulta en La Taberna."
         )
         return ConversationHandler.END
 
@@ -494,7 +494,7 @@ async def start_dm_set_fullname(update: Update, context: ContextTypes.DEFAULT_TY
     user = await db_users.get_user(user_id)
     if not user or not user["onboarding_complete"]:
         await update.message.reply_text(
-            "No te tengo fichado. Usa /consulta en La Taberna primero."
+            "Necesitas registrarte primero. Usa /consulta en La Taberna."
         )
         return ConversationHandler.END
 
