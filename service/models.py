@@ -28,6 +28,25 @@ class UserProfile(BaseModel):
         return " | ".join(parts)
 
 
+    @classmethod
+    def from_db_or_guest(cls, user: dict | None, update) -> "UserProfile":
+        """Perfil desde DB o guest con nombre de Telegram."""
+        if user and user.get("onboarding_complete"):
+            return cls(
+                alias=user["alias"],
+                sun_sign=user.get("sun_sign"),
+                moon_sign=user.get("moon_sign"),
+                ascendant=user.get("ascendant"),
+                lunar_nakshatra=user.get("lunar_nakshatra"),
+                life_path=user.get("life_path"),
+            )
+        # Guest: usar first_name de Telegram
+        name = "Consultante"
+        if update and update.effective_user:
+            name = update.effective_user.first_name or "Consultante"
+        return cls(alias=name)
+
+
 class DrawnItem(BaseModel):
     """Un elemento tirado (carta, runa, figura, etc.)."""
     id: str

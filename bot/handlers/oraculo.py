@@ -28,12 +28,7 @@ async def oraculo_command(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
         return
 
     user = await db_users.get_user(update.effective_user.id)
-    if not user or not user["onboarding_complete"]:
-        await update.message.reply_text(
-            LIMIT_MESSAGES["not_registered"],
-            reply_to_message_id=update.message.message_id,
-        )
-        return
+    # Registro opcional — guests permitidos
 
     # Verificar si la pregunta viene inline: /oraculo ¿pregunta?
     text = update.message.text or ""
@@ -91,11 +86,7 @@ async def _execute_oraculo(
 
     mark_user_busy(user_id)
     try:
-        profile = UserProfile(
-            alias=user["alias"], sun_sign=user.get("sun_sign"),
-            moon_sign=user.get("moon_sign"), ascendant=user.get("ascendant"),
-            life_path=user.get("life_path"),
-        )
+        profile = UserProfile.from_db_or_guest(user, update)
 
         request = InterpretationRequest(
             mode="oraculo", variant="libre",
