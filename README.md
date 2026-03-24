@@ -8,7 +8,7 @@ Bot de Telegram para el grupo **La Taberna de los Sortilegios** (~2,600 miembros
 
 | Comando | Sistema | Variantes |
 |---|---|---|
-| `/tarot` | Tarot Rider-Waite | 1 carta, 3 cartas, Cruz Celta, Si/No, Herradura (7), Relacion (6), Estrella (7), Cruz Simple (5), Tirada del dia, Smart selector |
+| `/tirartarot` | Tarot Rider-Waite | 1 carta, 3 cartas, Cruz Celta, Si/No, Herradura (7), Relacion (6), Estrella (7), Cruz Simple (5), Tirada del dia, Smart selector |
 | `/runa` | Runas Elder Futhark | Odin, Tres Nornas, Cruz Runica, Cinco Runas, Siete Runas |
 | `/iching` | I Ching (Wilhelm) | Hexagrama con/sin lineas mutables |
 | `/geomancia` | Geomancia | Una figura, Escudo completo |
@@ -169,7 +169,7 @@ Configurables via `EFFORT_*` en `.env` sin redeploy.
 - **System prompt estatico**: constante literal (no f-strings) para que el prompt caching funcione. Perfil del usuario se inyecta en el user message.
 - **Guardrails en system prompt**: rechazo in-character de preguntas fuera de contexto, jailbreak, preguntas sobre la naturaleza del bot, consejos medicos/legales/financieros.
 - **Personalidad Baphomet**: todos los mensajes del bot (no solo las interpretaciones) mantienen tono directo, humor seco, sin servilismo.
-- **Smart selector**: `/tarot <pregunta>` analiza keywords (coste cero, sin API) y elige la tirada mas apropiada. Tambien disponible como boton en el menu.
+- **Smart selector**: `/tirartarot <pregunta>` analiza keywords (coste cero, sin API) y elige la tirada mas apropiada. Tambien disponible como boton en el menu.
 - **Blockquote expandible por variante**: lecturas largas (Cruz Celta, herradura, estrella, relacion, natales, 7 runas, escudo, I Ching) se muestran colapsadas con "Mostrar mas". Lecturas cortas van texto directo. Controlado por `frozenset` en config, desactivable globalmente con `USE_BLOCKQUOTE=false`.
 - **Menu tarot con sub-categorias**: Rapidas / Completas / Especiales. Edita el mismo mensaje, sin spam en el chat.
 

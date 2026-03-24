@@ -27,7 +27,7 @@ def test_start_registered_has_alias():
 def test_help_has_all_commands():
     """Verifica que /ayudaoraculo incluye todos los comandos."""
     commands = [
-        "/consulta", "/tarot", "/runa", "/iching", "/geomancia", "/numerologia",
+        "/consulta", "/tirartarot", "/runa", "/iching", "/geomancia", "/numerologia",
         "/natal", "/vedica", "/oraculo", "/bibliomancia", "/admins",
         "/miperfil", "/actualizarperfil", "/borrarme", "/cancelaroraculo", "/ayudaoraculo",
     ]

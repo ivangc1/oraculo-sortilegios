@@ -196,7 +196,7 @@ def main() -> None:
     app.add_handler(CommandHandler("borrarme", borrarme_command))
     app.add_handler(CommandHandler("stats", stats_command))
     app.add_handler(CommandHandler("version", version_command))
-    app.add_handler(CommandHandler("tarot", tarot_command))
+    app.add_handler(CommandHandler("tirartarot", tarot_command))
     app.add_handler(CommandHandler("runa", runas_command))
     app.add_handler(CommandHandler("iching", iching_command))
     app.add_handler(CommandHandler("geomancia", geomancia_command))

@@ -29,7 +29,7 @@ from service.models import DrawnItem, InterpretationRequest, UserProfile
 
 
 async def tarot_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Handler para /tarot — menu de variantes o smart selection con texto inline."""
+    """Handler para /tirartarot — menu de variantes o smart selection con texto inline."""
     settings: Settings = context.bot_data["settings"]
     if not await middleware_check(update, context, settings):
         return
@@ -38,7 +38,7 @@ async def tarot_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
     user = await db_users.get_user(user_id)
     # Registro opcional — guests permitidos
 
-    # Smart selection: /tarot pregunta directa
+    # Smart selection: /tirartarot pregunta directa
     if context.args:
         question = " ".join(context.args)
         from service.smart_selector import select_variant, variant_label
@@ -151,7 +151,7 @@ async def tarot_question_callback(
     settings: Settings = context.bot_data["settings"]
 
     if not variant or not user:
-        await query.edit_message_text("Ha habido un error. Vuelve a intentarlo con /tarot.")
+        await query.edit_message_text("Ha habido un error. Vuelve a intentarlo con /tirartarot.")
         return
 
     if answer == "yes":

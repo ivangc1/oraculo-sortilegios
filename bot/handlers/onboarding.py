@@ -56,7 +56,7 @@ async def consulta_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -
     user = await db_users.get_user(user_id)
     if user and user["onboarding_complete"]:
         await update.message.reply_text(
-            f"Ya te tengo fichado, {user['alias']}. Usa /tarot, /runa, /iching o lo que quieras.",
+            f"Ya te tengo fichado, {user['alias']}. Usa /tirartarot, /runa, /iching o lo que quieras.",
             reply_to_message_id=update.message.message_id,
         )
         return ConversationHandler.END
@@ -354,7 +354,7 @@ async def _complete_onboarding(
         lines.append(f"Sol en {sun_sign}.")
     if lp is not None:
         lines.append(f"Camino de vida: {lp}.")
-    lines.append("\nUsa /tarot, /runa, /iching o lo que te apetezca.")
+    lines.append("\nUsa /tirartarot, /runa, /iching o lo que te apetezca.")
 
     chat_id = update.effective_chat.id
     await context.bot.send_message(chat_id, text=" ".join(lines))
