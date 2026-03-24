@@ -22,7 +22,7 @@ class Settings(BaseSettings):
 
     # Anthropic
     ANTHROPIC_API_KEY: str
-    ANTHROPIC_API_VERSION: str = "2024-10-22"
+    ANTHROPIC_API_VERSION: str = "2023-06-01"
 
     # Límites
     MONTHLY_SPENDING_LIMIT: float = 25.0
