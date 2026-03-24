@@ -73,7 +73,8 @@ def create_persistence() -> PicklePersistence:
 
 async def post_init(application: Application) -> None:
     """Inicialización post-arranque: DB, servicios, alertas."""
-    settings = application.bot_data["settings"]
+    settings = application.bot_data.get("settings") or load_settings()
+    application.bot_data.setdefault("settings", settings)
 
     # Inicializar DB
     await Database.get()
