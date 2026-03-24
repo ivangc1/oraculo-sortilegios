@@ -127,10 +127,10 @@ async def save_partial_onboarding(user_id: int, username: str | None, alias: str
 
 
 async def get_incomplete_onboarding(user_id: int) -> dict | None:
-    """Devuelve perfil si existe con onboarding_complete=FALSE."""
+    """Devuelve perfil si existe con onboarding_complete=FALSE (excluye guests)."""
     db = await Database.get()
     cursor = await db.execute(
-        "SELECT * FROM users WHERE telegram_user_id = ? AND onboarding_complete = FALSE",
+        "SELECT * FROM users WHERE telegram_user_id = ? AND onboarding_complete = FALSE AND alias NOT LIKE 'guest_%'",
         (user_id,),
     )
     row = await cursor.fetchone()
