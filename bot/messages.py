@@ -14,7 +14,7 @@ LIMIT_MESSAGES = {
     "dm_only_group": "Solo opero en La Taberna de los Sortilegios. No hago consultas a domicilio.",
     "api_error": "El oráculo está indispuesto. Pasa en las mejores familias. Inténtalo después.",
     "rate_limit": "Demasiados golpes a la puerta del oráculo. Espera un momento.",
-    "already_registered": "Ya te tengo fichado. Usa /tirartarot, /runa o lo que quieras.",
+    "already_registered": "Ya estás registrado. Usa /tirartarot, /runa o lo que quieras.",
     "onboarding_timeout": "Se te pasó el tiempo. Cuando quieras volver a intentarlo, /consulta.",
     "cancelled": "Hecho, lo dejamos aquí. Sin rencores.",
     "invalid_date": "Esa fecha no cuadra. Formato: DD/MM/AAAA.",
