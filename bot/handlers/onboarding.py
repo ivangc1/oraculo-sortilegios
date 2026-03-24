@@ -57,7 +57,7 @@ async def consulta_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -
     if user and user["onboarding_complete"]:
         # Ya registrado — mostrar modos
         await update.message.reply_text(
-            f"Ya te tengo fichado, {user['alias']}.\n\n"
+            f"{user['alias']}, elige tu veneno.\n\n"
             "🃏 /tirartarot · ᚱ /runa · ☯ /iching · ⊕ /geomancia\n"
             "🔮 /oraculo · 📖 /bibliomancia · /ayudaoraculo para ver todo.",
             reply_to_message_id=update.message.message_id,

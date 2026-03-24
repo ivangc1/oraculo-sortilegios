@@ -44,7 +44,10 @@
       "Bash(xargs wc:*)",
       "Bash(python -m pytest tests/test_smart_selector.py -v --tb=short)",
       "Bash(python -m pytest tests/test_handlers_basic.py::test_help_has_all_commands -q --tb=long)",
-      "Bash(grep -n \"not_registered\\\\|onboarding_complete\\\\|No te conozco\\\\|consulta para presentarte\" bot/handlers/*.py bot/messages.py)"
+      "Bash(grep -n \"not_registered\\\\|onboarding_complete\\\\|No te conozco\\\\|consulta para presentarte\" bot/handlers/*.py bot/messages.py)",
+      "Bash(sed -i \"s|Ya te tengo fichado, {user\\\\[''alias''\\\\]}. Vuelve a La Taberna y pide lo que quieras.|Ya estás registrado, {user[''alias'']}. Vuelve a La Taberna y usa /tirartarot o lo que quieras.|\" bot/handlers/dm_onboarding.py)",
+      "Bash(sed -i \"s|No te tengo fichado. Usa /consulta en La Taberna primero.|Necesitas registrarte primero. Usa /consulta en La Taberna.|g\" bot/handlers/dm_onboarding.py)",
+      "Bash(sed -i 's|Ya te tengo fichado. Usa /tirartarot, /runa o lo que quieras.|Ya estás registrado. Usa /tirartarot, /runa o lo que quieras.|' bot/messages.py)"
     ]
   }
 }
