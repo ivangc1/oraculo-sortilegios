@@ -57,8 +57,14 @@ async def oraculo_question_text(update: Update, context: ContextTypes.DEFAULT_TY
     user = context.user_data.get("oraculo_user")
     question = update.message.text
 
-    if not user or not question:
+    if not question:
         return
+
+    # Recuperar user de DB si se perdió (e.g. tras restart con persistencia)
+    if not user:
+        user = await db_users.get_user(update.effective_user.id)
+        if not user:
+            logger.warning(f"oraculo: user {update.effective_user.id} not in DB, proceeding as guest")
 
     context.user_data["oraculo_awaiting_question"] = False
     await _execute_oraculo(update, context, user, question.strip(), settings)
