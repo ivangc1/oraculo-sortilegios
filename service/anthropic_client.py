@@ -35,7 +35,7 @@ class AnthropicService:
             api_key=settings.ANTHROPIC_API_KEY,
             default_headers={"anthropic-version": settings.ANTHROPIC_API_VERSION},
             max_retries=2,
-            timeout=30.0,
+            timeout=120.0,
         )
         self._model = "claude-sonnet-4-6"
 
