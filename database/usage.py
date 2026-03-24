@@ -23,12 +23,13 @@ async def record_usage(
     drawn_json = json.dumps(drawn_data, ensure_ascii=False) if drawn_data else None
 
     async with db.execute("BEGIN"):
-        # Asegurar que el usuario existe (guests pueden no tener fila en users)
-        await db.execute(
-            """INSERT OR IGNORE INTO users (telegram_user_id, alias, birth_date, onboarding_complete, registered_at)
-               VALUES (?, ?, ?, 0, ?)""",
-            (user_id, f"guest_{user_id}", "1900-01-01", now),
+        # Verificar si el usuario existe. Si no, saltar FK desactivando temporalmente.
+        cursor_check = await db.execute(
+            "SELECT 1 FROM users WHERE telegram_user_id = ?", (user_id,)
         )
+        user_exists = await cursor_check.fetchone() is not None
+        if not user_exists:
+            await db.execute("PRAGMA foreign_keys = OFF")
         cursor = await db.execute(
             """INSERT INTO usage_log (
                 user_id, mode, variant, tokens_input, tokens_output,
@@ -40,11 +41,14 @@ async def record_usage(
             ),
         )
         usage_id = cursor.lastrowid
-        await db.execute(
-            "UPDATE users SET last_activity = ? WHERE telegram_user_id = ?",
-            (now, user_id),
-        )
+        if user_exists:
+            await db.execute(
+                "UPDATE users SET last_activity = ? WHERE telegram_user_id = ?",
+                (now, user_id),
+            )
         await db.commit()
+        if not user_exists:
+            await db.execute("PRAGMA foreign_keys = ON")
 
     return usage_id
 
