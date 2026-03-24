@@ -52,37 +52,29 @@ async def consulta_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -
 
     user_id = update.effective_user.id
 
-    # ¿Ya registrado?
     user = await db_users.get_user(user_id)
+
     if user and user["onboarding_complete"]:
+        # Ya registrado — mostrar modos
         await update.message.reply_text(
-            f"Ya te tengo fichado, {user['alias']}. Usa /tirartarot, /runa, /iching o lo que quieras.",
+            f"Ya te tengo fichado, {user['alias']}.\n\n"
+            "🃏 /tirartarot · ᚱ /runa · ☯ /iching · ⊕ /geomancia\n"
+            "🔮 /oraculo · 📖 /bibliomancia · /ayudaoraculo para ver todo.",
             reply_to_message_id=update.message.message_id,
         )
         return ConversationHandler.END
 
-    # ¿Onboarding incompleto? Retomar desde donde se quedó
-    partial = await db_users.get_incomplete_onboarding(user_id)
-    if partial:
-        # Tiene alias y fecha, falta hora/ciudad
-        context.user_data["onb_alias"] = partial["alias"]
-        context.user_data["onb_date"] = partial["birth_date"]
-        await update.message.reply_text(
-            f"Retomamos donde lo dejaste, {partial['alias']}.\n"
-            "¿A qué hora naciste? (HH:MM en formato 24h)\n"
-            "Si no lo sabes, escribe «no sé».",
-            reply_markup=ForceReply(selective=True),
-            reply_to_message_id=update.message.message_id,
-        )
-        return ASK_TIME
-
-    # Nuevo onboarding → redirigir a DM para privacidad
+    # No registrado — mostrar modos + opción de registrarse
     bot_username = (await context.bot.get_me()).username
     await update.message.reply_text(
-        "No te conozco, forastero. Vamos al privado para que tus datos no anden por aquí.",
+        "Puedes usar las tiradas directamente sin registrarte.\n\n"
+        "🃏 /tirartarot · ᚱ /runa · ☯ /iching · ⊕ /geomancia\n"
+        "🔮 /oraculo · 📖 /bibliomancia\n\n"
+        "Si te registras, las lecturas se personalizan con tu perfil astral.\n"
+        "Para /natal, /vedica y /numerologia sí necesitas registro.",
         reply_markup=InlineKeyboardMarkup([
             [InlineKeyboardButton(
-                "📝 Registrarme",
+                "📝 Registrarme (opcional)",
                 url=f"https://t.me/{bot_username}?start=onboarding",
             )],
         ]),
