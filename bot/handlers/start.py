@@ -47,11 +47,11 @@ _INTRO_GROUP = """🔮 Soy El Pezuñento, oráculo de La Taberna de los Sortileg
 
 Leo las cartas, las runas, los hexagramas y lo que haga falta. No endulzo y no hago recados. Si vienes con una pregunta de verdad, te respondo de verdad.
 
-Usa /consulta para presentarte. Si ya nos conocemos, /tarot, /runa, /iching o lo que te apetezca. /ayudaoraculo para ver todo."""
+Usa /consulta para presentarte. Si ya nos conocemos, /tirartarot, /runa, /iching o lo que te apetezca. /ayudaoraculo para ver todo."""
 
 _INTRO_GROUP_REGISTERED = """🔮 {alias}, ya nos conocemos.
 
-/tarot, /runa, /iching, /geomancia, /numerologia, /natal, /vedica, /oraculo, /bibliomancia — elige tu veneno. /ayudaoraculo si te pierdes."""
+/tirartarot, /runa, /iching, /geomancia, /numerologia, /natal, /vedica, /oraculo, /bibliomancia — elige tu veneno. /ayudaoraculo si te pierdes."""
 
 _INTRO_DM = """🔮 Soy El Pezuñento. Solo opero en La Taberna de los Sortilegios. No hago consultas a domicilio. Búscame en el grupo."""
 
