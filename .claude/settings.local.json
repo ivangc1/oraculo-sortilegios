@@ -43,7 +43,8 @@
       "Bash(find C:Usersivangprojectsoraculo-sortilegios.claudeworktreeselated-satoshitests -name test_*.py -type f)",
       "Bash(xargs wc:*)",
       "Bash(python -m pytest tests/test_smart_selector.py -v --tb=short)",
-      "Bash(python -m pytest tests/test_handlers_basic.py::test_help_has_all_commands -q --tb=long)"
+      "Bash(python -m pytest tests/test_handlers_basic.py::test_help_has_all_commands -q --tb=long)",
+      "Bash(grep -n \"not_registered\\\\|onboarding_complete\\\\|No te conozco\\\\|consulta para presentarte\" bot/handlers/*.py bot/messages.py)"
     ]
   }
 }

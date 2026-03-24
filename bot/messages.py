@@ -7,7 +7,7 @@ LIMIT_MESSAGES = {
     "queue_timeout": "Hay cola en el oráculo. No empujes. Vuelve en un momento.",
     "request_in_progress": "Aún estoy con tu consulta. No me metas prisa.",
     "truncated": "\n\n...El oráculo ha dicho lo que tenía que decir.",
-    "not_registered": "No te conozco, forastero. Usa /consulta para presentarte antes de pedir nada.",
+    "not_registered": "Para esto necesito tus datos de nacimiento. Usa /consulta para registrarte.",
     "off_topic": "Eso pregúntaselo a Google. Yo leo las cartas, no hago recados.",
     "admin_only": "Ese comando es solo para el guardián de la taberna. Tú no lo eres.",
     "nominatim_down": "No consigo ubicar esa ciudad ahora mismo. Vuelve a intentarlo en un rato o escribe /cancelaroraculo.",
