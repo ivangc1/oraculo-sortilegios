@@ -42,7 +42,8 @@
       "Bash(grep -r \"os\\\\.system\\\\|subprocess\\\\|popen\\\\|shell=True\\\\|Popen\" --include=*.py /c/Users/ivang/projects/oraculo-sortilegios/.claude/worktrees/elated-satoshi/bot /c/Users/ivang/projects/oraculo-sortilegios/.claude/worktrees/elated-satoshi/service)",
       "Bash(find C:Usersivangprojectsoraculo-sortilegios.claudeworktreeselated-satoshitests -name test_*.py -type f)",
       "Bash(xargs wc:*)",
-      "Bash(python -m pytest tests/test_smart_selector.py -v --tb=short)"
+      "Bash(python -m pytest tests/test_smart_selector.py -v --tb=short)",
+      "Bash(python -m pytest tests/test_handlers_basic.py::test_help_has_all_commands -q --tb=long)"
     ]
   }
 }
