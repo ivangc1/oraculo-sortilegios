@@ -1,13 +1,12 @@
 """Formateo: html.escape + marcadores custom [[T]][[C]] -> HTML.
 
-Soporte para spoiler y expandable blockquote de Telegram Bot API 7.0+.
+Soporte para expandable blockquote de Telegram Bot API 7.0+.
+Cierra tags abiertos antes de wrapping para evitar HTML malformado.
 """
 
 import html
+import re
 import textwrap
-
-# Lecturas largas (>= este umbral de chars) usan expandable blockquote
-_BLOCKQUOTE_THRESHOLD = 1500
 
 
 def format_response(raw_text: str) -> str:
@@ -18,33 +17,70 @@ def format_response(raw_text: str) -> str:
     return safe
 
 
-def wrap_spoiler(text: str) -> str:
-    """Envuelve texto en spoiler de Telegram. El usuario pulsa para revelar."""
-    return f"<tg-spoiler>{text}</tg-spoiler>"
+def _close_open_tags(text: str) -> str:
+    """Cierra tags HTML abiertos al final del texto y reabre al inicio si es necesario.
+
+    Solo maneja <b>, <i>, <tg-spoiler> — los unicos que usamos.
+    Devuelve el texto con tags balanceados.
+    """
+    tags = ["b", "i"]
+    open_tags = []
+    for tag in tags:
+        open_count = len(re.findall(f"<{tag}>", text))
+        close_count = len(re.findall(f"</{tag}>", text))
+        if open_count > close_count:
+            open_tags.append(tag)
+    # Cerrar en orden inverso (LIFO)
+    for tag in reversed(open_tags):
+        text += f"</{tag}>"
+    return text
+
+
+def _reopen_tags_from_previous(prev_chunk: str) -> str:
+    """Detecta tags que quedaron abiertos al final del chunk anterior
+    y devuelve los tags de apertura para prepend al siguiente chunk."""
+    tags = ["b", "i"]
+    reopen = []
+    for tag in tags:
+        open_count = len(re.findall(f"<{tag}>", prev_chunk))
+        close_count = len(re.findall(f"</{tag}>", prev_chunk))
+        if open_count > close_count:
+            reopen.append(tag)
+    return "".join(f"<{tag}>" for tag in reopen)
 
 
 def wrap_blockquote(text: str) -> str:
-    """Envuelve texto en blockquote expandible. Se muestra colapsado."""
+    """Envuelve texto en blockquote expandible. Cierra tags abiertos primero."""
+    text = _close_open_tags(text)
     return f"<blockquote expandable>{text}</blockquote>"
 
 
 def format_and_split(raw_text: str, use_blockquote: bool = False) -> list[str]:
-    """Pipeline completo: format -> split -> blockquote opcional.
+    """Pipeline completo: format -> split -> balance tags -> blockquote opcional.
 
     Args:
         raw_text: texto crudo del LLM con marcadores [[T]] [[C]]
         use_blockquote: si True, TODOS los chunks se envuelven en
             blockquote expandible (colapsado en el chat).
-            Activar solo para variantes largas (cruz_celta, natales, etc.)
 
     Returns:
         Lista de chunks HTML listos para enviar con parse_mode="HTML"
     """
     formatted = format_response(raw_text)
     chunks = split_message(formatted)
+
+    # Balancear tags entre chunks
+    balanced = []
+    for i, chunk in enumerate(chunks):
+        if i > 0:
+            reopen = _reopen_tags_from_previous(chunks[i - 1])
+            chunk = reopen + chunk
+        chunk = _close_open_tags(chunk)
+        balanced.append(chunk)
+
     if use_blockquote:
-        chunks = [wrap_blockquote(c) for c in chunks]
-    return chunks
+        balanced = [wrap_blockquote(c) for c in balanced]
+    return balanced
 
 
 def split_message(text: str, max_length: int = 4096) -> list[str]:
