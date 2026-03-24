@@ -319,7 +319,7 @@ async def _complete_dm_onboarding(
         lines.append(f"Sol en {sun_sign}.")
     if lp is not None:
         lines.append(f"Camino de vida: {lp}.")
-    lines.append("\nVuelve a La Taberna y usa /tarot, /runa, /iching o lo que te apetezca.")
+    lines.append("\nVuelve a La Taberna y usa /tirartarot, /runa, /iching o lo que te apetezca.")
 
     await context.bot.send_message(update.effective_chat.id, text=" ".join(lines))
 

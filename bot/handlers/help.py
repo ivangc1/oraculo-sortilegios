@@ -9,11 +9,11 @@ from bot.middleware import middleware_check
 
 _HELP_TEXT = """🔮 Modos disponibles:
 
-🃏 /tarot — Consulta las cartas del Tarot
+🃏 /tirartarot — Consulta las cartas del Tarot
    Una carta · Tres cartas · Cruz Celta · Sí/No
    Herradura (7) · Relación (6) · Estrella (6) · Cruz Simple (5)
    Tirada del día · 🎯 El Pezuñento elige
-   Atajo: /tarot <tu pregunta>
+   Atajo: /tirartarot <tu pregunta>
 
 ᚱ /runa — Consulta las runas del Elder Futhark
    Runa de Odín · Tres Nornas · Cruz Rúnica
