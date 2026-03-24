@@ -34,11 +34,7 @@ async def geomancia_command(update: Update, context: ContextTypes.DEFAULT_TYPE) 
     settings: Settings = context.bot_data["settings"]
     if not await middleware_check(update, context, settings):
         return
-    user = await db_users.get_user(update.effective_user.id)
-    if not user or not user["onboarding_complete"]:
-        await update.message.reply_text(LIMIT_MESSAGES["not_registered"],
-                                        reply_to_message_id=update.message.message_id)
-        return
+    # Registro opcional — guests permitidos
     await update.message.reply_text("¿Qué tipo de consulta geomántica quieres?",
                                     reply_markup=geomancia_keyboard(),
                                     reply_to_message_id=update.message.message_id)
@@ -57,8 +53,7 @@ async def geomancia_execute(
     chat_id = update.effective_chat.id
 
     user = await db_users.get_user(user_id)
-    if not user or not user["onboarding_complete"]:
-        return
+    # Registro opcional — guests permitidos
 
     if is_user_busy(user_id):
         if query:
@@ -119,8 +114,7 @@ async def geomancia_execute(
             photo_msg = await context.bot.send_message(chat_id, text=fallback)
 
         # Interpretación
-        profile = UserProfile(alias=user["alias"], sun_sign=user.get("sun_sign"),
-                              life_path=user.get("life_path"))
+        profile = UserProfile.from_db_or_guest(user, update)
         request = InterpretationRequest(
             mode="geomancia", variant=variant, drawn_items=drawn_items,
             question=question, user_profile=profile,

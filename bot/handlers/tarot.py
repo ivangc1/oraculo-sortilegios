@@ -36,12 +36,7 @@ async def tarot_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
 
     user_id = update.effective_user.id
     user = await db_users.get_user(user_id)
-    if not user or not user["onboarding_complete"]:
-        await update.message.reply_text(
-            LIMIT_MESSAGES["not_registered"],
-            reply_to_message_id=update.message.message_id,
-        )
-        return
+    # Registro opcional — guests permitidos
 
     # Smart selection: /tarot pregunta directa
     if context.args:
@@ -92,9 +87,7 @@ async def tarot_callback(
 
     # Verificar registro
     user = await db_users.get_user(user_id)
-    if not user or not user["onboarding_complete"]:
-        await query.edit_message_text(LIMIT_MESSAGES["not_registered"])
-        return
+    # Registro opcional — guests permitidos
 
     # Bloqueo concurrente
     if is_user_busy(user_id):
@@ -187,9 +180,7 @@ async def tarot_question_text(update: Update, context: ContextTypes.DEFAULT_TYPE
     question = update.message.text
     is_smart = context.user_data.get("tarot_smart_mode", False)
 
-    if not user:
-        return
-
+    # user puede ser None (guest) — from_db_or_guest lo maneja
     context.user_data["tarot_awaiting_question"] = False
     context.user_data.pop("tarot_smart_mode", None)
 
@@ -261,14 +252,7 @@ async def _execute_tarot_reading(
             )
 
         # 4. Construir request de interpretación
-        profile = UserProfile(
-            alias=user["alias"],
-            sun_sign=user.get("sun_sign"),
-            moon_sign=user.get("moon_sign"),
-            ascendant=user.get("ascendant"),
-            lunar_nakshatra=user.get("lunar_nakshatra"),
-            life_path=user.get("life_path"),
-        )
+        profile = UserProfile.from_db_or_guest(user, update)
 
         drawn_items = [
             DrawnItem(
@@ -394,9 +378,7 @@ async def tarot_smart_callback(
     user_id = query.from_user.id
 
     user = await db_users.get_user(user_id)
-    if not user or not user["onboarding_complete"]:
-        await query.edit_message_text(LIMIT_MESSAGES["not_registered"])
-        return
+    # Registro opcional — guests permitidos
 
     if is_user_busy(user_id):
         await query.edit_message_text(LIMIT_MESSAGES["request_in_progress"])
