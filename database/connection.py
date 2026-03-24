@@ -78,10 +78,10 @@ class Database:
             cls._instance.row_factory = aiosqlite.Row
             await cls._instance.execute("PRAGMA journal_mode=WAL")
             await cls._instance.execute("PRAGMA busy_timeout=5000")
-            await cls._instance.execute("PRAGMA foreign_keys=ON")
+            await cls._instance.execute("PRAGMA foreign_keys=OFF")
             await cls._init_tables(cls._instance)
             await cls._apply_migrations(cls._instance)
-            logger.info("SQLite inicializado (WAL, FK ON)")
+            logger.info("SQLite inicializado (WAL, FK OFF — guests permitidos)")
         return cls._instance
 
     @classmethod
