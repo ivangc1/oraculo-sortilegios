@@ -22,6 +22,13 @@ async def record_usage(
     now = datetime.now(timezone.utc).isoformat()
     drawn_json = json.dumps(drawn_data, ensure_ascii=False) if drawn_data else None
 
+    # Asegurar que el usuario existe (guests pueden no tener fila en users)
+    await db.execute(
+        """INSERT OR IGNORE INTO users (telegram_user_id, alias, birth_date, onboarding_complete, created_at)
+           VALUES (?, ?, ?, 0, ?)""",
+        (user_id, f"guest_{user_id}", "1900-01-01", now),
+    )
+
     async with db.execute("BEGIN"):
         cursor = await db.execute(
             """INSERT INTO usage_log (
