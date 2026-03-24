@@ -17,39 +17,12 @@ async def record_usage(
     truncated: bool = False,
     drawn_data: dict | None = None,
 ) -> int:
-    """Registra uso + actualiza last_activity. Guests sin fila en users permitidos."""
+    """Registra uso + actualiza last_activity. FK OFF global — guests permitidos."""
     db = await Database.get()
     now = datetime.now(timezone.utc).isoformat()
     drawn_json = json.dumps(drawn_data, ensure_ascii=False) if drawn_data else None
 
-    # Verificar si el usuario existe
-    cursor_check = await db.execute(
-        "SELECT 1 FROM users WHERE telegram_user_id = ?", (user_id,)
-    )
-    user_exists = await cursor_check.fetchone() is not None
-
-    if user_exists:
-        # Usuario registrado: insert + update last_activity en transacción
-        async with db.execute("BEGIN"):
-            cursor = await db.execute(
-                """INSERT INTO usage_log (
-                    user_id, mode, variant, tokens_input, tokens_output,
-                    cost_usd, cached, truncated, drawn_data, timestamp
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
-                (
-                    user_id, mode, variant, tokens_input, tokens_output,
-                    cost_usd, cached, truncated, drawn_json, now,
-                ),
-            )
-            usage_id = cursor.lastrowid
-            await db.execute(
-                "UPDATE users SET last_activity = ? WHERE telegram_user_id = ?",
-                (now, user_id),
-            )
-            await db.commit()
-    else:
-        # Guest: desactivar FK, insertar, reactivar
-        await db.execute("PRAGMA foreign_keys = OFF")
+    async with db.execute("BEGIN"):
         cursor = await db.execute(
             """INSERT INTO usage_log (
                 user_id, mode, variant, tokens_input, tokens_output,
@@ -61,8 +34,11 @@ async def record_usage(
             ),
         )
         usage_id = cursor.lastrowid
+        await db.execute(
+            "UPDATE users SET last_activity = ? WHERE telegram_user_id = ?",
+            (now, user_id),
+        )
         await db.commit()
-        await db.execute("PRAGMA foreign_keys = ON")
 
     return usage_id
 
