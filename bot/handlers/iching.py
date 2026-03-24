@@ -31,12 +31,7 @@ async def iching_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
 
     user_id = update.effective_user.id
     user = await db_users.get_user(user_id)
-    if not user or not user["onboarding_complete"]:
-        await update.message.reply_text(
-            LIMIT_MESSAGES["not_registered"],
-            reply_to_message_id=update.message.message_id,
-        )
-        return
+    # Registro opcional — guests permitidos
 
     await iching_execute(update, context, question=None)
 
@@ -55,8 +50,7 @@ async def iching_execute(
     chat_id = update.effective_chat.id
 
     user = await db_users.get_user(user_id)
-    if not user or not user["onboarding_complete"]:
-        return
+    # Registro opcional — guests permitidos
 
     if is_user_busy(user_id):
         msg = LIMIT_MESSAGES["request_in_progress"]
@@ -95,13 +89,7 @@ async def iching_execute(
             photo_msg = await context.bot.send_message(chat_id, text=build_text_fallback(hexagram))
 
         # 3. Interpretación
-        profile = UserProfile(
-            alias=user["alias"],
-            sun_sign=user.get("sun_sign"),
-            moon_sign=user.get("moon_sign"),
-            ascendant=user.get("ascendant"),
-            life_path=user.get("life_path"),
-        )
+        profile = UserProfile.from_db_or_guest(user, update)
 
         # Extra data con info del hexagrama para el sub-prompt
         extra = {
