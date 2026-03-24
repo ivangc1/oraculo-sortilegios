@@ -42,7 +42,10 @@ async def middleware_check(update: Update, context: ContextTypes.DEFAULT_TYPE, s
         return False
 
     user = update.effective_user
-    if user is None or user.is_bot:
+    if user is None:
+        return False
+    # Permitir admins anónimos (id=1087968824, is_bot=True)
+    if user.is_bot and user.id != 1087968824:
         return False
 
     chat = update.effective_chat
