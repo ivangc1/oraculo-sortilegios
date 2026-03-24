@@ -72,9 +72,14 @@ def create_persistence() -> PicklePersistence:
 
 
 async def post_init(application: Application) -> None:
-    """Inicialización post-arranque: DB, servicios, alertas."""
-    settings = application.bot_data.get("settings") or load_settings()
-    application.bot_data.setdefault("settings", settings)
+    """Inicialización post-arranque: DB, servicios, alertas.
+
+    CRÍTICO: PicklePersistence puede sobreescribir bot_data al arrancar.
+    Siempre re-inyectar settings y servicios desde _RUNTIME_SERVICES.
+    """
+    for key, value in _RUNTIME_SERVICES.items():
+        application.bot_data[key] = value
+    settings = application.bot_data["settings"]
 
     # Inicializar DB
     await Database.get()
@@ -112,8 +117,14 @@ async def error_handler(update: object, context) -> None:
             pass
 
 
+
+# Module-level: servicios que sobreviven a PicklePersistence
+_RUNTIME_SERVICES: dict = {}
+
+
 def main() -> None:
     """Punto de entrada principal."""
+    global _RUNTIME_SERVICES
     settings = load_settings()
 
     # Admin para alertas
@@ -125,6 +136,13 @@ def main() -> None:
     # Servicios
     anthropic_service = AnthropicService(settings)
     interpreter_service = InterpreterService(anthropic_service)
+
+    # Guardar a nivel de módulo (inmune a PicklePersistence)
+    _RUNTIME_SERVICES = {
+        "settings": settings,
+        "anthropic_service": anthropic_service,
+        "interpreter_service": interpreter_service,
+    }
 
     # Persistence
     persistence = create_persistence()
@@ -139,10 +157,9 @@ def main() -> None:
         .build()
     )
 
-    # Guardar en bot_data para acceso global
-    app.bot_data["settings"] = settings
-    app.bot_data["anthropic_service"] = anthropic_service
-    app.bot_data["interpreter_service"] = interpreter_service
+    # Inyectar servicios (también en post_init como backup)
+    for key, value in _RUNTIME_SERVICES.items():
+        app.bot_data[key] = value
 
     # === HANDLERS (orden importa: ConversationHandlers primero) ===
 
