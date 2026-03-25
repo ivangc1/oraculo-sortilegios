@@ -101,7 +101,7 @@ async def _execute_informe(
     user: dict, settings: Settings,
 ) -> None:
     """Ejecuta informe numerológico completo."""
-    user_id = user["telegram_user_id"]
+    user_id = update.effective_user.id
     chat_id = update.effective_chat.id
 
     if is_user_busy(user_id):
