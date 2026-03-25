@@ -71,7 +71,7 @@ async def _execute_natal(
     user: dict, variant: str, settings: Settings,
 ) -> None:
     """Ejecuta cálculo + interpretación de carta natal."""
-    user_id = user["telegram_user_id"]
+    user_id = update.effective_user.id
     chat_id = update.effective_chat.id
 
     if is_user_busy(user_id):
