@@ -57,7 +57,7 @@ async def oraculo_question_text(update: Update, context: ContextTypes.DEFAULT_TY
     user = context.user_data.get("oraculo_user")
     question = update.message.text
 
-    if not user or not question:
+    if not question:
         return
 
     context.user_data["oraculo_awaiting_question"] = False
@@ -66,9 +66,9 @@ async def oraculo_question_text(update: Update, context: ContextTypes.DEFAULT_TY
 
 async def _execute_oraculo(
     update: Update, context: ContextTypes.DEFAULT_TYPE,
-    user: dict, question: str, settings: Settings,
+    user: dict | None, question: str, settings: Settings,
 ) -> None:
-    user_id = user["telegram_user_id"]
+    user_id = update.effective_user.id
     chat_id = update.effective_chat.id
 
     if is_user_busy(user_id):

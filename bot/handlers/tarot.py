@@ -214,7 +214,7 @@ async def _execute_tarot_reading(
 ) -> None:
     """Ejecuta tirada completa: genera → imagen → API → formateo → envío."""
     chat_id = update.effective_chat.id
-    user_id = user["telegram_user_id"]
+    user_id = update.effective_user.id
 
     # El usuario puede no estar marcado como busy si viene de question flow
     was_busy = is_user_busy(user_id)
