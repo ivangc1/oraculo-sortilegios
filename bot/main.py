@@ -372,9 +372,9 @@ def main() -> None:
             await numerologia_compat_date_text(update, context)
             return
 
-    # Texto libre: respuestas a ForceReply (reply directo al bot)
+    # Texto libre: captura cualquier texto cuando hay flag activo en user_data
     app.add_handler(MessageHandler(
-        filters.TEXT & ~filters.COMMAND & filters.REPLY,
+        filters.TEXT & ~filters.COMMAND,
         dispatch_text_reply,
     ))
 
