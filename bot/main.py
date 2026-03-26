@@ -22,7 +22,7 @@ from telegram.ext import (
 )
 
 from bot.config import load_settings
-from bot.alerts import set_admin_user_id, send_alert
+from bot.alerts import set_admin_user_id, set_fallback_chat_id, send_alert
 from bot.concurrency import init_semaphore
 from bot.feedback import handle_feedback
 from bot.jobs import cleanup_membership_cache_job, send_weekly_summary
@@ -136,8 +136,9 @@ def main() -> None:
     global _RUNTIME_SERVICES
     settings = load_settings()
 
-    # Admin para alertas
+    # Admin para alertas (fallback al grupo si DM falla)
     set_admin_user_id(settings.ADMIN_USER_ID)
+    set_fallback_chat_id(settings.ALLOWED_CHAT_ID)
 
     # Semáforo de concurrencia API
     init_semaphore(settings.MAX_CONCURRENT_API)
@@ -359,6 +360,9 @@ def main() -> None:
     # Estos capturan respuestas a ForceReply de numerologia y oraculo
     async def dispatch_text_reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Despacha texto libre a handlers que esperan ForceReply."""
+        user = update.effective_user
+        flags = {k: v for k, v in context.user_data.items() if "awaiting" in k}
+        logger.debug(f"dispatch_text_reply: user={user.id if user else None} flags={flags} text={update.message.text[:50] if update.message and update.message.text else None}")
         if context.user_data.get("tarot_awaiting_question"):
             await tarot_question_text(update, context)
             return
