@@ -147,7 +147,7 @@ async def _process_tarot(
         reply_markup=question_keyboard(),
     )
 
-    # Guardar datos para el flujo de pregunta (callback + ForceReply)
+    # Guardar datos para el flujo de pregunta
     context.user_data["tarot_variant"] = variant
     context.user_data["tarot_user"] = user
 
@@ -180,7 +180,7 @@ async def tarot_question_callback(
 
 
 async def tarot_question_text(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Recibe texto de pregunta de tarot (via ForceReply)."""
+    """Recibe texto de pregunta de tarot."""
     if not context.user_data.get("tarot_awaiting_question"):
         return
 
@@ -390,7 +390,7 @@ async def _execute_tarot_reading(
 async def tarot_smart_callback(
     update: Update, context: ContextTypes.DEFAULT_TYPE,
 ) -> None:
-    """Callback para 'El Pezuñento elige'. Pide pregunta via ForceReply."""
+    """Callback para 'El Pezuñento elige'. Pide pregunta al usuario."""
     query = update.callback_query
     await query.answer()
 

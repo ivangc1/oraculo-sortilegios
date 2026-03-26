@@ -343,7 +343,7 @@ def main() -> None:
 
         # Oraculo
         if data == "or":
-            # Oraculo via callback (redirige al flujo ForceReply)
+            # Oraculo via callback
             await query.answer()
             return
 
@@ -357,10 +357,10 @@ def main() -> None:
 
     app.add_handler(CallbackQueryHandler(dispatch_callback))
 
-    # 5. Handlers de texto libre (ForceReply responses)
-    # Estos capturan respuestas a ForceReply de numerologia y oraculo
+    # 5. Handlers de texto libre
+    # Capturan respuestas de texto de numerologia, oraculo y tarot
     async def dispatch_text_reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
-        """Despacha texto libre a handlers que esperan ForceReply."""
+        """Despacha texto libre a handlers que esperan input."""
         user = update.effective_user
         flags = {k: v for k, v in context.user_data.items() if "awaiting" in k}
         logger.debug(f"dispatch_text_reply: user={user.id if user else None} flags={flags} text={update.message.text[:50] if update.message and update.message.text else None}")
@@ -377,8 +377,7 @@ def main() -> None:
             await numerologia_compat_date_text(update, context)
             return
 
-    # Texto libre: ForceReply no funciona para admins anónimos,
-    # así que aceptamos cualquier texto y filtramos por user_data flags.
+    # Texto libre: filtramos por user_data flags (awaiting_*).
     app.add_handler(MessageHandler(
         filters.TEXT & ~filters.COMMAND,
         dispatch_text_reply,

@@ -22,7 +22,7 @@ from service.models import InterpretationRequest, UserProfile
 
 
 async def oraculo_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Handler para /oraculo — pide pregunta con ForceReply."""
+    """Handler para /oraculo — pide pregunta al usuario."""
     settings: Settings = context.bot_data["settings"]
     if not await middleware_check(update, context, settings):
         return
@@ -50,7 +50,7 @@ async def oraculo_command(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
 
 
 async def oraculo_question_text(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Recibe pregunta del oráculo vía ForceReply."""
+    """Recibe pregunta del oráculo vía texto libre."""
     if not context.user_data.get("oraculo_awaiting_question"):
         return
 
