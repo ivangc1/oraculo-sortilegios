@@ -39,9 +39,10 @@ async def oraculo_command(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
         await _execute_oraculo(update, context, user, parts[1].strip(), settings)
         return
 
+    is_anonymous = update.effective_user and update.effective_user.id == 1087968824
     await update.message.reply_text(
         "¿Qué quieres preguntarle al oráculo?",
-        reply_markup=ForceReply(selective=True),
+        reply_markup=None if is_anonymous else ForceReply(selective=True),
         reply_to_message_id=update.message.message_id,
     )
     context.user_data["oraculo_awaiting_question"] = True
