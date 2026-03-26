@@ -138,7 +138,7 @@ def main() -> None:
 
     # Admin para alertas (fallback al grupo si DM falla)
     set_admin_user_id(settings.ADMIN_USER_ID)
-    set_fallback_chat_id(settings.ALLOWED_CHAT_ID)
+    set_fallback_chat_id(settings.ALLOWED_CHAT_ID, settings.ALLOWED_THREAD_ID)
 
     # Semáforo de concurrencia API
     init_semaphore(settings.MAX_CONCURRENT_API)
