@@ -88,7 +88,7 @@ Todas las demas variables tienen defaults razonables. Ver `.env.example` para la
 1. Crear bot en BotFather, obtener token
 2. `/setjoingroups` off
 3. `/setcommands` con la lista de `data/botfather_commands.txt`
-4. **NO tocar `/setprivacy`** (dejar privacy mode ON; ForceReply lo maneja)
+4. `/setprivacy` → **Disable** (privacy mode OFF para que el bot reciba todos los mensajes del grupo)
 5. Anadir bot al grupo, obtener chat_id via getUpdates
 6. Permiso recomendado: "Delete messages" (para borrar datos sensibles que se escriban en grupo por error)
 
@@ -96,7 +96,7 @@ Todas las demas variables tienen defaults razonables. Ver `.env.example` para la
 
 ```bash
 python -m bot.main          # Desarrollo (long polling)
-sudo systemctl start bot-taberna  # Produccion (systemd)
+sudo systemctl start oraculo      # Produccion (systemd)
 ```
 
 ### Tests
@@ -167,10 +167,10 @@ Configurables via `EFFORT_*` en `.env` sin redeploy.
 - **Marcadores custom `[[T]]` `[[C]]`**: en vez de `##` y `**` (que Sonnet usa inconsistentemente).
 - **NO retry manual**: el SDK de Anthropic ya reintenta 2x automaticamente.
 - **System prompt estatico**: constante literal (no f-strings) para que el prompt caching funcione. Perfil del usuario se inyecta en el user message.
-- **Guardrails en system prompt**: rechazo in-character de preguntas fuera de contexto, jailbreak, preguntas sobre la naturaleza del bot, consejos medicos/legales/financieros.
+- **Guardrails minimos**: solo anti-jailbreak y proteccion de identidad (nunca revela que es IA). El oraculo responde a cualquier tema — amor, fertilidad, dinero, muerte, enemigos — sin restricciones ni disclaimers.
 - **Personalidad Baphomet**: todos los mensajes del bot (no solo las interpretaciones) mantienen tono directo, humor seco, sin servilismo.
 - **Smart selector**: `/tirartarot <pregunta>` analiza keywords (coste cero, sin API) y elige la tirada mas apropiada. Tambien disponible como boton en el menu.
-- **Blockquote expandible por variante**: lecturas largas (Cruz Celta, herradura, estrella, relacion, natales, 7 runas, escudo, I Ching) se muestran colapsadas con "Mostrar mas". Lecturas cortas van texto directo. Controlado por `frozenset` en config, desactivable globalmente con `USE_BLOCKQUOTE=false`.
+- **Blockquote expandible**: todas las tiradas de tarot + natales + 7 runas + escudo + I Ching se muestran colapsadas con "Mostrar mas". Controlado por `frozenset` en config, desactivable globalmente con `USE_BLOCKQUOTE=false`.
 - **Menu tarot con sub-categorias**: Rapidas / Completas / Especiales. Edita el mismo mensaje, sin spam en el chat.
 
 ## Licencia
