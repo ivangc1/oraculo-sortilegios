@@ -58,7 +58,11 @@ async def iching_execute(
         if query:
             await query.edit_message_text(msg)
         else:
-            await update.message.reply_text(msg, reply_to_message_id=update.message.message_id)
+            await context.bot.send_message(
+                chat_id=chat_id, text=msg,
+                message_thread_id=thread_id,
+                reply_to_message_id=update.message.message_id,
+            )
         return
 
     limit_key = await check_limits(user_id, "iching", settings)
@@ -67,7 +71,11 @@ async def iching_execute(
         if query:
             await query.edit_message_text(msg)
         else:
-            await update.message.reply_text(msg, reply_to_message_id=update.message.message_id)
+            await context.bot.send_message(
+                chat_id=chat_id, text=msg,
+                message_thread_id=thread_id,
+                reply_to_message_id=update.message.message_id,
+            )
         return
 
     mark_user_busy(user_id)
