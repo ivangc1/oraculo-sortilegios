@@ -195,9 +195,11 @@ async def bibliomancia_command(update: Update, context: ContextTypes.DEFAULT_TYP
             return
 
     # Sin argumento → grid de botones
-    await update.message.reply_text(
-        "¿De qué texto sagrado quieres un fragmento?",
+    await context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text="¿De qué texto sagrado quieres un fragmento?",
         reply_markup=bibliomancia_keyboard(),
+        message_thread_id=update.effective_message.message_thread_id,
         reply_to_message_id=update.message.message_id,
     )
 
@@ -214,16 +216,24 @@ async def bibliomancia_callback(
 async def _send_fragment(update: Update, context, text_key: str) -> None:
     """Envía fragmento como mensaje nuevo."""
     fragment = _get_random_fragment(text_key)
+    thread_id = update.effective_message.message_thread_id
     if not fragment:
-        await update.message.reply_text(
-            "No he encontrado textos de ese libro.",
+        await context.bot.send_message(
+            chat_id=update.effective_chat.id,
+            text="No he encontrado textos de ese libro.",
+            message_thread_id=thread_id,
             reply_to_message_id=update.message.message_id,
         )
         return
 
     chunks = _split_long_message(fragment)
     for chunk in chunks:
-        await update.message.reply_text(chunk, reply_to_message_id=update.message.message_id)
+        await context.bot.send_message(
+            chat_id=update.effective_chat.id,
+            text=chunk,
+            message_thread_id=thread_id,
+            reply_to_message_id=update.message.message_id,
+        )
 
 
 async def _send_fragment_from_callback(query, context, text_key: str) -> None:
@@ -245,5 +255,7 @@ async def _send_fragment_from_callback(query, context, text_key: str) -> None:
     # Mensajes adicionales si excede 4096
     if len(chunks) > 1:
         chat_id = query.message.chat_id
+        thread_id = query.message.message_thread_id
         for chunk in chunks[1:]:
-            await context.bot.send_message(chat_id, text=chunk)
+            await context.bot.send_message(chat_id, text=chunk,
+                                           message_thread_id=thread_id)
