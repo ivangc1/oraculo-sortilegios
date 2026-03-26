@@ -79,8 +79,8 @@ async def middleware_check(update: Update, context: ContextTypes.DEFAULT_TYPE, s
         if thread_id != settings.ALLOWED_THREAD_ID:
             return False
 
-    # 6. Membresía (caché 1h)
-    if not await _check_membership(user.id, chat.id, context, settings):
+    # 6. Membresía (caché 1h) — admins anónimos siempre pasan
+    if user.id != 1087968824 and not await _check_membership(user.id, chat.id, context, settings):
         return False
 
     # 7. Actualizar username si cambió
