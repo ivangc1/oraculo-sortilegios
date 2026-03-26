@@ -1,5 +1,6 @@
 """Middleware completo: edits, DM, chat_id, topics, membresía caché, username, migration."""
 
+import asyncio
 import time
 
 from loguru import logger
@@ -77,6 +78,26 @@ async def middleware_check(update: Update, context: ContextTypes.DEFAULT_TYPE, s
     if settings.ALLOWED_THREAD_ID is not None:
         thread_id = message.message_thread_id
         if thread_id != settings.ALLOWED_THREAD_ID:
+            # Solo avisar si es un comando del bot (no texto libre)
+            if message.text and message.text.startswith("/"):
+                try:
+                    warning = await message.reply_text(
+                        "🔮 Las consultas al oráculo solo funcionan en el hilo de El Oráculo.",
+                    )
+                    # Borrar comando + aviso después de 8 segundos
+                    async def _cleanup():
+                        await asyncio.sleep(8)
+                        try:
+                            await message.delete()
+                        except Exception:
+                            pass
+                        try:
+                            await warning.delete()
+                        except Exception:
+                            pass
+                    asyncio.create_task(_cleanup())
+                except Exception:
+                    pass
             return False
 
     # 6. Membresía (caché 1h) — admins anónimos siempre pasan
