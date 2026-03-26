@@ -239,6 +239,18 @@ def main() -> None:
 
         data = query.data
 
+        # Anti-ajeno: solo el usuario que inició el comando puede pulsar los botones
+        # Excepto feedback (tiene su propia verificación) y admins anónimos (comparten ID)
+        if not data.startswith("fb:"):
+            reply_msg = getattr(query.message, "reply_to_message", None)
+            if reply_msg and reply_msg.from_user:
+                initiator_id = reply_msg.from_user.id
+                clicker_id = query.from_user.id
+                # Permitir si ambos son admin anónimo (mismo ID)
+                if clicker_id != initiator_id and clicker_id != 1087968824:
+                    await query.answer("Esa consulta no es tuya. Usa tu propio comando.", show_alert=False)
+                    return
+
         # Feedback
         if data.startswith("fb:"):
             await handle_feedback(update, context, settings)
