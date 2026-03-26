@@ -155,12 +155,18 @@ async def tarot_question_callback(
         return
 
     if answer == "yes":
-        await query.edit_message_text("⏳ Esperando tu pregunta...")
-        await context.bot.send_message(
-            chat_id=query.message.chat_id,
-            text="✍️ Escribe tu pregunta para las cartas:",
-            reply_markup=ForceReply(selective=False),
-        )
+        # Admin anónimo (GroupAnonymousBot) no soporta ForceReply selective
+        # porque no tiene identidad persistente. Usamos ForceReply(selective=True)
+        # para usuarios normales y el handler de texto (sin filters.REPLY)
+        # captura la respuesta vía user_data flag.
+        await query.edit_message_text("✍️ Escribe tu pregunta para las cartas:")
+        is_anonymous = update.effective_user and update.effective_user.id == 1087968824
+        if not is_anonymous:
+            await context.bot.send_message(
+                chat_id=query.message.chat_id,
+                text="✍️ Escribe tu pregunta:",
+                reply_markup=ForceReply(selective=True),
+            )
         context.user_data["tarot_awaiting_question"] = True
         return
 
@@ -392,10 +398,12 @@ async def tarot_smart_callback(
     await query.edit_message_text(
         "Escribe tu pregunta y yo decido qué tirada te conviene:"
     )
-    await query.message.reply_text(
-        "¿Qué quieres saber?",
-        reply_markup=ForceReply(selective=True),
-    )
+    is_anonymous = query.from_user and query.from_user.id == 1087968824
+    if not is_anonymous:
+        await query.message.reply_text(
+            "¿Qué quieres saber?",
+            reply_markup=ForceReply(selective=True),
+        )
     context.user_data["tarot_awaiting_question"] = True
     context.user_data["tarot_smart_mode"] = True
     context.user_data["tarot_user"] = user
