@@ -9,11 +9,17 @@ _alert_timestamps: dict[str, float] = {}
 
 # Configurado en main.py
 _admin_user_id: int = 0
+_fallback_chat_id: int = 0
 
 
 def set_admin_user_id(user_id: int) -> None:
     global _admin_user_id
     _admin_user_id = user_id
+
+
+def set_fallback_chat_id(chat_id: int) -> None:
+    global _fallback_chat_id
+    _fallback_chat_id = chat_id
 
 
 async def send_alert(
@@ -35,4 +41,10 @@ async def send_alert(
     try:
         await bot.send_message(_admin_user_id, message)
     except Exception:
-        logger.error(f"Failed to send alert: {alert_type}")
+        # DM falló (el admin no ha iniciado /start con el bot).
+        # Intentar enviar al grupo si hay chat_id configurado.
+        try:
+            if _fallback_chat_id:
+                await bot.send_message(_fallback_chat_id, message)
+        except Exception:
+            logger.error(f"Failed to send alert: {alert_type}")
