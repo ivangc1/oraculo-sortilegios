@@ -43,7 +43,6 @@ async def oraculo_command(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
         text="¿Qué quieres preguntarle al oráculo?",
-        reply_to_message_id=update.message.message_id,
         message_thread_id=thread_id,
     )
     context.user_data["oraculo_awaiting_question"] = True
