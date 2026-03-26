@@ -81,16 +81,17 @@ async def middleware_check(update: Update, context: ContextTypes.DEFAULT_TYPE, s
             # Solo avisar si es un comando del bot (no texto libre)
             if message.text and message.text.startswith("/"):
                 try:
-                    warning = await message.reply_text(
-                        "🔮 Las consultas al oráculo solo funcionan en el hilo de El Oráculo.",
+                    # Borrar el comando de general
+                    await message.delete()
+                    # Enviar aviso en el hilo correcto
+                    warning = await context.bot.send_message(
+                        chat_id=chat.id,
+                        text="🔮 Las consultas al oráculo solo funcionan en este hilo.",
+                        message_thread_id=settings.ALLOWED_THREAD_ID,
                     )
-                    # Borrar comando + aviso después de 8 segundos
+                    # Borrar aviso después de 8 segundos
                     async def _cleanup():
                         await asyncio.sleep(8)
-                        try:
-                            await message.delete()
-                        except Exception:
-                            pass
                         try:
                             await warning.delete()
                         except Exception:
