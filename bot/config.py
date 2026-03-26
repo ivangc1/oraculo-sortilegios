@@ -150,10 +150,15 @@ class Settings(BaseSettings):
 
     # Variantes que usan blockquote expandible (lecturas largas)
     _BLOCKQUOTE_VARIANTS = frozenset({
+        ("tarot", "1_carta"),
+        ("tarot", "3_cartas"),
         ("tarot", "cruz_celta"),
+        ("tarot", "cruz_simple"),
         ("tarot", "herradura"),
         ("tarot", "estrella"),
         ("tarot", "relacion"),
+        ("tarot", "si_no"),
+        ("tarot", "tirada_dia"),
         ("natal", "tropical"),
         ("natal", "vedica"),
         ("runas", "siete"),

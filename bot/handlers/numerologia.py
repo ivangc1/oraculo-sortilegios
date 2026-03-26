@@ -7,7 +7,7 @@ Compatibilidad solo pide segunda fecha (camino de vida), no nombre.
 import asyncio
 
 from loguru import logger
-from telegram import ForceReply, InlineKeyboardButton, InlineKeyboardMarkup, Update
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.error import BadRequest, Forbidden
 from telegram.ext import ContextTypes
 
@@ -32,12 +32,20 @@ async def numerologia_command(update: Update, context: ContextTypes.DEFAULT_TYPE
         return
     user = await db_users.get_user(update.effective_user.id)
     if not user or not user["onboarding_complete"]:
-        await update.message.reply_text(LIMIT_MESSAGES["not_registered"],
-                                        reply_to_message_id=update.message.message_id)
+        await context.bot.send_message(
+            chat_id=update.effective_chat.id,
+            text=LIMIT_MESSAGES["not_registered"],
+            message_thread_id=update.effective_message.message_thread_id,
+            reply_to_message_id=update.message.message_id,
+        )
         return
-    await update.message.reply_text("¿Qué quieres consultar?",
-                                    reply_markup=numerologia_keyboard(),
-                                    reply_to_message_id=update.message.message_id)
+    await context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text="¿Qué quieres consultar?",
+        reply_markup=numerologia_keyboard(),
+        message_thread_id=update.effective_message.message_thread_id,
+        reply_to_message_id=update.message.message_id,
+    )
 
 
 async def numerologia_informe_callback(
@@ -83,8 +91,11 @@ async def numerologia_name_text(update: Update, context: ContextTypes.DEFAULT_TY
     name = update.message.text.strip()
 
     if len(name) < 2:
-        await update.message.reply_text("Ese nombre es muy corto. Escribe tu nombre completo.",
-                                        reply_markup=ForceReply(selective=True))
+        await context.bot.send_message(
+            chat_id=update.effective_chat.id,
+            text="Ese nombre es muy corto. Escribe tu nombre completo.",
+            message_thread_id=update.effective_message.message_thread_id,
+        )
         return
 
     context.user_data["numerologia_awaiting_name"] = False
@@ -103,14 +114,17 @@ async def _execute_informe(
     """Ejecuta informe numerológico completo."""
     user_id = update.effective_user.id
     chat_id = update.effective_chat.id
+    thread_id = update.effective_message.message_thread_id
 
     if is_user_busy(user_id):
-        await context.bot.send_message(chat_id, text=LIMIT_MESSAGES["request_in_progress"])
+        await context.bot.send_message(chat_id, text=LIMIT_MESSAGES["request_in_progress"],
+                                       message_thread_id=thread_id)
         return
 
     limit_key = await check_limits(user_id, "numerologia", settings)
     if limit_key:
-        await context.bot.send_message(chat_id, text=LIMIT_MESSAGES[limit_key])
+        await context.bot.send_message(chat_id, text=LIMIT_MESSAGES[limit_key],
+                                       message_thread_id=thread_id)
         return
 
     mark_user_busy(user_id)
@@ -153,13 +167,15 @@ async def _execute_informe(
                 timeout=settings.QUEUE_TIMEOUT,
             )
         except asyncio.TimeoutError:
-            await context.bot.send_message(chat_id, text=LIMIT_MESSAGES["queue_timeout"])
+            await context.bot.send_message(chat_id, text=LIMIT_MESSAGES["queue_timeout"],
+                                           message_thread_id=thread_id)
             return
 
         if response.error:
             error_key = {"timeout": "queue_timeout", "rate_limit": "rate_limit",
                          "empty_response": "empty_response"}.get(response.error, "api_error")
-            await context.bot.send_message(chat_id, text=LIMIT_MESSAGES.get(error_key, LIMIT_MESSAGES["api_error"]))
+            await context.bot.send_message(chat_id, text=LIMIT_MESSAGES.get(error_key, LIMIT_MESSAGES["api_error"]),
+                                           message_thread_id=thread_id)
             return
 
         text = response.text
@@ -169,7 +185,8 @@ async def _execute_informe(
         chunks = format_and_split(text, use_blockquote=False)
         text_msg = None
         for i, chunk in enumerate(chunks):
-            text_msg = await context.bot.send_message(chat_id, text=chunk, parse_mode="HTML")
+            text_msg = await context.bot.send_message(chat_id, text=chunk, parse_mode="HTML",
+                                                      message_thread_id=thread_id)
 
         usage_id = await db_usage.record_usage(
             user_id=user_id, mode="numerologia", variant="informe",
@@ -182,7 +199,8 @@ async def _execute_informe(
             try:
                 await context.bot.send_message(chat_id, text="¿Qué te ha parecido la lectura?",
                                                reply_markup=feedback_keyboard(usage_id),
-                                               reply_to_message_id=text_msg.message_id)
+                                               reply_to_message_id=text_msg.message_id,
+                                               message_thread_id=thread_id)
             except (BadRequest, Forbidden):
                 pass
 
@@ -205,10 +223,9 @@ async def numerologia_compat_callback(
         await query.edit_message_text(LIMIT_MESSAGES["not_registered"])
         return
 
-    await query.edit_message_text("Para la compatibilidad necesito la fecha de nacimiento de la otra persona.")
-    await query.message.reply_text(
-        "Escribe la fecha de nacimiento de la otra persona (DD/MM/AAAA):",
-        reply_markup=ForceReply(selective=True),
+    await query.edit_message_text(
+        "Para la compatibilidad necesito la fecha de nacimiento de la otra persona.\n\n"
+        "Escribe la fecha (DD/MM/AAAA):"
     )
     context.user_data["numerologia_awaiting_compat_date"] = True
 
@@ -233,8 +250,11 @@ async def numerologia_compat_date_text(update: Update, context: ContextTypes.DEF
         if not (1 <= day <= 31 and 1 <= month <= 12 and 1900 <= year <= 2025):
             raise ValueError("Fecha fuera de rango")
     except (ValueError, IndexError):
-        await update.message.reply_text(LIMIT_MESSAGES["invalid_date"],
-                                        reply_markup=ForceReply(selective=True))
+        await context.bot.send_message(
+            chat_id=update.effective_chat.id,
+            text=LIMIT_MESSAGES["invalid_date"],
+            message_thread_id=update.effective_message.message_thread_id,
+        )
         context.user_data["numerologia_awaiting_compat_date"] = True
         return
 
@@ -243,14 +263,17 @@ async def numerologia_compat_date_text(update: Update, context: ContextTypes.DEF
         return
 
     chat_id = update.effective_chat.id
+    thread_id = update.effective_message.message_thread_id
 
     if is_user_busy(user_id):
-        await context.bot.send_message(chat_id, text=LIMIT_MESSAGES["request_in_progress"])
+        await context.bot.send_message(chat_id, text=LIMIT_MESSAGES["request_in_progress"],
+                                       message_thread_id=thread_id)
         return
 
     limit_key = await check_limits(user_id, "numerologia", settings)
     if limit_key:
-        await context.bot.send_message(chat_id, text=LIMIT_MESSAGES[limit_key])
+        await context.bot.send_message(chat_id, text=LIMIT_MESSAGES[limit_key],
+                                       message_thread_id=thread_id)
         return
 
     mark_user_busy(user_id)
@@ -286,13 +309,15 @@ async def numerologia_compat_date_text(update: Update, context: ContextTypes.DEF
                 timeout=settings.QUEUE_TIMEOUT,
             )
         except asyncio.TimeoutError:
-            await context.bot.send_message(chat_id, text=LIMIT_MESSAGES["queue_timeout"])
+            await context.bot.send_message(chat_id, text=LIMIT_MESSAGES["queue_timeout"],
+                                           message_thread_id=thread_id)
             return
 
         if response.error:
             error_key = {"timeout": "queue_timeout", "rate_limit": "rate_limit",
                          "empty_response": "empty_response"}.get(response.error, "api_error")
-            await context.bot.send_message(chat_id, text=LIMIT_MESSAGES.get(error_key, LIMIT_MESSAGES["api_error"]))
+            await context.bot.send_message(chat_id, text=LIMIT_MESSAGES.get(error_key, LIMIT_MESSAGES["api_error"]),
+                                           message_thread_id=thread_id)
             return
 
         text = response.text
@@ -302,7 +327,8 @@ async def numerologia_compat_date_text(update: Update, context: ContextTypes.DEF
         chunks = format_and_split(text, use_blockquote=False)
         text_msg = None
         for i, chunk in enumerate(chunks):
-            text_msg = await context.bot.send_message(chat_id, text=chunk, parse_mode="HTML")
+            text_msg = await context.bot.send_message(chat_id, text=chunk, parse_mode="HTML",
+                                                      message_thread_id=thread_id)
 
         usage_id = await db_usage.record_usage(
             user_id=user_id, mode="numerologia", variant="compatibilidad",
@@ -315,7 +341,8 @@ async def numerologia_compat_date_text(update: Update, context: ContextTypes.DEF
             try:
                 await context.bot.send_message(chat_id, text="¿Qué te ha parecido la lectura?",
                                                reply_markup=feedback_keyboard(usage_id),
-                                               reply_to_message_id=text_msg.message_id)
+                                               reply_to_message_id=text_msg.message_id,
+                                               message_thread_id=thread_id)
             except (BadRequest, Forbidden):
                 pass
 

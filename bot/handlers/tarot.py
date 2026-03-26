@@ -3,7 +3,7 @@
 import asyncio
 
 from loguru import logger
-from telegram import ForceReply, Update
+from telegram import Update
 from telegram.error import BadRequest, Forbidden
 from telegram.ext import ContextTypes
 
@@ -46,20 +46,31 @@ async def tarot_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
         label = variant_label(variant)
 
         # Verificar limites antes de ejecutar
+        thread_id = update.effective_message.message_thread_id
         if is_user_busy(user_id):
-            await update.message.reply_text(LIMIT_MESSAGES["request_in_progress"],
-                                            reply_to_message_id=update.message.message_id)
+            await context.bot.send_message(
+                chat_id=update.effective_chat.id,
+                text=LIMIT_MESSAGES["request_in_progress"],
+                message_thread_id=thread_id,
+                reply_to_message_id=update.message.message_id,
+            )
             return
         limit_key = await check_limits(user_id, "tarot", settings)
         if limit_key:
-            await update.message.reply_text(LIMIT_MESSAGES[limit_key],
-                                            reply_to_message_id=update.message.message_id)
+            await context.bot.send_message(
+                chat_id=update.effective_chat.id,
+                text=LIMIT_MESSAGES[limit_key],
+                message_thread_id=thread_id,
+                reply_to_message_id=update.message.message_id,
+            )
             return
 
         mark_user_busy(user_id)
         try:
-            await update.message.reply_text(
-                f"🎯 El Pezuñento ha elegido: {label}",
+            await context.bot.send_message(
+                chat_id=update.effective_chat.id,
+                text=f"🎯 El Pezuñento ha elegido: {label}",
+                message_thread_id=thread_id,
                 reply_to_message_id=update.message.message_id,
             )
             await _execute_tarot_reading(update, context, user, variant, question, settings)
@@ -67,9 +78,11 @@ async def tarot_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
             release_user(user_id)
         return
 
-    await update.message.reply_text(
-        "Elige tu tirada:",
+    await context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text="Elige tu tirada:",
         reply_markup=tarot_keyboard(),
+        message_thread_id=update.effective_message.message_thread_id,
         reply_to_message_id=update.message.message_id,
     )
 
@@ -155,12 +168,9 @@ async def tarot_question_callback(
         return
 
     if answer == "yes":
-        await query.edit_message_text("⏳ Esperando tu pregunta...")
-        await context.bot.send_message(
-            chat_id=query.message.chat_id,
-            text="✍️ Escribe tu pregunta para las cartas:",
-            reply_markup=ForceReply(selective=False),
-        )
+        # Editamos el mensaje existente (no crea mensaje nuevo → no aparece en general)
+        # El handler de texto captura la respuesta vía user_data flag
+        await query.edit_message_text("✍️ Escribe tu pregunta para las cartas:")
         context.user_data["tarot_awaiting_question"] = True
         return
 
@@ -193,8 +203,10 @@ async def tarot_question_text(update: Update, context: ContextTypes.DEFAULT_TYPE
         from service.smart_selector import select_variant, variant_label
         variant = select_variant(question)
         label = variant_label(variant)
-        await update.message.reply_text(
-            f"🎯 El Pezuñento ha elegido: {label}",
+        await context.bot.send_message(
+            chat_id=update.effective_chat.id,
+            text=f"🎯 El Pezuñento ha elegido: {label}",
+            message_thread_id=update.effective_message.message_thread_id,
             reply_to_message_id=update.message.message_id,
         )
 
@@ -215,6 +227,7 @@ async def _execute_tarot_reading(
     """Ejecuta tirada completa: genera → imagen → API → formateo → envío."""
     chat_id = update.effective_chat.id
     user_id = update.effective_user.id
+    thread_id = update.effective_message.message_thread_id
 
     # El usuario puede no estar marcado como busy si viene de question flow
     was_busy = is_user_busy(user_id)
@@ -236,12 +249,14 @@ async def _execute_tarot_reading(
                     chat_id,
                     photo=jpeg_buffer,
                     caption=caption,
+                    message_thread_id=thread_id,
                 )
             except (BadRequest, Forbidden) as e:
                 logger.error(f"Failed to send photo: {e}")
                 photo_msg = await context.bot.send_message(
                     chat_id,
                     text=build_text_fallback(variant, cards),
+                    message_thread_id=thread_id,
                 )
             finally:
                 jpeg_buffer.close()
@@ -249,6 +264,7 @@ async def _execute_tarot_reading(
             photo_msg = await context.bot.send_message(
                 chat_id,
                 text=build_text_fallback(variant, cards),
+                message_thread_id=thread_id,
             )
 
         # 4. Construir request de interpretación
@@ -292,6 +308,7 @@ async def _execute_tarot_reading(
                 chat_id,
                 text=LIMIT_MESSAGES["queue_timeout"],
                 reply_to_message_id=photo_msg.message_id,
+                message_thread_id=thread_id,
             )
             return
 
@@ -307,6 +324,7 @@ async def _execute_tarot_reading(
                 chat_id,
                 text=msgs.get(error_key, msgs["api_error"]),
                 reply_to_message_id=photo_msg.message_id,
+                message_thread_id=thread_id,
             )
             return
 
@@ -325,6 +343,7 @@ async def _execute_tarot_reading(
                 text=chunk,
                 parse_mode="HTML",
                 reply_to_message_id=reply_to,
+                message_thread_id=thread_id,
             )
 
         # 8. Registrar uso y enviar feedback
@@ -349,6 +368,7 @@ async def _execute_tarot_reading(
                     text="¿Qué te ha parecido la lectura?",
                     reply_markup=feedback_keyboard(usage_id),
                     reply_to_message_id=text_msg.message_id,
+                    message_thread_id=thread_id,
                 )
             except (BadRequest, Forbidden):
                 pass
@@ -391,10 +411,6 @@ async def tarot_smart_callback(
 
     await query.edit_message_text(
         "Escribe tu pregunta y yo decido qué tirada te conviene:"
-    )
-    await query.message.reply_text(
-        "¿Qué quieres saber?",
-        reply_markup=ForceReply(selective=True),
     )
     context.user_data["tarot_awaiting_question"] = True
     context.user_data["tarot_smart_mode"] = True
