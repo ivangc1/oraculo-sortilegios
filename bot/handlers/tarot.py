@@ -155,11 +155,11 @@ async def tarot_question_callback(
         return
 
     if answer == "yes":
-        await query.edit_message_text("Escribe tu pregunta:")
-        # ForceReply para que el bot reciba la respuesta en grupo con privacy mode
-        await query.message.reply_text(
-            "Escribe tu pregunta para las cartas:",
-            reply_markup=ForceReply(selective=True),
+        await query.edit_message_text("⏳ Esperando tu pregunta...")
+        await context.bot.send_message(
+            chat_id=query.message.chat_id,
+            text="✍️ Escribe tu pregunta para las cartas:",
+            reply_markup=ForceReply(selective=False),
         )
         context.user_data["tarot_awaiting_question"] = True
         return

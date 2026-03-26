@@ -372,9 +372,10 @@ def main() -> None:
             await numerologia_compat_date_text(update, context)
             return
 
-    # Solo respuestas a mensajes del bot (reply)
+    # Texto libre: ForceReply no funciona para admins anónimos,
+    # así que aceptamos cualquier texto y filtramos por user_data flags.
     app.add_handler(MessageHandler(
-        filters.TEXT & ~filters.COMMAND & filters.REPLY,
+        filters.TEXT & ~filters.COMMAND,
         dispatch_text_reply,
     ))
 
