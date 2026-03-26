@@ -32,12 +32,20 @@ async def numerologia_command(update: Update, context: ContextTypes.DEFAULT_TYPE
         return
     user = await db_users.get_user(update.effective_user.id)
     if not user or not user["onboarding_complete"]:
-        await update.message.reply_text(LIMIT_MESSAGES["not_registered"],
-                                        reply_to_message_id=update.message.message_id)
+        await context.bot.send_message(
+            chat_id=update.effective_chat.id,
+            text=LIMIT_MESSAGES["not_registered"],
+            message_thread_id=update.effective_message.message_thread_id,
+            reply_to_message_id=update.message.message_id,
+        )
         return
-    await update.message.reply_text("¿Qué quieres consultar?",
-                                    reply_markup=numerologia_keyboard(),
-                                    reply_to_message_id=update.message.message_id)
+    await context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text="¿Qué quieres consultar?",
+        reply_markup=numerologia_keyboard(),
+        message_thread_id=update.effective_message.message_thread_id,
+        reply_to_message_id=update.message.message_id,
+    )
 
 
 async def numerologia_informe_callback(
@@ -83,7 +91,11 @@ async def numerologia_name_text(update: Update, context: ContextTypes.DEFAULT_TY
     name = update.message.text.strip()
 
     if len(name) < 2:
-        await update.message.reply_text("Ese nombre es muy corto. Escribe tu nombre completo.")
+        await context.bot.send_message(
+            chat_id=update.effective_chat.id,
+            text="Ese nombre es muy corto. Escribe tu nombre completo.",
+            message_thread_id=update.effective_message.message_thread_id,
+        )
         return
 
     context.user_data["numerologia_awaiting_name"] = False
@@ -238,7 +250,11 @@ async def numerologia_compat_date_text(update: Update, context: ContextTypes.DEF
         if not (1 <= day <= 31 and 1 <= month <= 12 and 1900 <= year <= 2025):
             raise ValueError("Fecha fuera de rango")
     except (ValueError, IndexError):
-        await update.message.reply_text(LIMIT_MESSAGES["invalid_date"])
+        await context.bot.send_message(
+            chat_id=update.effective_chat.id,
+            text=LIMIT_MESSAGES["invalid_date"],
+            message_thread_id=update.effective_message.message_thread_id,
+        )
         context.user_data["numerologia_awaiting_compat_date"] = True
         return
 

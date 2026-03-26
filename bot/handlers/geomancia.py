@@ -35,9 +35,13 @@ async def geomancia_command(update: Update, context: ContextTypes.DEFAULT_TYPE) 
     if not await middleware_check(update, context, settings):
         return
     # Registro opcional — guests permitidos
-    await update.message.reply_text("¿Qué tipo de consulta geomántica quieres?",
-                                    reply_markup=geomancia_keyboard(),
-                                    reply_to_message_id=update.message.message_id)
+    await context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text="¿Qué tipo de consulta geomántica quieres?",
+        reply_markup=geomancia_keyboard(),
+        message_thread_id=update.effective_message.message_thread_id,
+        reply_to_message_id=update.message.message_id,
+    )
 
 
 async def geomancia_execute(

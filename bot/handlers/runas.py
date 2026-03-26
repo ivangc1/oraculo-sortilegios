@@ -33,9 +33,11 @@ async def runas_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
     user = await db_users.get_user(user_id)
     # Registro opcional — guests permitidos
 
-    await update.message.reply_text(
-        "¿Qué tipo de tirada rúnica quieres?",
+    await context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text="¿Qué tipo de tirada rúnica quieres?",
         reply_markup=runas_keyboard(),
+        message_thread_id=update.effective_message.message_thread_id,
         reply_to_message_id=update.message.message_id,
     )
 

@@ -32,8 +32,12 @@ async def natal_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
         return
     user = await db_users.get_user(update.effective_user.id)
     if not user or not user["onboarding_complete"]:
-        await update.message.reply_text(LIMIT_MESSAGES["not_registered"],
-                                        reply_to_message_id=update.message.message_id)
+        await context.bot.send_message(
+            chat_id=update.effective_chat.id,
+            text=LIMIT_MESSAGES["not_registered"],
+            message_thread_id=update.effective_message.message_thread_id,
+            reply_to_message_id=update.message.message_id,
+        )
         return
     await _execute_natal(update, context, user, "tropical", settings)
 
@@ -45,8 +49,12 @@ async def vedica_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         return
     user = await db_users.get_user(update.effective_user.id)
     if not user or not user["onboarding_complete"]:
-        await update.message.reply_text(LIMIT_MESSAGES["not_registered"],
-                                        reply_to_message_id=update.message.message_id)
+        await context.bot.send_message(
+            chat_id=update.effective_chat.id,
+            text=LIMIT_MESSAGES["not_registered"],
+            message_thread_id=update.effective_message.message_thread_id,
+            reply_to_message_id=update.message.message_id,
+        )
         return
     await _execute_natal(update, context, user, "vedica", settings)
 

@@ -46,20 +46,31 @@ async def tarot_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
         label = variant_label(variant)
 
         # Verificar limites antes de ejecutar
+        thread_id = update.effective_message.message_thread_id
         if is_user_busy(user_id):
-            await update.message.reply_text(LIMIT_MESSAGES["request_in_progress"],
-                                            reply_to_message_id=update.message.message_id)
+            await context.bot.send_message(
+                chat_id=update.effective_chat.id,
+                text=LIMIT_MESSAGES["request_in_progress"],
+                message_thread_id=thread_id,
+                reply_to_message_id=update.message.message_id,
+            )
             return
         limit_key = await check_limits(user_id, "tarot", settings)
         if limit_key:
-            await update.message.reply_text(LIMIT_MESSAGES[limit_key],
-                                            reply_to_message_id=update.message.message_id)
+            await context.bot.send_message(
+                chat_id=update.effective_chat.id,
+                text=LIMIT_MESSAGES[limit_key],
+                message_thread_id=thread_id,
+                reply_to_message_id=update.message.message_id,
+            )
             return
 
         mark_user_busy(user_id)
         try:
-            await update.message.reply_text(
-                f"🎯 El Pezuñento ha elegido: {label}",
+            await context.bot.send_message(
+                chat_id=update.effective_chat.id,
+                text=f"🎯 El Pezuñento ha elegido: {label}",
+                message_thread_id=thread_id,
                 reply_to_message_id=update.message.message_id,
             )
             await _execute_tarot_reading(update, context, user, variant, question, settings)
@@ -67,9 +78,11 @@ async def tarot_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
             release_user(user_id)
         return
 
-    await update.message.reply_text(
-        "Elige tu tirada:",
+    await context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text="Elige tu tirada:",
         reply_markup=tarot_keyboard(),
+        message_thread_id=update.effective_message.message_thread_id,
         reply_to_message_id=update.message.message_id,
     )
 
@@ -190,8 +203,10 @@ async def tarot_question_text(update: Update, context: ContextTypes.DEFAULT_TYPE
         from service.smart_selector import select_variant, variant_label
         variant = select_variant(question)
         label = variant_label(variant)
-        await update.message.reply_text(
-            f"🎯 El Pezuñento ha elegido: {label}",
+        await context.bot.send_message(
+            chat_id=update.effective_chat.id,
+            text=f"🎯 El Pezuñento ha elegido: {label}",
+            message_thread_id=update.effective_message.message_thread_id,
             reply_to_message_id=update.message.message_id,
         )
 
