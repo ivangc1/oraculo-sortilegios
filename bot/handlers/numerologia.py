@@ -7,7 +7,7 @@ Compatibilidad solo pide segunda fecha (camino de vida), no nombre.
 import asyncio
 
 from loguru import logger
-from telegram import ForceReply, InlineKeyboardButton, InlineKeyboardMarkup, Update
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.error import BadRequest, Forbidden
 from telegram.ext import ContextTypes
 
@@ -83,8 +83,7 @@ async def numerologia_name_text(update: Update, context: ContextTypes.DEFAULT_TY
     name = update.message.text.strip()
 
     if len(name) < 2:
-        await update.message.reply_text("Ese nombre es muy corto. Escribe tu nombre completo.",
-                                        reply_markup=ForceReply(selective=True))
+        await update.message.reply_text("Ese nombre es muy corto. Escribe tu nombre completo.")
         return
 
     context.user_data["numerologia_awaiting_name"] = False
@@ -212,10 +211,9 @@ async def numerologia_compat_callback(
         await query.edit_message_text(LIMIT_MESSAGES["not_registered"])
         return
 
-    await query.edit_message_text("Para la compatibilidad necesito la fecha de nacimiento de la otra persona.")
-    await query.message.reply_text(
-        "Escribe la fecha de nacimiento de la otra persona (DD/MM/AAAA):",
-        reply_markup=ForceReply(selective=True),
+    await query.edit_message_text(
+        "Para la compatibilidad necesito la fecha de nacimiento de la otra persona.\n\n"
+        "Escribe la fecha (DD/MM/AAAA):"
     )
     context.user_data["numerologia_awaiting_compat_date"] = True
 
@@ -240,8 +238,7 @@ async def numerologia_compat_date_text(update: Update, context: ContextTypes.DEF
         if not (1 <= day <= 31 and 1 <= month <= 12 and 1900 <= year <= 2025):
             raise ValueError("Fecha fuera de rango")
     except (ValueError, IndexError):
-        await update.message.reply_text(LIMIT_MESSAGES["invalid_date"],
-                                        reply_markup=ForceReply(selective=True))
+        await update.message.reply_text(LIMIT_MESSAGES["invalid_date"])
         context.user_data["numerologia_awaiting_compat_date"] = True
         return
 
