@@ -155,7 +155,12 @@ async def tarot_question_callback(
         return
 
     if answer == "yes":
-        await query.edit_message_text("✍️ Escribe tu pregunta para las cartas:")
+        await query.edit_message_text("⏳ Esperando tu pregunta...")
+        await context.bot.send_message(
+            chat_id=query.message.chat_id,
+            text="✍️ Escribe tu pregunta para las cartas:",
+            reply_markup=ForceReply(selective=False),
+        )
         context.user_data["tarot_awaiting_question"] = True
         return
 
