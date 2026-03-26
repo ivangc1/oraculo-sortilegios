@@ -71,14 +71,17 @@ async def _execute_oraculo(
 ) -> None:
     user_id = update.effective_user.id
     chat_id = update.effective_chat.id
+    thread_id = update.effective_message.message_thread_id
 
     if is_user_busy(user_id):
-        await context.bot.send_message(chat_id, text=LIMIT_MESSAGES["request_in_progress"])
+        await context.bot.send_message(chat_id, text=LIMIT_MESSAGES["request_in_progress"],
+                                       message_thread_id=thread_id)
         return
 
     limit_key = await check_limits(user_id, "oraculo", settings)
     if limit_key:
-        await context.bot.send_message(chat_id, text=LIMIT_MESSAGES[limit_key])
+        await context.bot.send_message(chat_id, text=LIMIT_MESSAGES[limit_key],
+                                       message_thread_id=thread_id)
         return
 
     # Sanitizar pregunta
@@ -109,14 +112,16 @@ async def _execute_oraculo(
                 timeout=settings.QUEUE_TIMEOUT,
             )
         except asyncio.TimeoutError:
-            await context.bot.send_message(chat_id, text=LIMIT_MESSAGES["queue_timeout"])
+            await context.bot.send_message(chat_id, text=LIMIT_MESSAGES["queue_timeout"],
+                                           message_thread_id=thread_id)
             return
 
         if response.error:
             error_key = {"timeout": "queue_timeout", "rate_limit": "rate_limit",
                          "empty_response": "empty_response"}.get(response.error, "api_error")
             await context.bot.send_message(
-                chat_id, text=LIMIT_MESSAGES.get(error_key, LIMIT_MESSAGES["api_error"]))
+                chat_id, text=LIMIT_MESSAGES.get(error_key, LIMIT_MESSAGES["api_error"]),
+                message_thread_id=thread_id)
             return
 
         text = response.text
@@ -127,7 +132,8 @@ async def _execute_oraculo(
         text_msg = None
         for i, chunk in enumerate(chunks):
             text_msg = await context.bot.send_message(
-                chat_id, text=chunk, parse_mode="HTML")
+                chat_id, text=chunk, parse_mode="HTML",
+                message_thread_id=thread_id)
 
         # drawn_data: solo longitud de pregunta (privacidad)
         drawn_data = {"question_length": len(question)}
@@ -143,7 +149,8 @@ async def _execute_oraculo(
                 await context.bot.send_message(
                     chat_id, text="¿Qué te ha parecido la lectura?",
                     reply_markup=feedback_keyboard(usage_id),
-                    reply_to_message_id=text_msg.message_id)
+                    reply_to_message_id=text_msg.message_id,
+                    message_thread_id=thread_id)
             except (BadRequest, Forbidden):
                 pass
 
