@@ -73,14 +73,17 @@ async def _execute_natal(
     """Ejecuta cálculo + interpretación de carta natal."""
     user_id = update.effective_user.id
     chat_id = update.effective_chat.id
+    thread_id = update.effective_message.message_thread_id
 
     if is_user_busy(user_id):
-        await context.bot.send_message(chat_id, text=LIMIT_MESSAGES["request_in_progress"])
+        await context.bot.send_message(chat_id, text=LIMIT_MESSAGES["request_in_progress"],
+                                       message_thread_id=thread_id)
         return
 
     limit_key = await check_limits(user_id, "natal", settings)
     if limit_key:
-        await context.bot.send_message(chat_id, text=LIMIT_MESSAGES[limit_key])
+        await context.bot.send_message(chat_id, text=LIMIT_MESSAGES[limit_key],
+                                       message_thread_id=thread_id)
         return
 
     # Verificar datos necesarios
@@ -88,6 +91,7 @@ async def _execute_natal(
         await context.bot.send_message(
             chat_id,
             text="Necesito tu ciudad de nacimiento para la carta natal. Usa /actualizarperfil.",
+            message_thread_id=thread_id,
         )
         return
 
@@ -116,7 +120,8 @@ async def _execute_natal(
         if variant == "tropical":
             from service.calculators.natal_tropical import calculate_natal_tropical, build_drawn_data, is_available
             if not is_available():
-                await context.bot.send_message(chat_id, text="El módulo de natales no está disponible ahora.")
+                await context.bot.send_message(chat_id, text="El módulo de natales no está disponible ahora.",
+                                               message_thread_id=thread_id)
                 return
             natal_data = calculate_natal_tropical(
                 user["alias"], year, month, day, hour, minute, lat, lon, tz_str,
@@ -126,7 +131,8 @@ async def _execute_natal(
         else:
             from service.calculators.natal_vedica import calculate_natal_vedica, build_drawn_data, is_available
             if not is_available():
-                await context.bot.send_message(chat_id, text="El módulo de natales no está disponible ahora.")
+                await context.bot.send_message(chat_id, text="El módulo de natales no está disponible ahora.",
+                                               message_thread_id=thread_id)
                 return
             natal_data = calculate_natal_vedica(
                 user["alias"], year, month, day, hour, minute, lat, lon, tz_str,
@@ -152,7 +158,8 @@ async def _execute_natal(
             summary_lines.append(f"Sistema: {natal_data['house_system']}")
         summary_lines.append(simplified_note)
 
-        summary_msg = await context.bot.send_message(chat_id, text="\n".join(summary_lines))
+        summary_msg = await context.bot.send_message(chat_id, text="\n".join(summary_lines),
+                                                       message_thread_id=thread_id)
 
         # Interpretar
         profile = UserProfile(
@@ -184,13 +191,15 @@ async def _execute_natal(
                 timeout=settings.QUEUE_TIMEOUT,
             )
         except asyncio.TimeoutError:
-            await context.bot.send_message(chat_id, text=LIMIT_MESSAGES["queue_timeout"])
+            await context.bot.send_message(chat_id, text=LIMIT_MESSAGES["queue_timeout"],
+                                           message_thread_id=thread_id)
             return
 
         if response.error:
             error_key = {"timeout": "queue_timeout", "rate_limit": "rate_limit",
                          "empty_response": "empty_response"}.get(response.error, "api_error")
-            await context.bot.send_message(chat_id, text=LIMIT_MESSAGES.get(error_key, LIMIT_MESSAGES["api_error"]))
+            await context.bot.send_message(chat_id, text=LIMIT_MESSAGES.get(error_key, LIMIT_MESSAGES["api_error"]),
+                                           message_thread_id=thread_id)
             return
 
         text = response.text
@@ -202,7 +211,8 @@ async def _execute_natal(
         for i, chunk in enumerate(chunks):
             reply_to = summary_msg.message_id if i == 0 else (text_msg.message_id if text_msg else None)
             text_msg = await context.bot.send_message(chat_id, text=chunk, parse_mode="HTML",
-                                                      reply_to_message_id=reply_to)
+                                                      reply_to_message_id=reply_to,
+                                                      message_thread_id=thread_id)
 
         usage_id = await db_usage.record_usage(
             user_id=user_id, mode="natal", variant=mode_variant,
@@ -215,7 +225,8 @@ async def _execute_natal(
             try:
                 await context.bot.send_message(chat_id, text="¿Qué te ha parecido la lectura?",
                                                reply_markup=feedback_keyboard(usage_id),
-                                               reply_to_message_id=text_msg.message_id)
+                                               reply_to_message_id=text_msg.message_id,
+                                               message_thread_id=thread_id)
             except (BadRequest, Forbidden):
                 pass
 
@@ -223,7 +234,8 @@ async def _execute_natal(
 
     except Exception as e:
         logger.error(f"Natal calculation error: {e}")
-        await context.bot.send_message(chat_id, text=LIMIT_MESSAGES["api_error"])
+        await context.bot.send_message(chat_id, text=LIMIT_MESSAGES["api_error"],
+                                       message_thread_id=thread_id)
     finally:
         release_user(user_id)
 

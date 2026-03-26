@@ -51,6 +51,7 @@ async def geomancia_execute(
     settings: Settings = context.bot_data["settings"]
     user_id = (query.from_user if query else update.effective_user).id
     chat_id = update.effective_chat.id
+    thread_id = update.effective_message.message_thread_id
 
     user = await db_users.get_user(user_id)
     # Registro opcional — guests permitidos
@@ -105,13 +106,16 @@ async def geomancia_execute(
         # Enviar imagen
         if jpeg_buffer:
             try:
-                photo_msg = await context.bot.send_photo(chat_id, photo=jpeg_buffer, caption=caption)
+                photo_msg = await context.bot.send_photo(chat_id, photo=jpeg_buffer, caption=caption,
+                                                           message_thread_id=thread_id)
             except (BadRequest, Forbidden):
-                photo_msg = await context.bot.send_message(chat_id, text=fallback)
+                photo_msg = await context.bot.send_message(chat_id, text=fallback,
+                                                           message_thread_id=thread_id)
             finally:
                 jpeg_buffer.close()
         else:
-            photo_msg = await context.bot.send_message(chat_id, text=fallback)
+            photo_msg = await context.bot.send_message(chat_id, text=fallback,
+                                                       message_thread_id=thread_id)
 
         # Interpretación
         profile = UserProfile.from_db_or_guest(user, update)
@@ -137,14 +141,16 @@ async def geomancia_execute(
             )
         except asyncio.TimeoutError:
             await context.bot.send_message(chat_id, text=LIMIT_MESSAGES["queue_timeout"],
-                                           reply_to_message_id=photo_msg.message_id)
+                                           reply_to_message_id=photo_msg.message_id,
+                                           message_thread_id=thread_id)
             return
 
         if response.error:
             error_key = {"timeout": "queue_timeout", "rate_limit": "rate_limit",
                          "empty_response": "empty_response"}.get(response.error, "api_error")
             await context.bot.send_message(chat_id, text=LIMIT_MESSAGES.get(error_key, LIMIT_MESSAGES["api_error"]),
-                                           reply_to_message_id=photo_msg.message_id)
+                                           reply_to_message_id=photo_msg.message_id,
+                                           message_thread_id=thread_id)
             return
 
         text = response.text
@@ -156,7 +162,8 @@ async def geomancia_execute(
         for i, chunk in enumerate(chunks):
             reply_to = photo_msg.message_id if i == 0 else (text_msg.message_id if text_msg else None)
             text_msg = await context.bot.send_message(chat_id, text=chunk, parse_mode="HTML",
-                                                      reply_to_message_id=reply_to)
+                                                      reply_to_message_id=reply_to,
+                                                      message_thread_id=thread_id)
 
         usage_id = await db_usage.record_usage(
             user_id=user_id, mode="geomancia", variant=variant,
@@ -169,7 +176,8 @@ async def geomancia_execute(
             try:
                 await context.bot.send_message(chat_id, text="¿Qué te ha parecido la lectura?",
                                                reply_markup=feedback_keyboard(usage_id),
-                                               reply_to_message_id=text_msg.message_id)
+                                               reply_to_message_id=text_msg.message_id,
+                                               message_thread_id=thread_id)
             except (BadRequest, Forbidden):
                 pass
 

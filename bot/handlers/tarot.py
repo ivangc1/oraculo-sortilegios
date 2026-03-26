@@ -162,10 +162,12 @@ async def tarot_question_callback(
         await query.edit_message_text("✍️ Escribe tu pregunta para las cartas:")
         is_anonymous = update.effective_user and update.effective_user.id == 1087968824
         if not is_anonymous:
+            thread_id = update.effective_message.message_thread_id
             await context.bot.send_message(
                 chat_id=query.message.chat_id,
                 text="✍️ Escribe tu pregunta:",
                 reply_markup=ForceReply(selective=True),
+                message_thread_id=thread_id,
             )
         context.user_data["tarot_awaiting_question"] = True
         return
@@ -221,6 +223,7 @@ async def _execute_tarot_reading(
     """Ejecuta tirada completa: genera → imagen → API → formateo → envío."""
     chat_id = update.effective_chat.id
     user_id = update.effective_user.id
+    thread_id = update.effective_message.message_thread_id
 
     # El usuario puede no estar marcado como busy si viene de question flow
     was_busy = is_user_busy(user_id)
@@ -242,12 +245,14 @@ async def _execute_tarot_reading(
                     chat_id,
                     photo=jpeg_buffer,
                     caption=caption,
+                    message_thread_id=thread_id,
                 )
             except (BadRequest, Forbidden) as e:
                 logger.error(f"Failed to send photo: {e}")
                 photo_msg = await context.bot.send_message(
                     chat_id,
                     text=build_text_fallback(variant, cards),
+                    message_thread_id=thread_id,
                 )
             finally:
                 jpeg_buffer.close()
@@ -255,6 +260,7 @@ async def _execute_tarot_reading(
             photo_msg = await context.bot.send_message(
                 chat_id,
                 text=build_text_fallback(variant, cards),
+                message_thread_id=thread_id,
             )
 
         # 4. Construir request de interpretación
@@ -298,6 +304,7 @@ async def _execute_tarot_reading(
                 chat_id,
                 text=LIMIT_MESSAGES["queue_timeout"],
                 reply_to_message_id=photo_msg.message_id,
+                message_thread_id=thread_id,
             )
             return
 
@@ -313,6 +320,7 @@ async def _execute_tarot_reading(
                 chat_id,
                 text=msgs.get(error_key, msgs["api_error"]),
                 reply_to_message_id=photo_msg.message_id,
+                message_thread_id=thread_id,
             )
             return
 
@@ -331,6 +339,7 @@ async def _execute_tarot_reading(
                 text=chunk,
                 parse_mode="HTML",
                 reply_to_message_id=reply_to,
+                message_thread_id=thread_id,
             )
 
         # 8. Registrar uso y enviar feedback
@@ -355,6 +364,7 @@ async def _execute_tarot_reading(
                     text="¿Qué te ha parecido la lectura?",
                     reply_markup=feedback_keyboard(usage_id),
                     reply_to_message_id=text_msg.message_id,
+                    message_thread_id=thread_id,
                 )
             except (BadRequest, Forbidden):
                 pass

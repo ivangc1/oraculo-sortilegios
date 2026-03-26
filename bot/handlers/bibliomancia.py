@@ -245,5 +245,7 @@ async def _send_fragment_from_callback(query, context, text_key: str) -> None:
     # Mensajes adicionales si excede 4096
     if len(chunks) > 1:
         chat_id = query.message.chat_id
+        thread_id = query.message.message_thread_id
         for chunk in chunks[1:]:
-            await context.bot.send_message(chat_id, text=chunk)
+            await context.bot.send_message(chat_id, text=chunk,
+                                           message_thread_id=thread_id)

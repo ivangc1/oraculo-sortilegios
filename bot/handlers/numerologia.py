@@ -103,14 +103,17 @@ async def _execute_informe(
     """Ejecuta informe numerológico completo."""
     user_id = update.effective_user.id
     chat_id = update.effective_chat.id
+    thread_id = update.effective_message.message_thread_id
 
     if is_user_busy(user_id):
-        await context.bot.send_message(chat_id, text=LIMIT_MESSAGES["request_in_progress"])
+        await context.bot.send_message(chat_id, text=LIMIT_MESSAGES["request_in_progress"],
+                                       message_thread_id=thread_id)
         return
 
     limit_key = await check_limits(user_id, "numerologia", settings)
     if limit_key:
-        await context.bot.send_message(chat_id, text=LIMIT_MESSAGES[limit_key])
+        await context.bot.send_message(chat_id, text=LIMIT_MESSAGES[limit_key],
+                                       message_thread_id=thread_id)
         return
 
     mark_user_busy(user_id)
@@ -153,13 +156,15 @@ async def _execute_informe(
                 timeout=settings.QUEUE_TIMEOUT,
             )
         except asyncio.TimeoutError:
-            await context.bot.send_message(chat_id, text=LIMIT_MESSAGES["queue_timeout"])
+            await context.bot.send_message(chat_id, text=LIMIT_MESSAGES["queue_timeout"],
+                                           message_thread_id=thread_id)
             return
 
         if response.error:
             error_key = {"timeout": "queue_timeout", "rate_limit": "rate_limit",
                          "empty_response": "empty_response"}.get(response.error, "api_error")
-            await context.bot.send_message(chat_id, text=LIMIT_MESSAGES.get(error_key, LIMIT_MESSAGES["api_error"]))
+            await context.bot.send_message(chat_id, text=LIMIT_MESSAGES.get(error_key, LIMIT_MESSAGES["api_error"]),
+                                           message_thread_id=thread_id)
             return
 
         text = response.text
@@ -169,7 +174,8 @@ async def _execute_informe(
         chunks = format_and_split(text, use_blockquote=False)
         text_msg = None
         for i, chunk in enumerate(chunks):
-            text_msg = await context.bot.send_message(chat_id, text=chunk, parse_mode="HTML")
+            text_msg = await context.bot.send_message(chat_id, text=chunk, parse_mode="HTML",
+                                                      message_thread_id=thread_id)
 
         usage_id = await db_usage.record_usage(
             user_id=user_id, mode="numerologia", variant="informe",
@@ -182,7 +188,8 @@ async def _execute_informe(
             try:
                 await context.bot.send_message(chat_id, text="¿Qué te ha parecido la lectura?",
                                                reply_markup=feedback_keyboard(usage_id),
-                                               reply_to_message_id=text_msg.message_id)
+                                               reply_to_message_id=text_msg.message_id,
+                                               message_thread_id=thread_id)
             except (BadRequest, Forbidden):
                 pass
 
@@ -243,14 +250,17 @@ async def numerologia_compat_date_text(update: Update, context: ContextTypes.DEF
         return
 
     chat_id = update.effective_chat.id
+    thread_id = update.effective_message.message_thread_id
 
     if is_user_busy(user_id):
-        await context.bot.send_message(chat_id, text=LIMIT_MESSAGES["request_in_progress"])
+        await context.bot.send_message(chat_id, text=LIMIT_MESSAGES["request_in_progress"],
+                                       message_thread_id=thread_id)
         return
 
     limit_key = await check_limits(user_id, "numerologia", settings)
     if limit_key:
-        await context.bot.send_message(chat_id, text=LIMIT_MESSAGES[limit_key])
+        await context.bot.send_message(chat_id, text=LIMIT_MESSAGES[limit_key],
+                                       message_thread_id=thread_id)
         return
 
     mark_user_busy(user_id)
@@ -286,13 +296,15 @@ async def numerologia_compat_date_text(update: Update, context: ContextTypes.DEF
                 timeout=settings.QUEUE_TIMEOUT,
             )
         except asyncio.TimeoutError:
-            await context.bot.send_message(chat_id, text=LIMIT_MESSAGES["queue_timeout"])
+            await context.bot.send_message(chat_id, text=LIMIT_MESSAGES["queue_timeout"],
+                                           message_thread_id=thread_id)
             return
 
         if response.error:
             error_key = {"timeout": "queue_timeout", "rate_limit": "rate_limit",
                          "empty_response": "empty_response"}.get(response.error, "api_error")
-            await context.bot.send_message(chat_id, text=LIMIT_MESSAGES.get(error_key, LIMIT_MESSAGES["api_error"]))
+            await context.bot.send_message(chat_id, text=LIMIT_MESSAGES.get(error_key, LIMIT_MESSAGES["api_error"]),
+                                           message_thread_id=thread_id)
             return
 
         text = response.text
@@ -302,7 +314,8 @@ async def numerologia_compat_date_text(update: Update, context: ContextTypes.DEF
         chunks = format_and_split(text, use_blockquote=False)
         text_msg = None
         for i, chunk in enumerate(chunks):
-            text_msg = await context.bot.send_message(chat_id, text=chunk, parse_mode="HTML")
+            text_msg = await context.bot.send_message(chat_id, text=chunk, parse_mode="HTML",
+                                                      message_thread_id=thread_id)
 
         usage_id = await db_usage.record_usage(
             user_id=user_id, mode="numerologia", variant="compatibilidad",
@@ -315,7 +328,8 @@ async def numerologia_compat_date_text(update: Update, context: ContextTypes.DEF
             try:
                 await context.bot.send_message(chat_id, text="¿Qué te ha parecido la lectura?",
                                                reply_markup=feedback_keyboard(usage_id),
-                                               reply_to_message_id=text_msg.message_id)
+                                               reply_to_message_id=text_msg.message_id,
+                                               message_thread_id=thread_id)
             except (BadRequest, Forbidden):
                 pass
 
