@@ -150,7 +150,7 @@ async def tarot_question_callback(
     user = context.user_data.get("tarot_user")
     settings: Settings = context.bot_data["settings"]
 
-    if not variant or not user:
+    if not variant:
         await query.edit_message_text("Ha habido un error. Vuelve a intentarlo con /tirartarot.")
         return
 
