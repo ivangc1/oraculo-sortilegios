@@ -17,7 +17,6 @@ Bot de Telegram para el grupo **La Taberna de los Sortilegios** (~2,600 miembros
 | `/vedica` | Carta natal vedica | Lahiri ayanamsa, Nakshatras, Dashas |
 | `/oraculo` | Pregunta libre | Sonnet interpreta directamente |
 | `/bibliomancia` | Textos sagrados | Biblia, Coran, Gita, Evangelio de Tomas |
-| `/admins` | Directorio guardianes | Grid inline con bios |
 | `/consulta` | Registro | Redirige a DM para onboarding privado |
 | `/startoraculo` | Presentacion | Intro del oraculo en grupo |
 | `/ayudaoraculo` | Ayuda | Lista de todos los comandos |
@@ -75,8 +74,6 @@ pip install -r requirements.txt
 ```bash
 cp .env.example .env
 # Editar .env con valores reales
-cp data/admins_private.example.json data/admins_private.json
-# Editar con datos reales de los admins del grupo
 ```
 
 Variables obligatorias en `.env`: `BOT_TOKEN`, `ANTHROPIC_API_KEY`, `ALLOWED_CHAT_ID`, `ADMIN_USER_ID`.
