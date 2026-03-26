@@ -197,7 +197,6 @@ def main() -> None:
     from bot.handlers.natal import natal_command, vedica_command
     from bot.handlers.oraculo import oraculo_command
     from bot.handlers.bibliomancia import bibliomancia_command
-    from bot.handlers.admins import admins_command
 
     app.add_handler(CommandHandler("start", start_command))  # Deep links + DM
     app.add_handler(CommandHandler("startoraculo", start_command))
@@ -215,7 +214,7 @@ def main() -> None:
     app.add_handler(CommandHandler("vedica", vedica_command))
     app.add_handler(CommandHandler("oraculo", oraculo_command))
     app.add_handler(CommandHandler("bibliomancia", bibliomancia_command))
-    app.add_handler(CommandHandler("admins", admins_command))
+
 
     # 4. Callback handlers para modos con menú inline
     from bot.handlers.tarot import tarot_callback, tarot_question_callback, tarot_question_text, tarot_smart_callback
@@ -229,7 +228,6 @@ def main() -> None:
     from bot.handlers.natal import natal_callback
     from bot.handlers.oraculo import oraculo_question_text
     from bot.handlers.bibliomancia import bibliomancia_callback
-    from bot.handlers.admins import admins_callback
 
     # Dispatcher de callbacks por prefijo
     async def dispatch_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -355,15 +353,6 @@ def main() -> None:
             text_key = key_map.get(data)
             if text_key:
                 await bibliomancia_callback(update, context, text_key)
-            return
-
-        # Admins
-        if data.startswith("a:"):
-            suffix = data[2:]
-            if suffix == "bk":
-                await admins_callback(update, context, "back")
-            else:
-                await admins_callback(update, context, suffix)
             return
 
     app.add_handler(CallbackQueryHandler(dispatch_callback))

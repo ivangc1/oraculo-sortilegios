@@ -35,8 +35,6 @@ _HELP_TEXT = """🔮 Modos disponibles:
 📖 /bibliomancia — Fragmento de texto sagrado
    Biblia · Corán · Gita · Evangelio de Tomás
 
-🛡 /admins — Guardianes de la taberna
-
 🆕 /consulta — Registrarte para empezar
 📋 /miperfil · ✏️ /actualizarperfil · 🗑 /borrarme
 ❌ /cancelaroraculo — Cancelar operación en curso
