@@ -182,7 +182,7 @@ async def _execute_informe(
         if response.truncated:
             text += LIMIT_MESSAGES["truncated"]
 
-        chunks = format_and_split(text, use_blockquote=False)
+        chunks = format_and_split(text, use_blockquote=settings.use_blockquote_for("numerologia", "informe"))
         text_msg = None
         for i, chunk in enumerate(chunks):
             text_msg = await context.bot.send_message(chat_id, text=chunk, parse_mode="HTML",
@@ -324,7 +324,7 @@ async def numerologia_compat_date_text(update: Update, context: ContextTypes.DEF
         if response.truncated:
             text += LIMIT_MESSAGES["truncated"]
 
-        chunks = format_and_split(text, use_blockquote=False)
+        chunks = format_and_split(text, use_blockquote=settings.use_blockquote_for("numerologia", "compatibilidad"))
         text_msg = None
         for i, chunk in enumerate(chunks):
             text_msg = await context.bot.send_message(chat_id, text=chunk, parse_mode="HTML",
