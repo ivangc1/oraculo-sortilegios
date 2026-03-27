@@ -161,9 +161,17 @@ class Settings(BaseSettings):
         ("tarot", "tirada_dia"),
         ("natal", "tropical"),
         ("natal", "vedica"),
+        ("runas", "odin"),
+        ("runas", "nornas"),
+        ("runas", "cruz"),
+        ("runas", "cinco"),
         ("runas", "siete"),
+        ("geomancia", "figura"),
         ("geomancia", "escudo"),
         ("iching", "hexagrama"),
+        ("oraculo", "libre"),
+        ("numerologia", "informe"),
+        ("numerologia", "compatibilidad"),
     })
 
     def use_blockquote_for(self, mode: str, variant: str) -> bool:
