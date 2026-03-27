@@ -1,13 +1,7 @@
 #!/usr/bin/env python3
 """
-Limpia mensajes del bot con ForceReply residual buscando por texto exacto.
-Solo borra mensajes que contengan los textos que acompañaban al ForceReply.
-
-Uso (en el servidor):
-  cd /opt/oraculo-sortilegios
-  sudo systemctl stop oraculo
-  python3 scripts/cleanup_forcereply.py
-  sudo systemctl start oraculo
+Limpia ForceReply residuales buscando por texto exacto.
+Usa concurrencia para escanear rápido (~30s para 2000 IDs).
 """
 
 import asyncio
@@ -24,13 +18,43 @@ if env_path.exists():
             os.environ.setdefault(k.strip(), v.strip())
 
 from telegram import Bot
-from telegram.error import BadRequest, TimedOut
+from telegram.error import BadRequest, TimedOut, RetryAfter
 
-# Textos exactos que el bot enviaba con ForceReply
 FORCEREPLY_TEXTS = {
     "✍️ Escribe tu pregunta:",
     "¿Qué quieres saber?",
 }
+
+deleted_ids = []
+
+
+async def check_and_delete(bot: Bot, chat_id: int, admin_id: int, msg_id: int, sem: asyncio.Semaphore):
+    async with sem:
+        try:
+            fwd = await bot.forward_message(
+                chat_id=admin_id,
+                from_chat_id=chat_id,
+                message_id=msg_id,
+            )
+            text = (fwd.text or "").strip()
+
+            # Borrar reenvío del DM siempre
+            try:
+                await bot.delete_message(chat_id=admin_id, message_id=fwd.message_id)
+            except Exception:
+                pass
+
+            if text in FORCEREPLY_TEXTS:
+                await bot.delete_message(chat_id=chat_id, message_id=msg_id)
+                deleted_ids.append(msg_id)
+                print(f"  ✓ Borrado msg_id={msg_id} — \"{text}\"")
+
+        except (BadRequest, TimedOut):
+            pass
+        except RetryAfter as e:
+            await asyncio.sleep(e.retry_after)
+        except Exception:
+            pass
 
 
 async def main():
@@ -46,61 +70,36 @@ async def main():
     bot = Bot(token=token)
 
     me = await bot.get_me()
-    bot_id = me.id
-    print(f"Bot: @{me.username} (id={bot_id})")
-    print(f"Chat: {chat_id}")
-    print(f"Buscando textos: {FORCEREPLY_TEXTS}\n")
+    print(f"Bot: @{me.username} (id={me.id})")
+    print(f"Chat: {chat_id}\n")
 
-    # Mensaje sonda para obtener el message_id más reciente
-    probe = await bot.send_message(chat_id=chat_id, text="🔧 Buscando ForceReply residuales...")
+    probe = await bot.send_message(chat_id=chat_id, text="🔧 Limpieza rápida...")
     latest_id = probe.message_id
     await bot.delete_message(chat_id=chat_id, message_id=latest_id)
 
     scan_range = 2000
     start_id = max(1, latest_id - scan_range)
-    deleted = 0
-    checked = 0
+    print(f"Escaneando {start_id} → {latest_id} ({scan_range} IDs)...")
 
-    print(f"Escaneando message_ids {start_id} → {latest_id}...")
+    # 10 peticiones concurrentes — rápido sin saturar API
+    sem = asyncio.Semaphore(10)
 
-    for msg_id in range(start_id, latest_id):
-        try:
-            # Reenviar al DM del admin para leer el contenido
-            fwd = await bot.forward_message(
-                chat_id=admin_id,
-                from_chat_id=chat_id,
-                message_id=msg_id,
-            )
-            checked += 1
-
-            # Comprobar si el texto coincide con un ForceReply
-            text = (fwd.text or "").strip()
-            is_forcereply = text in FORCEREPLY_TEXTS
-
-            # Borrar el reenvío del DM siempre
-            try:
-                await bot.delete_message(chat_id=admin_id, message_id=fwd.message_id)
-            except Exception:
-                pass
-
-            if is_forcereply:
-                await bot.delete_message(chat_id=chat_id, message_id=msg_id)
-                deleted += 1
-                print(f"  ✓ Borrado msg_id={msg_id} — \"{text}\"")
-
-        except BadRequest:
-            pass  # No existe
-        except TimedOut:
-            await asyncio.sleep(3)
-        except Exception:
-            pass
-
-        # Rate limit
-        if checked % 20 == 0:
-            await asyncio.sleep(1)
+    # Procesar en lotes de 100
+    batch_size = 100
+    for batch_start in range(start_id, latest_id, batch_size):
+        batch_end = min(batch_start + batch_size, latest_id)
+        tasks = [
+            check_and_delete(bot, chat_id, admin_id, msg_id, sem)
+            for msg_id in range(batch_start, batch_end)
+        ]
+        await asyncio.gather(*tasks)
+        pct = int((batch_end - start_id) / scan_range * 100)
+        print(f"  ... {pct}%")
 
     print(f"\n{'='*40}")
-    print(f"Escaneados: {checked} | ForceReply borrados: {deleted}")
+    print(f"ForceReply borrados: {len(deleted_ids)}")
+    if deleted_ids:
+        print(f"IDs: {deleted_ids}")
     await bot.shutdown()
 
 
