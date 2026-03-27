@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Limpia ForceReply residuales buscando por texto exacto.
-Usa concurrencia para escanear rápido (~30s para 2000 IDs).
+Usa concurrencia para escanear rápido.
 """
 
 import asyncio
@@ -20,12 +20,26 @@ if env_path.exists():
 from telegram import Bot
 from telegram.error import BadRequest, TimedOut, RetryAfter
 
-FORCEREPLY_TEXTS = {
+# Subcadenas que identifican mensajes de ForceReply del bot
+FORCEREPLY_MARKERS = [
+    "Escribe tu pregunta para las cartas:",
+    "Escribe tu pregunta para las runas:",
+    "Escribe tu pregunta para el I Ching:",
+    "Escribe tu pregunta para la geomancia:",
+    "Escribe tu pregunta y yo decido qué tirada te conviene:",
+    "Escribe tu pregunta:",
     "✍️ Escribe tu pregunta:",
     "¿Qué quieres saber?",
-}
+]
 
 deleted_ids = []
+
+
+def is_forcereply_text(text: str) -> bool:
+    if not text:
+        return False
+    text = text.strip()
+    return any(marker in text for marker in FORCEREPLY_MARKERS)
 
 
 async def check_and_delete(bot: Bot, chat_id: int, admin_id: int, msg_id: int, sem: asyncio.Semaphore):
@@ -36,7 +50,7 @@ async def check_and_delete(bot: Bot, chat_id: int, admin_id: int, msg_id: int, s
                 from_chat_id=chat_id,
                 message_id=msg_id,
             )
-            text = (fwd.text or "").strip()
+            text = fwd.text or ""
 
             # Borrar reenvío del DM siempre
             try:
@@ -44,14 +58,15 @@ async def check_and_delete(bot: Bot, chat_id: int, admin_id: int, msg_id: int, s
             except Exception:
                 pass
 
-            if text in FORCEREPLY_TEXTS:
+            if is_forcereply_text(text):
                 await bot.delete_message(chat_id=chat_id, message_id=msg_id)
                 deleted_ids.append(msg_id)
-                print(f"  ✓ Borrado msg_id={msg_id} — \"{text}\"")
+                print(f"  ✓ Borrado msg_id={msg_id} — \"{text.strip()[:60]}\"")
 
         except (BadRequest, TimedOut):
             pass
         except RetryAfter as e:
+            print(f"  ⏳ Rate limit, esperando {e.retry_after}s...")
             await asyncio.sleep(e.retry_after)
         except Exception:
             pass
@@ -77,14 +92,13 @@ async def main():
     latest_id = probe.message_id
     await bot.delete_message(chat_id=chat_id, message_id=latest_id)
 
-    scan_range = 2000
+    # Rango grande: 10000 IDs para cubrir varios días
+    scan_range = 10000
     start_id = max(1, latest_id - scan_range)
     print(f"Escaneando {start_id} → {latest_id} ({scan_range} IDs)...")
 
-    # 10 peticiones concurrentes — rápido sin saturar API
     sem = asyncio.Semaphore(10)
 
-    # Procesar en lotes de 100
     batch_size = 100
     for batch_start in range(start_id, latest_id, batch_size):
         batch_end = min(batch_start + batch_size, latest_id)
