@@ -17,7 +17,7 @@ from bot.keyboards import feedback_keyboard, natal_keyboard
 from bot.limits import check_limits, record_cooldown
 from bot.messages import LIMIT_MESSAGES
 from bot.middleware import middleware_check
-from bot.typing import with_typing
+from bot.typing import get_thread_id, with_typing
 from database import usage as db_usage
 from database import users as db_users
 from service.calculators.timezone import get_utc_datetime
@@ -35,7 +35,7 @@ async def natal_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
         await context.bot.send_message(
             chat_id=update.effective_chat.id,
             text=LIMIT_MESSAGES["not_registered"],
-            message_thread_id=update.effective_message.message_thread_id,
+            message_thread_id=get_thread_id(update),
             reply_to_message_id=update.message.message_id,
         )
         return
@@ -52,7 +52,7 @@ async def vedica_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         await context.bot.send_message(
             chat_id=update.effective_chat.id,
             text=LIMIT_MESSAGES["not_registered"],
-            message_thread_id=update.effective_message.message_thread_id,
+            message_thread_id=get_thread_id(update),
             reply_to_message_id=update.message.message_id,
         )
         return
@@ -81,7 +81,7 @@ async def _execute_natal(
     """Ejecuta cálculo + interpretación de carta natal."""
     user_id = update.effective_user.id
     chat_id = update.effective_chat.id
-    thread_id = update.effective_message.message_thread_id
+    thread_id = get_thread_id(update)
 
     if is_user_busy(user_id):
         await context.bot.send_message(chat_id, text=LIMIT_MESSAGES["request_in_progress"],

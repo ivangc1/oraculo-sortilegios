@@ -19,6 +19,7 @@ from telegram.ext import ContextTypes
 from bot.config import Settings
 from bot.keyboards import bibliomancia_keyboard
 from bot.middleware import middleware_check
+from bot.typing import get_thread_id
 
 _rng = random.SystemRandom()
 
@@ -199,7 +200,7 @@ async def bibliomancia_command(update: Update, context: ContextTypes.DEFAULT_TYP
         chat_id=update.effective_chat.id,
         text="¿De qué texto sagrado quieres un fragmento?",
         reply_markup=bibliomancia_keyboard(),
-        message_thread_id=update.effective_message.message_thread_id,
+        message_thread_id=get_thread_id(update),
         reply_to_message_id=update.message.message_id,
     )
 
@@ -216,7 +217,7 @@ async def bibliomancia_callback(
 async def _send_fragment(update: Update, context, text_key: str) -> None:
     """Envía fragmento como mensaje nuevo."""
     fragment = _get_random_fragment(text_key)
-    thread_id = update.effective_message.message_thread_id
+    thread_id = get_thread_id(update)
     if not fragment:
         await context.bot.send_message(
             chat_id=update.effective_chat.id,
@@ -255,7 +256,7 @@ async def _send_fragment_from_callback(query, context, text_key: str) -> None:
     # Mensajes adicionales si excede 4096
     if len(chunks) > 1:
         chat_id = query.message.chat_id
-        thread_id = query.message.message_thread_id
+        thread_id = get_thread_id(update)
         for chunk in chunks[1:]:
             await context.bot.send_message(chat_id, text=chunk,
                                            message_thread_id=thread_id)
