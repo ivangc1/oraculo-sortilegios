@@ -73,8 +73,8 @@ async def middleware_check(update: Update, context: ContextTypes.DEFAULT_TYPE, s
     if chat.id != settings.ALLOWED_CHAT_ID:
         return False
 
-    # 5. Topics — General está cerrado, solo aceptar el hilo permitido
-    if settings.ALLOWED_THREAD_ID is not None:
+    # 5. Topics — si el grupo es forum y hay hilo configurado, solo aceptar ese hilo
+    if getattr(chat, "is_forum", False) and settings.ALLOWED_THREAD_ID is not None:
         if message.message_thread_id != settings.ALLOWED_THREAD_ID:
             return False
 

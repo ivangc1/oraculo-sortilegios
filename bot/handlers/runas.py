@@ -14,7 +14,7 @@ from bot.keyboards import feedback_keyboard, runas_keyboard
 from bot.limits import check_limits, record_cooldown
 from bot.messages import LIMIT_MESSAGES
 from bot.middleware import middleware_check
-from bot.typing import with_typing
+from bot.typing import get_thread_id, with_typing
 from database import usage as db_usage
 from database import users as db_users
 from generators.runas import build_drawn_data, draw_runes
@@ -37,7 +37,7 @@ async def runas_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
         chat_id=update.effective_chat.id,
         text="¿Qué tipo de tirada rúnica quieres?",
         reply_markup=runas_keyboard(),
-        message_thread_id=update.effective_message.message_thread_id,
+        message_thread_id=get_thread_id(update),
         reply_to_message_id=update.message.message_id,
     )
 
@@ -54,7 +54,7 @@ async def runas_execute(
     settings: Settings = context.bot_data["settings"]
     user_id = (query.from_user if query else update.effective_user).id
     chat_id = update.effective_chat.id
-    thread_id = update.effective_message.message_thread_id
+    thread_id = get_thread_id(update)
 
     user = await db_users.get_user(user_id)
     # Registro opcional — guests permitidos

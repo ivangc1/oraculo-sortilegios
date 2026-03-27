@@ -14,7 +14,7 @@ from bot.keyboards import feedback_keyboard
 from bot.limits import check_limits, record_cooldown
 from bot.messages import LIMIT_MESSAGES
 from bot.middleware import middleware_check
-from bot.typing import with_typing
+from bot.typing import get_thread_id, with_typing
 from database import usage as db_usage
 from database import users as db_users
 from service.interpreter import InterpreterService
@@ -39,7 +39,7 @@ async def oraculo_command(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
         await _execute_oraculo(update, context, user, parts[1].strip(), settings)
         return
 
-    thread_id = update.effective_message.message_thread_id
+    thread_id = get_thread_id(update)
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
         text="¿Qué quieres preguntarle al oráculo?",
@@ -77,7 +77,7 @@ async def _execute_oraculo(
 ) -> None:
     user_id = update.effective_user.id
     chat_id = update.effective_chat.id
-    thread_id = update.effective_message.message_thread_id
+    thread_id = get_thread_id(update)
 
     if is_user_busy(user_id):
         await context.bot.send_message(chat_id, text=LIMIT_MESSAGES["request_in_progress"],

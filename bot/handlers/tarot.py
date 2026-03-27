@@ -19,7 +19,7 @@ from bot.keyboards import (
 from bot.limits import check_limits, record_cooldown
 from bot.messages import LIMIT_MESSAGES
 from bot.middleware import middleware_check
-from bot.typing import with_typing
+from bot.typing import get_thread_id, with_typing
 from database import usage as db_usage
 from database import users as db_users
 from generators.tarot import build_drawn_data, draw_tarot
@@ -46,7 +46,7 @@ async def tarot_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
         label = variant_label(variant)
 
         # Verificar limites antes de ejecutar
-        thread_id = update.effective_message.message_thread_id
+        thread_id = get_thread_id(update)
         if is_user_busy(user_id):
             await context.bot.send_message(
                 chat_id=update.effective_chat.id,
@@ -82,7 +82,7 @@ async def tarot_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
         chat_id=update.effective_chat.id,
         text="Elige tu tirada:",
         reply_markup=tarot_keyboard(),
-        message_thread_id=update.effective_message.message_thread_id,
+        message_thread_id=get_thread_id(update),
         reply_to_message_id=update.message.message_id,
     )
 
@@ -206,7 +206,7 @@ async def tarot_question_text(update: Update, context: ContextTypes.DEFAULT_TYPE
         await context.bot.send_message(
             chat_id=update.effective_chat.id,
             text=f"🎯 El Pezuñento ha elegido: {label}",
-            message_thread_id=update.effective_message.message_thread_id,
+            message_thread_id=get_thread_id(update),
             reply_to_message_id=update.message.message_id,
         )
 
@@ -227,7 +227,7 @@ async def _execute_tarot_reading(
     """Ejecuta tirada completa: genera → imagen → API → formateo → envío."""
     chat_id = update.effective_chat.id
     user_id = update.effective_user.id
-    thread_id = update.effective_message.message_thread_id
+    thread_id = get_thread_id(update)
 
     # El usuario puede no estar marcado como busy si viene de question flow
     was_busy = is_user_busy(user_id)
