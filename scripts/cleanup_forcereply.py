@@ -42,19 +42,19 @@ def is_forcereply_text(text: str) -> bool:
     return any(marker in text for marker in FORCEREPLY_MARKERS)
 
 
-async def check_and_delete(bot: Bot, chat_id: int, admin_id: int, msg_id: int, sem: asyncio.Semaphore):
+async def check_and_delete(bot: Bot, chat_id: int, msg_id: int, sem: asyncio.Semaphore):
     async with sem:
         try:
             fwd = await bot.forward_message(
-                chat_id=admin_id,
+                chat_id=chat_id,
                 from_chat_id=chat_id,
                 message_id=msg_id,
             )
             text = fwd.text or ""
 
-            # Borrar reenvío del DM siempre
+            # Borrar reenvío siempre
             try:
-                await bot.delete_message(chat_id=admin_id, message_id=fwd.message_id)
+                await bot.delete_message(chat_id=chat_id, message_id=fwd.message_id)
             except Exception:
                 pass
 
@@ -75,13 +75,11 @@ async def check_and_delete(bot: Bot, chat_id: int, admin_id: int, msg_id: int, s
 async def main():
     token = os.environ.get("BOT_TOKEN")
     chat_id = os.environ.get("ALLOWED_CHAT_ID")
-    admin_id = os.environ.get("ADMIN_USER_ID")
-    if not token or not chat_id or not admin_id:
-        print("ERROR: BOT_TOKEN, ALLOWED_CHAT_ID y ADMIN_USER_ID deben estar en .env")
+    if not token or not chat_id:
+        print("ERROR: BOT_TOKEN y ALLOWED_CHAT_ID deben estar en .env")
         sys.exit(1)
 
     chat_id = int(chat_id)
-    admin_id = int(admin_id)
     bot = Bot(token=token)
 
     me = await bot.get_me()
@@ -103,7 +101,7 @@ async def main():
     for batch_start in range(start_id, latest_id, batch_size):
         batch_end = min(batch_start + batch_size, latest_id)
         tasks = [
-            check_and_delete(bot, chat_id, admin_id, msg_id, sem)
+            check_and_delete(bot, chat_id, msg_id, sem)
             for msg_id in range(batch_start, batch_end)
         ]
         await asyncio.gather(*tasks)
