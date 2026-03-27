@@ -32,8 +32,9 @@ async def main():
     for msg_id in TARGET_IDS:
         print(f"--- msg_id={msg_id} ---")
         try:
+            # Reenviar al mismo grupo (no al DM)
             fwd = await bot.forward_message(
-                chat_id=admin_id,
+                chat_id=chat_id,
                 from_chat_id=chat_id,
                 message_id=msg_id,
             )
@@ -44,8 +45,8 @@ async def main():
             print(f"  photo: {bool(fwd.photo)}")
             print(f"  sticker: {bool(fwd.sticker)}")
 
-            # Borrar reenvío
-            await bot.delete_message(chat_id=admin_id, message_id=fwd.message_id)
+            # Borrar reenvío del grupo
+            await bot.delete_message(chat_id=chat_id, message_id=fwd.message_id)
         except BadRequest as e:
             print(f"  ERROR: {e}")
         except Exception as e:
