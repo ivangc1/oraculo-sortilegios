@@ -97,9 +97,9 @@ async def main():
     start_id = max(1, latest_id - scan_range)
     print(f"Escaneando {start_id} → {latest_id} ({scan_range} IDs)...")
 
-    sem = asyncio.Semaphore(10)
+    sem = asyncio.Semaphore(3)
 
-    batch_size = 100
+    batch_size = 30
     for batch_start in range(start_id, latest_id, batch_size):
         batch_end = min(batch_start + batch_size, latest_id)
         tasks = [
