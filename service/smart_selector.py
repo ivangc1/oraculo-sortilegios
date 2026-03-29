@@ -52,6 +52,11 @@ _YES_NO_VERBS = (
     "debo preocuparme", "es peligroso", "es seguro",
     "es una señal", "lo supero", "lo superaré", "lo superare",
     "me afecta", "me arrepiento", "confía en mí", "confia en mi",
+    "hay manera", "hay forma", "hay modo", "existe alguna forma",
+    "dará resultado", "dara resultado", "vale la pena esperar",
+    "me atrevo", "es demasiado tarde", "tengo tiempo", "importa realmente",
+    "le digo", "le cuento", "le hablo", "se lo digo", "se lo cuento",
+    "debo contarle", "debo decirle",
 )
 _YES_NO_RE = re.compile(
     r"^¿?\s*(" + "|".join(re.escape(v) for v in _YES_NO_VERBS) + r")\b",
@@ -89,6 +94,11 @@ _TEMPORAL_KEYWORDS = {
     "perspectivas", "perspectiva", "horizonte", "pronóstico", "pronostico",
     "evolución de", "evolucion de", "últimamente", "ultimamente",
     "a partir de ahora", "desde ahora",
+    "dentro de poco", "tarde o temprano", "cuándo será", "cuando sera",
+    "en qué momento", "en que momento", "cuándo cambiará", "cuando cambiara",
+    "qué cambiará", "que cambiara", "hacia dónde voy", "hacia donde voy",
+    "cómo acaba", "como acaba", "adónde lleva", "adonde lleva",
+    "fin de", "comienzo de", "inicio de",
 }
 
 # Keywords complejos (situacion, relacion, conflicto, decisiones, camino)
@@ -211,6 +221,42 @@ _COMPLEX_KEYWORDS = {
     "renuncia", "dejar el trabajo", "cambio de trabajo",
     "jubilación", "jubilacion", "retiro profesional",
     "estudios", "carrera universitaria", "universidad",
+    # Preguntas de interpretación/mensaje
+    "qué mensaje", "que mensaje", "qué señal", "que senal",
+    "qué simboliza", "que simboliza", "qué representa", "que representa",
+    "qué me revela", "que me revela", "qué me indica", "que me indica",
+    "qué me dice sobre", "que me dice sobre",
+    # Más "cómo" internos y de crecimiento
+    "cómo liberarme", "como liberarme", "cómo confiar", "como confiar",
+    "cómo aceptar", "como aceptar", "cómo crecer", "como crecer",
+    "cómo sanar mi", "como sanar mi", "cómo fluir", "como fluir",
+    "cómo amar", "como amar", "cómo perderle", "como perderle",
+    "cómo olvidar", "como olvidar", "cómo reinventarme", "como reinventarme",
+    # Crisis específicas
+    "crisis existencial", "crisis espiritual", "crisis de fe",
+    "crisis de identidad", "crisis de pareja", "crisis vocacional",
+    "proceso de duelo", "recaída", "recaida", "perfeccionismo",
+    "procrastinación", "procrastinacion",
+    # Relaciones en situaciones especiales
+    "amor a distancia", "relación a distancia", "relacion a distancia",
+    "relación abierta", "relacion abierta", "poligamia",
+    "acoso laboral", "mobbing", "jefe tóxico", "jefe toxico",
+    "ambiente laboral", "compañero difícil", "companero dificil",
+    "reinventarme", "cambio de carrera", "cambio de profesión", "cambio de profesion",
+    # Salud
+    "recuperación", "recuperacion", "tratamiento", "cirugía", "cirugia",
+    "operación", "operacion", "salud mental", "terapia",
+    # Finanzas concretas
+    "hipoteca", "alquiler", "ahorro", "ahorros",
+    "crisis económica", "crisis economica", "situación económica", "situacion economica",
+    # Esotérico específico
+    "ley de atracción", "ley de atraccion", "manifestación", "manifestacion",
+    "mal de ojo", "envidia ajena", "hechizo", "ritual", "magia",
+    "brujería", "brujeria", "maldición", "maldicion",
+    "protección espiritual", "proteccion espiritual",
+    "señales del universo", "senales del universo",
+    "sueños recurrentes", "suenos recurrentes",
+    "sincronías", "sinconias", "ángel guardián", "angel guardian",
 }
 
 _COMPLEX_WORD_THRESHOLD = 30  # >30 palabras → complejo
