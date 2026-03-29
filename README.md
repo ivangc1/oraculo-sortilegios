@@ -32,7 +32,7 @@ Bot de Telegram para el grupo **La Taberna de los Sortilegios** (~2,600 miembros
 | Lenguaje | Python 3.12+ |
 | Framework Telegram | python-telegram-bot 22.7 |
 | IA | Anthropic API (Claude Sonnet 4.6) via AsyncAnthropic |
-| Modelo | `claude-sonnet-4-6` con adaptive thinking |
+| Modelo | `claude-sonnet-4-6` (adaptive thinking desactivado, pendiente estabilidad API) |
 | Validacion | pydantic 2.12 + pydantic-settings 2.13 |
 | Base de datos | SQLite3 + aiosqlite 0.22 (WAL mode) |
 | Astrologia | kerykeion 5.12 (tropical + sidereal Lahiri nativo) |
@@ -78,7 +78,7 @@ cp .env.example .env
 
 Variables obligatorias en `.env`: `BOT_TOKEN`, `ANTHROPIC_API_KEY`, `ALLOWED_CHAT_ID`, `ADMIN_USER_ID`.
 
-Todas las demas variables tienen defaults razonables. Ver `.env.example` para la lista completa (47 variables incluyendo EFFORT_* y MAX_TOKENS_* por modo).
+Todas las demas variables tienen defaults razonables en `config.py`. Ver `.env.example` para la lista completa. Los valores `MAX_TOKENS_*` y `EFFORT_*` son defaults del codigo — no hace falta ponerlos en `.env` salvo que quieras overrides especificos por entorno.
 
 ### Setup BotFather
 
@@ -121,7 +121,7 @@ generators/             # SystemRandom, sin repeticion
 images/                 # Pillow: tarot, runas, hexagramas, geomancia
 database/               # SQLite singleton, WAL, migraciones
 data/                   # JSONs + datos estaticos
-tests/                  # 367+ tests
+tests/                  # 378+ tests
 ```
 
 ## Limites de uso
@@ -147,7 +147,9 @@ tests/                  # 367+ tests
 
 ## Adaptive thinking (Sonnet 4.6)
 
-El modelo usa `thinking: {"type": "adaptive", "effort": effort}` con effort configurable por modo:
+Actualmente **desactivado** — pendiente de estabilizacion de la API (empty responses y errores 400 con `output_config`). El codigo tiene la infraestructura completa (`EFFORT_*` por modo en `config.py`) lista para reactivar.
+
+Cuando se reactive, el effort sera configurable por modo:
 
 | Effort | Modos |
 |---|---|
@@ -155,7 +157,7 @@ El modelo usa `thinking: {"type": "adaptive", "effort": effort}` con effort conf
 | `medium` | tarot 3 cartas, si/no, cruz simple, runas Nornas, numerologia, oraculo |
 | `high` | Cruz Celta, herradura, relacion, estrella, runas Cruz/Cinco/Siete, I Ching, escudo, natales |
 
-Configurables via `EFFORT_*` en `.env` sin redeploy.
+Configurables via `EFFORT_*` en `config.py` (o `.env` para override sin redeploy).
 
 ## Decisiones de implementacion
 
