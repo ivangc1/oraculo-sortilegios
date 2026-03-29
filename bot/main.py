@@ -217,7 +217,7 @@ def main() -> None:
 
 
     # 4. Callback handlers para modos con menú inline
-    from bot.handlers.tarot import tarot_callback, tarot_question_callback, tarot_question_text, tarot_smart_callback
+    from bot.handlers.tarot import tarot_callback, tarot_deck_callback, tarot_question_callback, tarot_question_text, tarot_smart_callback
     from bot.handlers.runas import runas_execute
     from bot.handlers.iching import iching_execute
     from bot.handlers.geomancia import geomancia_execute
@@ -252,6 +252,14 @@ def main() -> None:
         # Feedback
         if data.startswith("fb:"):
             await handle_feedback(update, context, settings)
+            return
+
+        # Tarot deck selection (must be before tm: and t: prefix checks)
+        if data.startswith("td:"):
+            deck_map = {"td:rws": "rws", "td:mar": "marsella"}
+            deck = deck_map.get(data)
+            if deck:
+                await tarot_deck_callback(update, context, deck)
             return
 
         # Tarot sub-menus (must be before t: prefix check)

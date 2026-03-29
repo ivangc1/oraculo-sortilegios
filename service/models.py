@@ -60,6 +60,7 @@ class InterpretationRequest(BaseModel):
     """Petición de interpretación: Capa Bot → Capa Servicio."""
     mode: str
     variant: str
+    deck: str | None = None  # mazo de tarot (rws, marsella)
     drawn_items: list[DrawnItem] = []
     question: str | None = None
     user_profile: UserProfile

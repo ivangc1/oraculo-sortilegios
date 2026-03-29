@@ -14,6 +14,7 @@ from bot.formatting import format_and_split
 from bot.keyboards import (
     feedback_keyboard,
     question_keyboard,
+    tarot_deck_keyboard,
     tarot_keyboard,
 )
 from bot.limits import check_limits, record_cooldown
@@ -22,7 +23,7 @@ from bot.middleware import middleware_check
 from bot.typing import get_thread_id, with_typing
 from database import usage as db_usage
 from database import users as db_users
-from generators.tarot import build_drawn_data, draw_tarot
+from generators.tarot import build_drawn_data, draw_tarot, get_deck_label
 from images.tarot_composer import build_caption, build_text_fallback, compose_tarot
 from service.interpreter import InterpreterService
 from service.models import DrawnItem, InterpretationRequest, UserProfile
@@ -80,10 +81,25 @@ async def tarot_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
 
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text="Elige tu tirada:",
-        reply_markup=tarot_keyboard(),
+        text="Elige tu mazo:",
+        reply_markup=tarot_deck_keyboard(),
         message_thread_id=get_thread_id(update),
         reply_to_message_id=update.message.message_id,
+    )
+
+
+async def tarot_deck_callback(
+    update: Update, context: ContextTypes.DEFAULT_TYPE, deck: str,
+) -> None:
+    """Callback de selección de mazo → muestra menú de variantes."""
+    query = update.callback_query
+    await query.answer()
+
+    context.user_data["tarot_deck"] = deck
+    deck_label = get_deck_label(deck)
+    await query.edit_message_text(
+        f"{deck_label} — Elige tu tirada:",
+        reply_markup=tarot_keyboard(),
     )
 
 
@@ -236,7 +252,8 @@ async def _execute_tarot_reading(
 
     try:
         # 1. Generar tirada
-        cards = draw_tarot(variant)
+        deck = context.user_data.get("tarot_deck", "rws")
+        cards = draw_tarot(variant, deck=deck)
 
         # 2. Componer imagen
         jpeg_buffer = compose_tarot(variant, cards)
@@ -283,6 +300,7 @@ async def _execute_tarot_reading(
         request = InterpretationRequest(
             mode="tarot",
             variant=variant,
+            deck=deck,
             drawn_items=drawn_items,
             question=question,
             user_profile=profile,
@@ -385,6 +403,7 @@ async def _execute_tarot_reading(
     context.user_data.pop("tarot_user", None)
     context.user_data.pop("tarot_awaiting_question", None)
     context.user_data.pop("tarot_smart_mode", None)
+    context.user_data.pop("tarot_deck", None)
 
 
 async def tarot_smart_callback(

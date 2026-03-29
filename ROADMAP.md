@@ -1980,14 +1980,14 @@ ephe/
 - Tarot: Herradura (7), Relación (6), Estrella (7), Cruz Simple (5), Sí/No reforzado (3), Tirada del día (1) — total 9 variantes
 - Runas: Cinco Runas (5), Siete Runas (7) — total 5 variantes
 - Smart selector: `/tarot <pregunta>` analiza keywords y elige la tirada (coste cero)
-- Menú tarot con sub-categorías (Rápidas / Completas / Especiales)
+- Menú tarot con sub-categorías (Rápidas / Completas / Especiales) + selector de mazo (RWS / Marsella)
 - Blockquote expandible por variante para lecturas largas
 - Onboarding en DM con deep links
 - Seguridad: SQL column whitelist, user ID real, rate limit DM, anti-bypass
 - Adaptive thinking Sonnet 4.6 con effort por variante
 
 ### Pendiente (mejoras futuras)
-Memoria entre tiradas, compatibilidad tarot, tránsitos, sinastría, revolución solar, fases lunares, modo educativo, dashboard web, foto tirada → interpretación, Marsella, Thoth (arte original), oráculo historial, avisos lunaciones, webhook (si long polling), retención datos, Telegram Mini App para UI visual.
+Memoria entre tiradas, compatibilidad tarot, tránsitos, sinastría, revolución solar, fases lunares, modo educativo, dashboard web, foto tirada → interpretación, Thoth (arte original — bloqueado por copyright hasta 2033), oráculo historial, avisos lunaciones, webhook (si long polling), retención datos, Telegram Mini App para UI visual.
 
 ---
 
@@ -2000,7 +2000,7 @@ Memoria entre tiradas, compatibilidad tarot, tránsitos, sinastría, revolución
 | 1 | Nombre del bot | **El Oráculo de los Sortilegios** |
 | 2 | Username Telegram | **@oraculo_sortilegios_bot** |
 | 3 | Arquetipo y tono | **Baphomet de taberna** — hermético con fuego Marte/Aries. Directo, humor oscuro y seco, no endulza las lecturas. Sabe de lo oculto porque lo ha vivido. Dice la verdad en la cara, pero si preguntas en serio la respuesta es profunda y precisa. Personalidad definida por Tam (admin del grupo). |
-| 4 | Framework tarot | **Rider-Waite con toques herméticos** (raíces Golden Dawn, simbología alquímica) |
+| 4 | Framework tarot | **Rider-Waite (Golden Dawn) + Tarot de Marsella (tradición francesa)** — selector de mazo por usuario |
 | 5 | Nomenclatura cartas | **Hierofante, Bastos, Sota, Caballero**. Decisión de Tam. |
 | 6 | Invertir cartas | **Todas las 78** (mayores y menores). Estándar Rider-Waite, lecturas más ricas. |
 | 7 | Sistema numerológico | **Pitagórico**. Estándar occidental, más documentado. |

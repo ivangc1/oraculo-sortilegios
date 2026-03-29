@@ -48,7 +48,7 @@ def compose_single(cards: list[dict]) -> BytesIO | None:
     """Composición de 1 carta con etiqueta."""
     try:
         card = cards[0]
-        card_img = load_card_image(card["id"])
+        card_img = load_card_image(card["id"], card.get("deck", "rws"))
         if card["inverted"]:
             card_img = invert_card_image(card_img)
 
@@ -83,7 +83,7 @@ def compose_three(cards: list[dict]) -> BytesIO | None:
     try:
         images = []
         for card in cards:
-            img = load_card_image(card["id"])
+            img = load_card_image(card["id"], card.get("deck", "rws"))
             if card["inverted"]:
                 img = invert_card_image(img)
             images.append(img)
@@ -138,7 +138,7 @@ def compose_celtic_cross(cards: list[dict]) -> BytesIO | None:
 
         imgs = []
         for card in cards:
-            img = load_card_image(card["id"])
+            img = load_card_image(card["id"], card.get("deck", "rws"))
             if card["inverted"]:
                 img = invert_card_image(img)
             imgs.append(img)
@@ -243,7 +243,7 @@ def compose_two_rows(cards: list[dict], top_count: int) -> BytesIO | None:
     try:
         images = []
         for card in cards:
-            img = load_card_image(card["id"])
+            img = load_card_image(card["id"], card.get("deck", "rws"))
             if card["inverted"]:
                 img = invert_card_image(img)
             images.append(img)
@@ -331,7 +331,7 @@ def compose_cruz_simple(cards: list[dict]) -> BytesIO | None:
 
         images = []
         for card in cards:
-            img = load_card_image(card["id"])
+            img = load_card_image(card["id"], card.get("deck", "rws"))
             if card["inverted"]:
                 img = invert_card_image(img)
             images.append(img)
