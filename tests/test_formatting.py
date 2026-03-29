@@ -164,6 +164,30 @@ def test_format_and_split_blockquote_never_exceeds_4096():
         )
 
 
+def test_blockquote_boundary_exact_4036():
+    """Texto de exactamente 4036 chars (el límite interno con overhead=60)."""
+    # 4036 - len("<b>") - len("</b>") = 4036 - 3 - 4 = 4029 chars de contenido
+    raw = "[[T]]" + "A" * 4029 + "[[/T]]"
+    chunks = format_and_split(raw, use_blockquote=True)
+    for i, chunk in enumerate(chunks):
+        assert len(chunk) <= 4096, (
+            f"Chunk {i} excede 4096: {len(chunk)} chars"
+        )
+
+
+def test_blockquote_many_chunks_all_under_4096():
+    """Múltiples chunks con tags cruzados: todos deben caber en 4096."""
+    # 6 párrafos con bold abierto que cruza chunks
+    paras = [f"[[T]]Párrafo {i} " + "X" * 2000 + "[[/T]]" for i in range(6)]
+    raw = "\n\n".join(paras)
+    chunks = format_and_split(raw, use_blockquote=True)
+    assert len(chunks) >= 3
+    for i, chunk in enumerate(chunks):
+        assert len(chunk) <= 4096, (
+            f"Chunk {i} excede 4096: {len(chunk)} chars"
+        )
+
+
 def test_format_and_split_unclosed_italic_in_split():
     """Si split corta en medio de un <i>, los chunks quedan balanceados."""
     raw = "[[C]]" + "X" * 3000 + "[[/C]]\n\n" + "Segundo parrafo"
