@@ -33,6 +33,16 @@ _YES_NO_VERBS = (
     "lo conseguiré", "lo conseguire", "lo lograré", "lo lograre",
     "es mi culpa", "tengo razón", "tengo razon", "lo merece", "me merece",
     "volveré", "volvere",
+    "me ama", "me odia", "me ignora", "me necesita", "me echa de menos",
+    "es el indicado", "es la indicada", "es mi persona",
+    "debo confiar", "puedo fiarme", "es de fiar",
+    "tiene arreglo", "tiene remedio", "tiene cura",
+    "acabará bien", "acabara bien", "acabará mal", "acabara mal",
+    "saldré adelante", "saldre adelante", "se resolverá", "se resolvera",
+    "continuará", "continuara", "habrá cambio", "habra cambio",
+    "debo esperar", "debo soltar", "debo seguir", "debo dejarlo",
+    "estoy haciendo bien", "lo estoy haciendo mal",
+    "soy suficiente", "soy capaz", "tengo oportunidad",
 )
 _YES_NO_RE = re.compile(
     r"^¿?\s*(" + "|".join(re.escape(v) for v in _YES_NO_VERBS) + r")\b",
@@ -61,6 +71,9 @@ _TEMPORAL_KEYWORDS = {
     "qué sigue", "que sigue", "qué vendrá", "que vendra",
     "cómo continuará", "como continuara", "qué va a pasar", "que va a pasar",
     "ciclo", "nueva fase", "nueva etapa",
+    "qué me traerá", "que me traera", "qué esperar", "que esperar",
+    "en los próximos", "en los proximos", "esta temporada", "esta etapa",
+    "rumbo", "dirección de", "en breve", "avance", "periodo", "período",
 }
 
 # Keywords complejos (situacion, relacion, conflicto, decisiones, camino)
@@ -125,6 +138,37 @@ _COMPLEX_KEYWORDS = {
     "orientación", "orientacion", "consejo", "guía", "guia",
     "límites", "limites", "poner límites", "poner limites",
     "manipulación", "manipulacion", "control", "dependencia",
+    # Más formas de preguntar "cómo"
+    "cómo dejar", "como dejar", "cómo soltar", "como soltar",
+    "cómo perdonar", "como perdonar", "cómo comunicar", "como comunicar",
+    "cómo recuperar", "como recuperar", "cómo proteger", "como proteger",
+    "cómo conectar", "como conectar", "cómo atraer", "como atraer",
+    "cómo reconquistar", "como reconquistar", "cómo alejar", "como alejar",
+    # Situaciones vitales concretas
+    "divorcio", "enfermedad", "diagnóstico", "diagnostico",
+    "adicción", "adiccion", "deuda", "quiebra",
+    "acoso", "maltrato", "abuso",
+    "muerte", "fallecimiento", "luto", "duelo por",
+    "embarazo", "fertilidad", "maternidad", "paternidad",
+    "emigrar", "inmigrar", "extranjero", "mudanza al",
+    "oposición", "oposicion", "examen importante", "beca",
+    "pleito", "juicio", "demanda", "legal",
+    "herencia", "testamento", "custodia",
+    # Estados emocionales que merecen profundidad
+    "rabia", "resentimiento", "rencor",
+    "celos", "envidia",
+    "decepción", "decepcion", "desilusión", "desilusión",
+    "traicionado", "traicionada", "abandonado", "abandonada",
+    "rechazado", "rechazada", "incomprendido", "incomprendida",
+    "confundido", "confundida", "estoy confuso", "estoy confusa",
+    "me cuesta", "me resulta difícil", "me resulta dificil",
+    "estoy pasando por", "estoy viviendo",
+    "necesito entender", "no comprendo por qué", "no comprendo por que",
+    # Espiritualidad y energía
+    "energía", "energia", "bloqueo energético", "bloqueo energetico",
+    "vidas pasadas", "vida anterior", "misión del alma", "mision del alma",
+    "contrato espiritual", "corte de lazos",
+    "aura", "vibración", "vibracion",
 }
 
 _COMPLEX_WORD_THRESHOLD = 30  # >30 palabras → complejo
