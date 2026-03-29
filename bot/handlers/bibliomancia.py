@@ -28,7 +28,7 @@ _TEXTS: dict[str, dict] | None = None
 _LAST_FRAGMENT: dict[str, str] = {}  # {texto_key: último fragmento enviado}
 
 # Encoding del archivo de datos
-_DATA_ENCODING = "latin-1"
+_DATA_ENCODING = "utf-8"
 
 
 def _load_texts() -> None:
