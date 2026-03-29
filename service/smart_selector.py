@@ -57,6 +57,15 @@ _YES_NO_VERBS = (
     "me atrevo", "es demasiado tarde", "tengo tiempo", "importa realmente",
     "le digo", "le cuento", "le hablo", "se lo digo", "se lo cuento",
     "debo contarle", "debo decirle",
+    "siente algo", "siente algo por mí", "siente algo por mi",
+    "hay algo entre", "hay futuro entre", "somos buena pareja",
+    "funcionamos", "funcionaremos", "estaré bien", "estare bien",
+    "me busca", "me busca de verdad", "estoy equivocado", "estoy equivocada",
+    "es culpa mía", "es culpa mia", "fue mi culpa",
+    "merezco más", "merezco mejor", "merezco esto",
+    "es normal lo que siento", "es real lo que siento",
+    "tomé la decisión correcta", "tome la decision correcta",
+    "haría bien", "haria bien", "estaría bien", "estaria bien",
 )
 _YES_NO_RE = re.compile(
     r"^¿?\s*(" + "|".join(re.escape(v) for v in _YES_NO_VERBS) + r")\b",
@@ -99,6 +108,13 @@ _TEMPORAL_KEYWORDS = {
     "qué cambiará", "que cambiara", "hacia dónde voy", "hacia donde voy",
     "cómo acaba", "como acaba", "adónde lleva", "adonde lleva",
     "fin de", "comienzo de", "inicio de",
+    "próximas semanas", "proximas semanas", "los próximos días", "los proximos dias",
+    "este verano", "este otoño", "este otono", "este invierno", "esta primavera",
+    "en navidad", "en navidades", "para fin de año", "para fin de ano",
+    "cómo irá el año", "como ira el año", "como ira el ano",
+    "qué trae este año", "que trae este ano", "qué trae este mes", "que trae este mes",
+    "cómo sale todo", "como sale todo", "cómo resulta", "como resulta",
+    "hay luz al final", "antes de que acabe", "antes de que termine",
 }
 
 # Keywords complejos (situacion, relacion, conflicto, decisiones, camino)
@@ -257,6 +273,41 @@ _COMPLEX_KEYWORDS = {
     "señales del universo", "senales del universo",
     "sueños recurrentes", "suenos recurrentes",
     "sincronías", "sinconias", "ángel guardián", "angel guardian",
+    # Más "cómo" de gestión y adaptación
+    "cómo gestionar", "como gestionar", "cómo equilibrar", "como equilibrar",
+    "cómo priorizar", "como priorizar", "cómo adaptarme", "como adaptarme",
+    "cómo empezar de nuevo", "como empezar de nuevo", "cómo empezar", "como empezar",
+    "cómo cerrar", "como cerrar", "cómo sobrevivir", "como sobrevivir",
+    "cómo rendirme", "como rendirme", "cómo soltarlo", "como soltarlo",
+    # Preguntas sobre qué me afecta
+    "qué me aporta", "que me aporta", "qué me quita", "que me quita",
+    "qué me limita", "que me limita", "qué me pesa", "que me pesa",
+    "qué me ancla", "que me ancla", "qué me ciega", "que me ciega",
+    "qué elijo", "que elijo", "qué sacrifico", "que sacrifico",
+    "qué arriesgo", "que arriesgo", "qué pierdo", "que pierdo",
+    "qué gano", "que gano", "qué priorizo", "que priorizo",
+    # Segunda oportunidad y reconciliación
+    "segunda oportunidad", "volver a intentarlo", "perdonar y olvidar",
+    "dar otra oportunidad", "soltar el pasado", "reencuentro",
+    "reconciliar", "empezar de cero",
+    # Psicología y patrones profundos
+    "patrón familiar", "patron familiar", "repetición de patrones", "repeticion de patrones",
+    "herida de infancia", "niño interior", "nino interior",
+    "herencia emocional", "generacional", "sombra",
+    "intuición", "intuicion", "inconsciente",
+    # Trabajo interior y espiritualidad profunda
+    "yo superior", "yo interior", "propósito del alma", "proposito del alma",
+    "fluir con", "rendición", "rendicion", "fe ciega", "confianza ciega",
+    "chakras", "tercer ojo", "kundalini",
+    "limpieza energética", "limpieza energetica",
+    "curación energética", "curacion energetica",
+    "meditación", "meditacion", "mindfulness",
+    # Salud adicional
+    "dolor crónico", "dolor cronico", "enfermedad crónica", "enfermedad cronica",
+    "bienestar", "energía vital", "energia vital",
+    # Social y colectivo
+    "socio", "socios", "sociedad mercantil",
+    "compañeros de trabajo", "grupo de amigos", "comunidad",
 }
 
 _COMPLEX_WORD_THRESHOLD = 30  # >30 palabras → complejo
