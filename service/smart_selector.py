@@ -24,6 +24,15 @@ _YES_NO_VERBS = (
     "superaré", "superare", "saldrá bien", "saldra bien", "irá bien", "ira bien",
     "tiene futuro", "tiene sentido", "es compatible", "somos compatibles",
     "me conviene", "me perjudica", "es para mí", "es para mi",
+    "es hora de", "hay posibilidad", "hay esperanza", "hay salida",
+    "hay solución", "hay solucion", "tiene solución", "tiene solucion",
+    "me valora", "me extraña", "me extrana", "me respeta",
+    "me rechazará", "me rechazara", "me aceptará", "me aceptara",
+    "me hace bien", "me hace daño", "me hace dano",
+    "es definitivo", "es permanente", "es temporal", "es recíproco", "es reciproco",
+    "lo conseguiré", "lo conseguire", "lo lograré", "lo lograre",
+    "es mi culpa", "tengo razón", "tengo razon", "lo merece", "me merece",
+    "volveré", "volvere",
 )
 _YES_NO_RE = re.compile(
     r"^¿?\s*(" + "|".join(re.escape(v) for v in _YES_NO_VERBS) + r")\b",
@@ -47,6 +56,11 @@ _TEMPORAL_KEYWORDS = {
     "qué será", "que sera", "adónde", "adonde", "dónde estaré", "donde estare",
     "cómo evolucionará", "como evolucionara", "cómo irá", "como ira",
     "en el futuro", "qué pasará con", "que pasara con",
+    "qué me depara", "que me depara", "qué me aguarda", "que me aguarda",
+    "siguiente paso", "próxima etapa", "proxima etapa", "nueva etapa",
+    "qué sigue", "que sigue", "qué vendrá", "que vendra",
+    "cómo continuará", "como continuara", "qué va a pasar", "que va a pasar",
+    "ciclo", "nueva fase", "nueva etapa",
 }
 
 # Keywords complejos (situacion, relacion, conflicto, decisiones, camino)
@@ -92,6 +106,25 @@ _COMPLEX_KEYWORDS = {
     "trabajo o", "empleo", "proyecto", "negocio", "empresa",
     "contrato", "mudanza", "inversión", "inversion",
     "oportunidad", "oferta", "entrevista",
+    # Salud emocional y bienestar
+    "tóxico", "toxico", "relación tóxica", "persona tóxica",
+    "sanar", "sanación", "sanacion", "herida", "heridas",
+    "autoestima", "autoconocimiento", "autoconfianza",
+    "me siento atrapado", "me siento atrapada",
+    "estoy perdido", "estoy perdida", "no encuentro salida",
+    "no sé qué hacer", "no se que hacer", "no entiendo qué", "no entiendo que",
+    "miedo a", "tengo miedo de", "me da miedo",
+    "soledad", "me siento solo", "me siento sola",
+    "depresión", "depresion", "ansiedad crónica", "ansiedad cronica",
+    # Vida y propósito profundo
+    "qué hacer con mi vida", "que hacer con mi vida",
+    "sentido de mi vida", "sentido de la vida", "sin sentido",
+    "identidad", "quién soy", "quien soy",
+    "entre dos", "dos personas", "dos opciones", "dos caminos",
+    "a quién", "a quien", "a cuál", "a cual",
+    "orientación", "orientacion", "consejo", "guía", "guia",
+    "límites", "limites", "poner límites", "poner limites",
+    "manipulación", "manipulacion", "control", "dependencia",
 }
 
 _COMPLEX_WORD_THRESHOLD = 30  # >30 palabras → complejo
