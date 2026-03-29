@@ -19,7 +19,7 @@ El bot actúa como **El Pezuñento** (Baphomet) — el oráculo residente de la 
 
 | Componente | Tecnología | Notas |
 |---|---|---|
-| Lenguaje | **Python 3.13** | REPL mejorado, colores traceback, JIT experimental, ecosistema maduro |
+| Lenguaje | **Python 3.12** | Ecosistema maduro, compatible con todas las dependencias |
 | Framework Telegram | `python-telegram-bot` v22+ | Async, ConversationHandler, JobQueue, PicklePersistence |
 | IA | API de Anthropic (Claude Sonnet 4.6) | **AsyncAnthropic**, prompt caching, API version pinned |
 | Validación | `pydantic` v2 | model_validate(), errores traducidos a mensajes amigables |
