@@ -90,6 +90,21 @@ async def post_init(application: Application) -> None:
         application.bot_data[key] = value
     settings = application.bot_data["settings"]
 
+    # Limpiar flags awaiting huérfanos de sesiones anteriores
+    _AWAITING_KEYS = [
+        "tarot_awaiting_question", "oraculo_awaiting_question",
+        "numerologia_awaiting_name", "numerologia_awaiting_compat_date",
+        "tarot_variant", "tarot_user", "tarot_smart_mode", "tarot_deck",
+        "oraculo_user",
+    ]
+    cleaned = 0
+    for user_id, user_data in application.user_data.items():
+        for key in _AWAITING_KEYS:
+            if user_data.pop(key, None) is not None:
+                cleaned += 1
+    if cleaned:
+        logger.info(f"Limpiados {cleaned} flags huérfanos de {len(application.user_data)} usuarios")
+
     # Inicializar DB
     await Database.get()
 
