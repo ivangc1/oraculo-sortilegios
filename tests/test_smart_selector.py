@@ -103,6 +103,27 @@ class TestEdgeCases:
         assert select_variant("¿deberia irme?") == "1_carta"
 
 
+class TestPriorityOrder:
+    """Verifica que la prioridad si_no > temporal > complejo se respeta."""
+
+    def test_yes_no_wins_over_temporal(self):
+        """Si/no al inicio gana sobre keywords temporales."""
+        assert select_variant("¿debería esperar al futuro?") == "1_carta"
+
+    def test_yes_no_wins_over_complex(self):
+        """Si/no al inicio gana sobre keywords complejos."""
+        assert select_variant("¿debería dejar la relación?") == "1_carta"
+
+    def test_temporal_wins_over_complex(self):
+        """Keyword temporal gana sobre keyword complejo."""
+        assert select_variant("¿cómo evolucionará mi relación?") == "3_cartas"
+
+    def test_long_question_wins_over_all(self):
+        """Pregunta >30 palabras siempre va a cruz_celta."""
+        q = " ".join(["palabra"] * 31)
+        assert select_variant(q) == "cruz_celta"
+
+
 class TestVariantLabel:
     def test_known_labels(self):
         assert "carta" in variant_label("1_carta").lower()
