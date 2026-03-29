@@ -23,4 +23,5 @@ LIMIT_MESSAGES = {
     "dm_onboarding_redirect": "Vamos al privado. Tus datos no tienen que andar por aquí a la vista de todos.",
     "dm_rate_limited": "Demasiados intentos. Espera un rato antes de volver.",
     "dm_mid_flow": "Estamos a mitad de algo. Termina primero o usa /cancelaroraculo.",
+    "awaiting_expired": "Se te ha pasado el arroz. Si quieres consultar, vuelve a empezar.",
 }

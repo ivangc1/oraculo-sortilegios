@@ -187,7 +187,7 @@ async def tarot_question_callback(
     if answer == "yes":
         # Editamos el mensaje existente (no crea mensaje nuevo → no aparece en general)
         # El handler de texto captura la respuesta vía user_data flag
-        await query.edit_message_text("✍️ Escribe tu pregunta para las cartas:")
+        await query.edit_message_text("✍️ Escribe tu pregunta para las cartas:\n\n(Tienes 5 minutos antes de que el oráculo se aburra y cierre la mesa.)")
         context.user_data["tarot_awaiting_question"] = time.time()
         return
 
@@ -430,7 +430,7 @@ async def tarot_smart_callback(
         return
 
     await query.edit_message_text(
-        "Escribe tu pregunta y yo decido qué tirada te conviene:"
+        "Escribe tu pregunta y yo decido qué tirada te conviene:\n\n(Tienes 5 minutos antes de que el oráculo se aburra y cierre la mesa.)"
     )
     context.user_data["tarot_awaiting_question"] = time.time()
     context.user_data["tarot_smart_mode"] = True

@@ -43,7 +43,7 @@ async def oraculo_command(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
     thread_id = get_thread_id(update)
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text="¿Qué quieres preguntarle al oráculo?",
+        text="¿Qué quieres preguntarle al oráculo?\n\n(Tienes 5 minutos antes de que el oráculo se aburra y cierre la mesa.)",
         message_thread_id=thread_id,
     )
     context.user_data["oraculo_awaiting_question"] = time.time()
