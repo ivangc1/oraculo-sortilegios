@@ -172,6 +172,10 @@ class Settings(BaseSettings):
         ("oraculo", "libre"),
         ("numerologia", "informe"),
         ("numerologia", "compatibilidad"),
+        ("bibliomancia", "biblia"),
+        ("bibliomancia", "coran"),
+        ("bibliomancia", "gita"),
+        ("bibliomancia", "evangelio"),
     })
 
     def use_blockquote_for(self, mode: str, variant: str) -> bool:

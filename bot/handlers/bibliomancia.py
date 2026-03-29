@@ -17,6 +17,7 @@ from telegram.error import BadRequest
 from telegram.ext import ContextTypes
 
 from bot.config import Settings
+from bot.formatting import wrap_blockquote
 from bot.keyboards import bibliomancia_keyboard
 from bot.middleware import middleware_check
 from bot.typing import get_thread_id
@@ -209,13 +210,15 @@ async def bibliomancia_callback(
     update: Update, context: ContextTypes.DEFAULT_TYPE, text_key: str,
 ) -> None:
     """Callback desde grid de botones."""
+    settings: Settings = context.bot_data["settings"]
     query = update.callback_query
     await query.answer()
-    await _send_fragment_from_callback(query, context, text_key)
+    await _send_fragment_from_callback(update, query, context, settings, text_key)
 
 
 async def _send_fragment(update: Update, context, text_key: str) -> None:
     """Envía fragmento como mensaje nuevo."""
+    settings: Settings = context.bot_data["settings"]
     fragment = _get_random_fragment(text_key)
     thread_id = get_thread_id(update)
     if not fragment:
@@ -227,17 +230,20 @@ async def _send_fragment(update: Update, context, text_key: str) -> None:
         )
         return
 
+    use_bq = settings.use_blockquote_for("bibliomancia", text_key)
     chunks = _split_long_message(fragment)
     for chunk in chunks:
+        text = wrap_blockquote(chunk) if use_bq else chunk
         await context.bot.send_message(
             chat_id=update.effective_chat.id,
-            text=chunk,
+            text=text,
+            parse_mode="HTML" if use_bq else None,
             message_thread_id=thread_id,
             reply_to_message_id=update.message.message_id,
         )
 
 
-async def _send_fragment_from_callback(query, context, text_key: str) -> None:
+async def _send_fragment_from_callback(update, query, context, settings: Settings, text_key: str) -> None:
     """Envía fragmento editando el mensaje del callback."""
     fragment = _get_random_fragment(text_key)
     if not fragment:
@@ -247,9 +253,11 @@ async def _send_fragment_from_callback(query, context, text_key: str) -> None:
             pass
         return
 
+    use_bq = settings.use_blockquote_for("bibliomancia", text_key)
     chunks = _split_long_message(fragment)
+    first = wrap_blockquote(chunks[0]) if use_bq else chunks[0]
     try:
-        await query.edit_message_text(chunks[0])
+        await query.edit_message_text(first, parse_mode="HTML" if use_bq else None)
     except BadRequest:
         pass
 
@@ -258,5 +266,9 @@ async def _send_fragment_from_callback(query, context, text_key: str) -> None:
         chat_id = query.message.chat_id
         thread_id = get_thread_id(update)
         for chunk in chunks[1:]:
-            await context.bot.send_message(chat_id, text=chunk,
-                                           message_thread_id=thread_id)
+            text = wrap_blockquote(chunk) if use_bq else chunk
+            await context.bot.send_message(
+                chat_id, text=text,
+                parse_mode="HTML" if use_bq else None,
+                message_thread_id=thread_id,
+            )
