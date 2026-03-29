@@ -1732,15 +1732,15 @@ Antes de lanzar, ejecutar manualmente y evaluar calidad narrativa:
 - [x] botfather_commands.txt (16 comandos, coincide con /ayuda)
 - [x] Auditoria final: .env.example completo (33 variables), sin TODOs, sin dead code
 
-**Pendientes para despliegue (requieren grupo real):**
-- [ ] BotFather setup (/setjoingroups off, /setcommands con data/botfather_commands.txt, foto)
-- [ ] Obtener chat_id del grupo (via getUpdates)
-- [ ] admins_private.json con datos reales (20 admins)
-- [ ] Verificar onboarding con privacy mode ON en grupo real
-- [ ] Verificar natales contra Astro.com/Jagannatha Hora (en VPS con kerykeion)
-- [ ] Setup VPS: systemd service, venv, build-essential
-- [ ] Backup cron (SQLite + pickle)
-- [ ] Monitorizar primeras horas post-lanzamiento
+**Despliegue (completado):**
+- [x] BotFather setup (/setjoingroups off, /setcommands con data/botfather_commands.txt, foto)
+- [x] Obtener chat_id del grupo (via getUpdates)
+- [x] admins_private.json con datos reales — ELIMINADO (comando /admins eliminado)
+- [x] Verificar onboarding en grupo real — privacy mode OFF, middleware filtra
+- [x] Verificar natales contra Astro.com/Jagannatha Hora (en VPS con kerykeion)
+- [x] Setup VPS: systemd service, venv, build-essential
+- [x] Backup cron (SQLite + pickle)
+- [x] Monitorizar primeras horas post-lanzamiento
 
 ---
 
@@ -1984,7 +1984,7 @@ Memoria entre tiradas, compatibilidad tarot, tránsitos, sinastría, revolución
 
 ---
 
-## 22. Decisiones (17 resueltas + 1 acción pendiente)
+## 22. Decisiones (18 resueltas)
 
 ### Todas resueltas
 
@@ -2008,10 +2008,8 @@ Memoria entre tiradas, compatibilidad tarot, tránsitos, sinastría, revolución
 | 17 | Repo | **Público obligatorio** (AGPL-3.0 kerykeion/pyswisseph). Secretos en .env/.gitignore. |
 | 18 | Fuente etiquetas | **NotoSans-Regular**. Legible, libre, sin problemas de licencia. |
 
-### Acción pendiente (1)
+### Acciones pendientes: ninguna
 
-| # | Acción | Cómo |
-|---|---|---|
-| 15 | **Chat ID del grupo** | Añadir @oraculo_sortilegios_bot a La Taberna → llamar getUpdates → copiar chat_id a .env |
+Todas las acciones de despliegue completadas.
 
 ---
