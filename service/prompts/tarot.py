@@ -1,7 +1,24 @@
-"""Sub-prompts de tarot (inyectados en user message)."""
+"""Sub-prompts de tarot (inyectados en user message).
+
+Soporte multi-mazo: el parámetro deck ajusta la nomenclatura y enfoque interpretativo.
+"""
+
+_DECK_LABELS = {
+    "rws": "Rider-Waite-Smith",
+    "marsella": "Tarot de Marsella",
+}
+
+_MARSELLA_ADDENDUM = """
+MAZO: Tarot de Marsella.
+Nomenclatura Marsella: La Papisa (II), La Emperatriz (III), El Emperador (IV), El Papa (V),
+El Enamorado (VI), El Arcano sin Nombre (XIII, sin nombrar como "La Muerte"),
+La Casa de Dios (XVI, no "La Torre"), El Juicio (XX), El Mundo (XXI), El Loco (sin número).
+Los Arcanos Menores del Marsella NO tienen escenas ilustradas — son patrones geométricos de palos.
+La interpretación se basa más en numerología del palo y dignidad posicional que en imágenes narrativas.
+Interpreta con la tradición marsellesa: más esencial, menos psicológica, más directa."""
 
 
-def get_sub_prompt(variant: str) -> str:
+def get_sub_prompt(variant: str, deck: str = "rws") -> str:
     prompts = {
         "1_carta": _SUB_1_CARTA,
         "3_cartas": _SUB_3_CARTAS,
@@ -13,7 +30,22 @@ def get_sub_prompt(variant: str) -> str:
         "si_no": _SUB_SI_NO,
         "tirada_dia": _SUB_TIRADA_DIA,
     }
-    return prompts.get(variant, "")
+    base = prompts.get(variant, "")
+    if not base:
+        return ""
+
+    # Reemplazar referencias al mazo según deck
+    if deck == "marsella":
+        deck_label = _DECK_LABELS["marsella"]
+        base = base.replace("del Tarot Rider-Waite", f"del {deck_label}")
+        base = base.replace("Tarot Rider-Waite", deck_label)
+        base = base.replace("Rider-Waite", deck_label)
+        base = base.replace("Waite clasica", f"{deck_label} clasica")
+
+    if deck == "marsella":
+        base += _MARSELLA_ADDENDUM
+
+    return base
 
 
 _SUB_1_CARTA = """MODO: Tarot — Una carta.

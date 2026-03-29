@@ -20,6 +20,9 @@ CALLBACKS = {
     "tm:c": ("tarot_menu", "completas"),
     "tm:e": ("tarot_menu", "especiales"),
     "tm:bk": ("tarot_menu", "back"),
+    # Tarot deck selection
+    "td:rws": ("tarot_deck", "rws"),
+    "td:mar": ("tarot_deck", "marsella"),
     # Runas (5 variantes)
     "r:1": ("runas", "odin"),
     "r:3": ("runas", "nornas"),
@@ -56,6 +59,16 @@ def parse_callback(data: str) -> tuple[str, str] | None:
     if data.startswith("fb:"):
         return ("feedback", data)
     return CALLBACKS.get(data)
+
+
+def tarot_deck_keyboard() -> InlineKeyboardMarkup:
+    """Selección de mazo de tarot."""
+    return InlineKeyboardMarkup([
+        [
+            InlineKeyboardButton("🎴 Rider-Waite", callback_data="td:rws"),
+            InlineKeyboardButton("🏰 Marsella", callback_data="td:mar"),
+        ],
+    ])
 
 
 def tarot_keyboard() -> InlineKeyboardMarkup:

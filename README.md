@@ -1,6 +1,6 @@
 # El Oraculo de los Sortilegios
 
-Bot de Telegram para el grupo **La Taberna de los Sortilegios** (~2,600 miembros). Ofrece lecturas de tarot, runas, I Ching, geomancia, numerologia y cartas natales, impulsado por Claude Sonnet 4.6 de Anthropic.
+Bot de Telegram para el grupo **La Taberna de los Sortilegios** (~2,600 miembros). Ofrece lecturas de tarot (Rider-Waite y Marsella), runas, I Ching, geomancia, numerologia y cartas natales, impulsado por Claude Sonnet 4.6 de Anthropic.
 
 **@oraculo_sortilegios_bot** | Licencia: AGPL-3.0
 
@@ -8,7 +8,7 @@ Bot de Telegram para el grupo **La Taberna de los Sortilegios** (~2,600 miembros
 
 | Comando | Sistema | Variantes |
 |---|---|---|
-| `/tirartarot` | Tarot Rider-Waite | 1 carta, 3 cartas, Cruz Celta, Si/No, Herradura (7), Relacion (6), Estrella (7), Cruz Simple (5), Tirada del dia, Smart selector |
+| `/tirartarot` | Tarot (RWS / Marsella) | Selector de mazo, 1 carta, 3 cartas, Cruz Celta, Si/No, Herradura (7), Relacion (6), Estrella (7), Cruz Simple (5), Tirada del dia, Smart selector |
 | `/runa` | Runas Elder Futhark | Odin, Tres Nornas, Cruz Runica, Cinco Runas, Siete Runas |
 | `/iching` | I Ching (Wilhelm) | Hexagrama con/sin lineas mutables |
 | `/geomancia` | Geomancia | Una figura, Escudo completo |

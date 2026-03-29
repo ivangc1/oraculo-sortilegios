@@ -3,6 +3,8 @@
 El with cierra el file handle, copy() mantiene datos en RAM.
 exif_transpose() normaliza orientación EXIF antes de cachear.
 Concurrencia: lru_cache es seguro en asyncio single-thread.
+
+Soporte multi-mazo: assets/tarot/ (rws), assets/tarot_marsella/ (marsella).
 """
 
 from functools import lru_cache
@@ -10,23 +12,32 @@ from pathlib import Path
 
 from PIL import Image, ImageOps
 
-TAROT_ASSETS_DIR = Path(__file__).parent.parent / "assets" / "tarot"
+_ASSETS_BASE = Path(__file__).parent.parent / "assets"
+
+# Directorio de assets por mazo
+_DECK_DIRS = {
+    "rws": _ASSETS_BASE / "tarot",
+    "marsella": _ASSETS_BASE / "tarot_marsella",
+}
 
 
-@lru_cache(maxsize=78)
-def load_card_image(card_id: str) -> Image.Image:
+@lru_cache(maxsize=160)  # 78 * 2 mazos = 156
+def load_card_image(card_id: str, deck: str = "rws") -> Image.Image:
     """Carga y cachea una imagen de carta. EXIF normalizado."""
-    filepath = TAROT_ASSETS_DIR / f"{card_id}.png"
+    assets_dir = _DECK_DIRS.get(deck, _DECK_DIRS["rws"])
+    filepath = assets_dir / f"{card_id}.png"
     if not filepath.exists():
-        return _create_placeholder(card_id)
+        return _create_placeholder(card_id, deck)
     with Image.open(filepath) as img:
         img = ImageOps.exif_transpose(img)
         return img.copy()
 
 
-def _create_placeholder(card_id: str) -> Image.Image:
+def _create_placeholder(card_id: str, deck: str = "rws") -> Image.Image:
     """Crea placeholder si falta el PNG (desarrollo)."""
     from PIL import ImageDraw, ImageFont
+
+    from generators.tarot import get_deck_label
 
     img = Image.new("RGB", (300, 500), color=(40, 30, 50))
     draw = ImageDraw.Draw(img)
@@ -45,11 +56,17 @@ def _create_placeholder(card_id: str) -> Image.Image:
 
     # ID legible
     display = card_id.replace("_", " ").title()
-    # Centrar texto
     bbox = draw.textbbox((0, 0), display, font=font)
     text_w = bbox[2] - bbox[0]
     x = (300 - text_w) // 2
-    draw.text((x, 230), display, fill=(180, 160, 120), font=font)
+    draw.text((x, 220), display, fill=(180, 160, 120), font=font)
+
+    # Mazo
+    deck_label = get_deck_label(deck)
+    bbox2 = draw.textbbox((0, 0), deck_label, font=font)
+    text_w2 = bbox2[2] - bbox2[0]
+    x2 = (300 - text_w2) // 2
+    draw.text((x2, 250), deck_label, fill=(120, 120, 140), font=font)
 
     return img
 

@@ -20,7 +20,7 @@ class InterpreterService:
         parts = []
 
         # Sub-prompt del modo
-        sub_prompt = self._get_sub_prompt(request.mode, request.variant)
+        sub_prompt = self._get_sub_prompt(request.mode, request.variant, request.deck)
         if sub_prompt:
             parts.append(f"<instrucciones_modo>\n{sub_prompt}\n</instrucciones_modo>")
 
@@ -46,12 +46,12 @@ class InterpreterService:
 
         return "\n\n".join(parts)
 
-    def _get_sub_prompt(self, mode: str, variant: str) -> str | None:
+    def _get_sub_prompt(self, mode: str, variant: str, deck: str | None = None) -> str | None:
         """Carga sub-prompt según modo/variante. Importaciones lazy."""
         try:
             if mode == "tarot":
                 from service.prompts.tarot import get_sub_prompt
-                return get_sub_prompt(variant)
+                return get_sub_prompt(variant, deck=deck or "rws")
             elif mode == "runas":
                 from service.prompts.runas import get_sub_prompt
                 return get_sub_prompt(variant)
