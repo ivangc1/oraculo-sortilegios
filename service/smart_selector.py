@@ -66,6 +66,17 @@ _YES_NO_VERBS = (
     "es normal lo que siento", "es real lo que siento",
     "tomé la decisión correcta", "tome la decision correcta",
     "haría bien", "haria bien", "estaría bien", "estaria bien",
+    "encontraré", "encontrare", "conoceré", "conocere",
+    "me casaré", "me casare", "tendré hijos", "tendre hijos",
+    "me mudaré", "me mudare", "aprobaré", "aprobare",
+    "ganaré", "ganare", "perderé", "perdere",
+    "me curaré", "me curare", "durará", "durara",
+    "estaremos juntos", "seguiremos juntos", "saldré de esta", "saldre de esta",
+    "está con otra", "esta con otra", "está con otro", "esta con otro",
+    "hay alguien más", "hay alguien mas", "hay otra persona",
+    "me están usando", "me estan usando", "me están mintiendo", "me estan mintiendo",
+    "seré feliz", "sere feliz", "soy feliz", "sobreviviré", "sobrevivire",
+    "es normal", "es raro", "es una buena señal", "es mala señal",
 )
 _YES_NO_RE = re.compile(
     r"^¿?\s*(" + "|".join(re.escape(v) for v in _YES_NO_VERBS) + r")\b",
@@ -115,6 +126,12 @@ _TEMPORAL_KEYWORDS = {
     "qué trae este año", "que trae este ano", "qué trae este mes", "que trae este mes",
     "cómo sale todo", "como sale todo", "cómo resulta", "como resulta",
     "hay luz al final", "antes de que acabe", "antes de que termine",
+    "cuándo voy a", "cuando voy a", "cuándo podré", "cuando podre",
+    "cuándo encontraré", "cuando encontrare",
+    "la semana que viene", "el mes que viene", "el año que viene",
+    "en enero", "en febrero", "en marzo", "en abril", "en mayo",
+    "en junio", "en julio", "en agosto", "en septiembre",
+    "en octubre", "en noviembre", "en diciembre",
 }
 
 # Keywords complejos (situacion, relacion, conflicto, decisiones, camino)
@@ -308,6 +325,26 @@ _COMPLEX_KEYWORDS = {
     # Social y colectivo
     "socio", "socios", "sociedad mercantil",
     "compañeros de trabajo", "grupo de amigos", "comunidad",
+    # Qué siente/piensa/quiere la otra persona (muy común en tarot)
+    "qué siente", "que siente", "qué piensa", "que piensa",
+    "qué quiere", "que quiere", "qué busca", "que busca",
+    "qué pretende", "que pretende", "qué esconde", "que esconde",
+    "qué oculta", "que oculta", "cuáles son sus intenciones", "cuales son sus intenciones",
+    "su verdadera intención", "su verdadera intencion",
+    "qué hay detrás", "que hay detras", "qué no veo", "que no veo",
+    "cuál es la verdad", "cual es la verdad", "la verdad sobre", "la verdad de",
+    "qué tengo que aprender", "que tengo que aprender",
+    # Más "cómo" de acción
+    "cómo demostrar", "como demostrar", "cómo mantener", "como mantener",
+    "cómo fortalecer", "como fortalecer", "cómo construir", "como construir",
+    "cómo terminar con", "como terminar con", "cómo acabar con", "como acabar con",
+    "cómo evitar", "como evitar", "cómo prevenir", "como prevenir",
+    "cómo detectar", "como detectar", "cómo reconocer", "como reconocer",
+    "cómo descubrir", "como descubrir", "cómo vencer", "como vencer",
+    # Esotérico latinoamericano y prácticas mágicas
+    "amarre", "endulzamiento", "despojo", "limpia espiritual",
+    "me hicieron un trabajo", "trabajo de brujería", "trabajo de brujeria",
+    "velón", "velon", "sahumerio",
 }
 
 _COMPLEX_WORD_THRESHOLD = 30  # >30 palabras → complejo
