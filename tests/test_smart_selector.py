@@ -78,11 +78,14 @@ class TestDefault:
         "amor",
         "trabajo",
         "dime algo sobre mi vida",
-        "necesito orientación",
         "¿Qué me dicen las cartas?",
     ])
     def test_default_questions(self, q):
         assert select_variant(q) == "3_cartas"
+
+    def test_orientacion_es_complejo(self):
+        """Pedir orientación merece Cruz Celta, no default."""
+        assert select_variant("necesito orientación") == "cruz_celta"
 
 
 class TestEdgeCases:
