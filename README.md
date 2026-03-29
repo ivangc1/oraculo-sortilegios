@@ -121,7 +121,7 @@ generators/             # SystemRandom, sin repeticion
 images/                 # Pillow: tarot, runas, hexagramas, geomancia
 database/               # SQLite singleton, WAL, migraciones
 data/                   # JSONs + datos estaticos
-tests/                  # 378+ tests
+tests/                  # 384+ tests
 ```
 
 ## Limites de uso
