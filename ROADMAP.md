@@ -510,7 +510,7 @@ from PIL import Image, ImageOps
 
 @lru_cache(maxsize=78)
 def load_card_image(card_id: str) -> Image.Image:
-    with Image.open(f"assets/tarot/{card_id}.png") as img:
+    with Image.open(f"assets/tarot_rws/{card_id}.png") as img:
         img = ImageOps.exif_transpose(img)  # Normalizar EXIF antes de cachear
         return img.copy()  # with cierra el handle, copy mantiene datos en RAM
 ```
