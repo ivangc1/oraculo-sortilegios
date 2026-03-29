@@ -15,6 +15,15 @@ _YES_NO_VERBS = (
     "es cierto", "me quiere", "le gusto", "volverá", "volvera",
     "funcionará", "funcionara", "merece la pena", "vale la pena",
     "es verdad", "es mentira", "está bien", "esta bien",
+    "llegará", "llegara", "saldrá", "saldra", "terminará", "terminara",
+    "pasará", "pasara", "resultará", "resultara", "mejorará", "mejorara",
+    "cambiará", "cambiara", "le importo", "me perdonará", "me perdonara",
+    "me buscará", "me buscara", "me llamará", "me llamara",
+    "me escribirá", "me escribira", "es el momento", "es buena idea",
+    "debería de", "deberia de", "lograré", "lograre", "conseguiré", "conseguire",
+    "superaré", "superare", "saldrá bien", "saldra bien", "irá bien", "ira bien",
+    "tiene futuro", "tiene sentido", "es compatible", "somos compatibles",
+    "me conviene", "me perjudica", "es para mí", "es para mi",
 )
 _YES_NO_RE = re.compile(
     r"^¿?\s*(" + "|".join(re.escape(v) for v in _YES_NO_VERBS) + r")\b",
@@ -27,12 +36,20 @@ _TEMPORAL_KEYWORDS = {
     "pasado", "futuro", "evolución", "evolucion", "evolucionar",
     "cómo va", "como va", "cómo irá", "como ira",
     "qué pasó", "que paso", "qué viene", "que viene",
-    "hacia dónde", "hacia donde", "progreso", "camino",
+    "hacia dónde", "hacia donde", "progreso", "mi camino",
     "antes y después", "antes y despues", "próximamente", "proximamente",
     "qué me espera", "que me espera", "tendencia",
+    "a corto plazo", "a largo plazo", "próximos meses", "proximos meses",
+    "próximo año", "proximo año", "esta semana", "este mes", "este año",
+    "qué pasará", "que pasara", "cómo terminará", "como terminara",
+    "cómo acabará", "como acabara", "desenlace", "trayectoria",
+    "con el tiempo", "a futuro", "venidero", "resultado final",
+    "qué será", "que sera", "adónde", "adonde", "dónde estaré", "donde estare",
+    "cómo evolucionará", "como evolucionara", "cómo irá", "como ira",
+    "en el futuro", "qué pasará con", "que pasara con",
 }
 
-# Keywords complejos (situacion, relacion, conflicto)
+# Keywords complejos (situacion, relacion, conflicto, decisiones, camino)
 _COMPLEX_KEYWORDS = {
     "relación", "relacion", "situación", "situacion",
     "por qué", "por que", "qué está pasando", "que esta pasando",
@@ -40,6 +57,41 @@ _COMPLEX_KEYWORDS = {
     "problema", "bloqueo", "estancado", "estancada",
     "no avanzo", "no consigo", "qué hago", "que hago",
     "múltiples", "multiples", "complejo", "complicado",
+    # Preguntas de camino/proceso (cómo llegar a algo)
+    "cómo llego", "como llego", "cómo llegar", "como llegar",
+    "cómo puedo", "como puedo", "cómo lograr", "como lograr",
+    "cómo conseguir", "como conseguir", "cómo superar", "como superar",
+    "cómo salir", "como salir", "cómo afrontar", "como afrontar",
+    "cómo mejorar", "como mejorar", "cómo manejar", "como manejar",
+    "cómo hacer", "como hacer", "cómo saber", "como saber",
+    "cómo cambiar", "como cambiar", "cómo avanzar", "como avanzar",
+    "cómo resolver", "como resolver", "cómo encontrar", "como encontrar",
+    "cómo enfrentar", "como enfrentar", "cómo lidiar", "como lidiar",
+    # Necesidades y carencias
+    "qué necesito", "que necesito", "qué me falta", "que me falta",
+    "qué me impide", "que me impide", "qué me bloquea", "que me bloquea",
+    "qué me frena", "que me frena", "qué me retiene", "que me retiene",
+    "qué debo", "que debo", "qué debería", "que deberia",
+    # Decisiones y elecciones
+    "decisión", "decision", "elegir", "elección", "eleccion",
+    "qué camino", "que camino", "qué opción", "que opcion",
+    "encrucijada", "por dónde", "por donde", "alternativas",
+    "me quedo o", "sigo o", "acepto o", "cambio o",
+    # Relaciones y personas
+    "con él", "con ella", "con ellos", "con mi pareja",
+    "con mi ex", "con mi familia", "con mi jefe", "con mi amigo",
+    "ruptura", "separación", "separacion", "reconciliación", "reconciliacion",
+    "infidelidad", "traición", "traicion", "alejamiento",
+    # Crisis y transformación
+    "crisis", "transformación", "transformacion", "cambio de vida",
+    "pérdida", "perdida", "duelo", "trauma", "miedo profundo",
+    "propósito", "proposito", "misión de vida", "mision de vida",
+    "vocación", "vocacion", "destino", "karma",
+    "qué me enseña", "que me ensena", "lección", "leccion",
+    # Trabajo y proyectos
+    "trabajo o", "empleo", "proyecto", "negocio", "empresa",
+    "contrato", "mudanza", "inversión", "inversion",
+    "oportunidad", "oferta", "entrevista",
 }
 
 _COMPLEX_WORD_THRESHOLD = 30  # >30 palabras → complejo
