@@ -1,6 +1,7 @@
 """Handler completo de tarot: menú → tirada → imagen → interpretación → feedback."""
 
 import asyncio
+import time
 
 from loguru import logger
 from telegram import Update
@@ -187,7 +188,7 @@ async def tarot_question_callback(
         # Editamos el mensaje existente (no crea mensaje nuevo → no aparece en general)
         # El handler de texto captura la respuesta vía user_data flag
         await query.edit_message_text("✍️ Escribe tu pregunta para las cartas:")
-        context.user_data["tarot_awaiting_question"] = True
+        context.user_data["tarot_awaiting_question"] = time.time()
         return
 
     # Sin pregunta → ejecutar tirada directamente
@@ -431,6 +432,6 @@ async def tarot_smart_callback(
     await query.edit_message_text(
         "Escribe tu pregunta y yo decido qué tirada te conviene:"
     )
-    context.user_data["tarot_awaiting_question"] = True
+    context.user_data["tarot_awaiting_question"] = time.time()
     context.user_data["tarot_smart_mode"] = True
     context.user_data["tarot_user"] = user

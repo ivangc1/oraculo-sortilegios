@@ -367,21 +367,34 @@ def main() -> None:
 
     # 5. Handlers de texto libre
     # Capturan respuestas de texto de numerologia, oraculo y tarot
+    AWAITING_TIMEOUT = 300  # 5 minutos
+
+    def _is_awaiting(user_data: dict, key: str) -> bool:
+        """Comprueba si un flag awaiting está activo y no expirado."""
+        val = user_data.get(key)
+        if not val:
+            return False
+        # Timestamps (float) expiran tras AWAITING_TIMEOUT; booleans legacy siempre activos
+        if isinstance(val, float) and (time.time() - val) > AWAITING_TIMEOUT:
+            user_data[key] = False
+            return False
+        return True
+
     async def dispatch_text_reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Despacha texto libre a handlers que esperan input."""
         user = update.effective_user
         flags = {k: v for k, v in context.user_data.items() if "awaiting" in k}
         logger.debug(f"dispatch_text_reply: user={user.id if user else None} flags={flags} text={update.message.text[:50] if update.message and update.message.text else None}")
-        if context.user_data.get("tarot_awaiting_question"):
+        if _is_awaiting(context.user_data, "tarot_awaiting_question"):
             await tarot_question_text(update, context)
             return
-        if context.user_data.get("oraculo_awaiting_question"):
+        if _is_awaiting(context.user_data, "oraculo_awaiting_question"):
             await oraculo_question_text(update, context)
             return
-        if context.user_data.get("numerologia_awaiting_name"):
+        if _is_awaiting(context.user_data, "numerologia_awaiting_name"):
             await numerologia_name_text(update, context)
             return
-        if context.user_data.get("numerologia_awaiting_compat_date"):
+        if _is_awaiting(context.user_data, "numerologia_awaiting_compat_date"):
             await numerologia_compat_date_text(update, context)
             return
 
