@@ -440,36 +440,9 @@ Código existente migrado desde `/opt/evangelio/` (evangeliobot.py + datos.py ~6
 
 **Migración:** Mover `datos.py` a `data/bibliomancia_datos.py`. Adaptar import path. Eliminar bot standalone.
 
-### 7.11 /admins — Directorio de guardianes de la taberna (€0 API)
+### 7.11 /admins — ELIMINADO
 
-20 admins con sus bios. Dos vías de acceso:
-
-- `/admins` → Grid de botones inline (2 columnas):
-  ```
-  [Tam ☥∆Ωπ]     [Void]
-  [Wolf]          [Desco]
-  [Null]          [SenderoSolar]
-  [Deva]          [Zarandonga]
-  [Vernalles]     [John]
-  [Noodless]      [Lucia]
-  [Nick-G 𒀭]     [Babalon]
-  [Frater Lead]   [Ink 𒀭]
-  [LilaAzul]      [Yhennefer]
-  ```
-- `/admins @void` o `/admins void` → Bio directa + **mención por user_id** (notifica al admin)
-- Si no matchea: "No conozco a ese guardián."
-- Botón `[← Volver]` tras ver una bio → vuelve al grid
-- Un solo mensaje que se edita (zero spam)
-
-**Mención por user_id (no por username):** Los usernames cambian, los IDs no. La mención se hace con HTML:
-```html
-<a href="tg://user?id=123456789">Void</a>
-```
-Esto genera notificación al admin aunque cambie de username.
-
-**Datos PRIVADOS — IDs fuera del repo:**
-- `admins_private.json` → Archivo real con IDs + bios. **En `.gitignore`.**
-- `admins_private.example.json` → En el repo, con datos fake para que se sepa el formato.
+El comando `/admins` fue eliminado. El directorio de admins ya no es funcionalidad del bot.
 
 ```json
 // admins_private.example.json (en repo)
@@ -652,35 +625,27 @@ Oros, Copas y Espadas no tienen variante. Aplicar consistentemente en `tarot_car
 
 ### 9.1 Onboarding (timeout 5 min)
 
-### CRÍTICO: ForceReply en TODOS los pasos que esperan texto libre
+### ForceReply — ELIMINADO de handlers de grupo
 
-Por defecto, los bots de Telegram tienen **privacy mode ON**. En un grupo, el bot solo ve: comandos (/xxx), replies directos al bot, y @menciones. Si el bot pregunta "¿Cuándo naciste?" y el usuario escribe "15/06/1993" como mensaje nuevo (no como reply), **el bot no lo recibe**. El ConversationHandler muere silenciosamente.
+ForceReply se eliminó de todos los handlers de grupo (tarot, oráculo, runas, etc.) porque causaba problemas:
+- `ForceReply(selective=False)` mostraba barra de reply a TODOS los miembros del grupo
+- `ForceReply(selective=True)` requería privacy mode y era inconsistente
+- Los mensajes con ForceReply persistían y causaban confusión en el chat
 
-**Solución:** Usar `ForceReply(selective=True)` en cada mensaje que espera texto libre del usuario:
+**Solución actual:** Privacy mode OFF (`/setprivacy` → Disable). El bot recibe todos los mensajes y filtra en middleware (por chat_id, thread_id, membership). Los flujos de pregunta usan `user_data` flags + edición de mensajes en lugar de ForceReply.
 
-```python
-from telegram import ForceReply
+**Onboarding en DM** sigue usando ConversationHandler normal (en DM no hay problema de privacy mode).
 
-await update.message.reply_text(
-    "¿Cuándo naciste? (DD/MM/AAAA)",
-    reply_markup=ForceReply(selective=True)
-)
-```
+### Detección dinámica de forum/topics
 
-`ForceReply(selective=True)` hace que Telegram muestre automáticamente la interfaz de reply al usuario específico. Su respuesta es un reply directo al bot → el bot la recibe con privacy mode ON.
+El bot se adapta automáticamente a grupos con o sin hilos:
+- `get_thread_id(update)` en `bot/typing.py` — devuelve `message_thread_id` si `chat.is_forum`, `None` si no
+- Middleware solo comprueba `ALLOWED_THREAD_ID` cuando el grupo es forum
+- `ALLOWED_THREAD_ID` es opcional — si no se configura, el bot funciona en cualquier chat/hilo
 
-**Afecta a TODOS los ConversationHandlers:**
-- Onboarding: alias, fecha, hora, ciudad
-- Flujo de pregunta: "¿Tienes alguna pregunta para las cartas?"
-- Compatibilidad numerológica: segunda fecha
-- Actualización de perfil: hora, ciudad
-- Numerología primera vez: nombre completo
+### Anti-ajeno en callbacks
 
-**Sin ForceReply, el bot funciona en testing (DM o grupo con privacy off) y falla completamente en producción.** Esta es la causa #1 de bots de Telegram que "no funcionan en grupos" y nadie sabe por qué.
-
-**NO desactivar privacy mode** (`/setprivacy` → Disable) como alternativa — haría que el bot reciba TODOS los mensajes de 2,600 miembros, desperdiciando recursos.
-
-Onboarding simultáneo de dos usuarios funciona correctamente (`per_user=True` es default). No requiere manejo especial.
+Solo el usuario que inició una tirada puede pulsar sus botones inline. Si otro usuario pulsa, recibe un `callback_query.answer("Esas no son tus cartas")` y la acción se ignora. Implementado en `dispatch_callback` (main.py) y en handlers individuales.
 
 ### 9.2 Onboarding incompleto: retomar desde SQLite (funciona post-restart)
 
@@ -811,7 +776,7 @@ CALLBACKS = {
 📖 /bibliomancia — Fragmento de texto sagrado
    Biblia · Corán · Gita · Evangelio de Tomás
 
-🛡 /admins — Guardianes de la taberna
+🛡 /admins — ELIMINADO
 
 🆕 /consulta — Registrarte para empezar
 📋 /miperfil · ✏️ /actualizarperfil · 🗑 /borrarme
@@ -1333,7 +1298,7 @@ Procedimiento documentado para el primer arranque:
 ```
 1. Crear bot en BotFather → token
 2. Configurar: /setjoingroups off, /setcommands, foto, descripción
-3. **NO tocar /setprivacy** — Dejar privacy mode ON (default). ForceReply maneja la comunicación.
+3. `/setprivacy` → **Disable** (privacy mode OFF). El bot necesita recibir mensajes para funcionar en grupo. El middleware filtra por chat_id, thread_id y membership.
 4. Un admin de La Taberna añade el bot al grupo
 5. Obtener chat_id:
    Opción A: Modo discovery temporal que loguea chat_ids
@@ -1995,7 +1960,7 @@ ephe/
 | Typing task exception silenciosa | Baja | try/except Forbidden/BadRequest en keep_typing |
 | EXIF invierte cartas | Baja | ImageOps.exif_transpose() antes de cachear |
 | Semaphore no FIFO | Muy baja | Documentado, migrar a Queue si escala |
-| Privacy mode: bot no recibe texto en grupo | **Crítica** | **ForceReply(selective=True) en todos los ConversationHandlers** |
+| Privacy mode: bot no recibe texto en grupo | **Crítica** | Privacy mode OFF + middleware filtra por chat_id/thread_id/membership |
 | Migración grupo→supergrupo cambia chat_id | Baja | Handler ChatMigration + alerta sin throttle |
 | Imagen >10MB rechazada por Telegram | Baja | Verificación tamaño + reducción quality automática |
 | /stats silencioso para no-admin | Media | Respuesta in-character "solo para el guardián" |

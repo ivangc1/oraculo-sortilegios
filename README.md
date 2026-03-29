@@ -85,9 +85,10 @@ Todas las demas variables tienen defaults razonables. Ver `.env.example` para la
 1. Crear bot en BotFather, obtener token
 2. `/setjoingroups` off
 3. `/setcommands` con la lista de `data/botfather_commands.txt`
-4. `/setprivacy` → **Disable** (privacy mode OFF para que el bot reciba todos los mensajes del grupo)
+4. `/setprivacy` → **Disable** (privacy mode OFF — el bot necesita recibir mensajes del grupo; middleware filtra por chat_id/thread_id)
 5. Anadir bot al grupo, obtener chat_id via getUpdates
-6. Permiso recomendado: "Delete messages" (para borrar datos sensibles que se escriban en grupo por error)
+6. Permisos recomendados: "Delete messages" (borrar datos sensibles en grupo), "Pin messages" (opcional)
+7. `ALLOWED_THREAD_ID` es opcional — solo necesario si el grupo usa forum/topics y quieres restringir a un hilo concreto
 
 ### Ejecucion
 
@@ -165,9 +166,11 @@ Configurables via `EFFORT_*` en `.env` sin redeploy.
 - **NO retry manual**: el SDK de Anthropic ya reintenta 2x automaticamente.
 - **System prompt estatico**: constante literal (no f-strings) para que el prompt caching funcione. Perfil del usuario se inyecta en el user message.
 - **Guardrails minimos**: solo anti-jailbreak y proteccion de identidad (nunca revela que es IA). El oraculo responde a cualquier tema — amor, fertilidad, dinero, muerte, enemigos — sin restricciones ni disclaimers.
-- **Personalidad Baphomet**: todos los mensajes del bot (no solo las interpretaciones) mantienen tono directo, humor seco, sin servilismo.
+- **Personalidad Baphomet**: El Pezuñento es omnisciente — NUNCA dice "no se". Tono modulado segun contexto (humor acido para preguntas casuales, gravedad para dolor, autoridad para decisiones vitales). Todos los mensajes mantienen caracter, sin servilismo.
+- **Deteccion dinamica de forum/topics**: el bot se adapta automaticamente a grupos con o sin hilos. Usa `chat.is_forum` para decidir si enviar `message_thread_id`. `ALLOWED_THREAD_ID` solo se comprueba en grupos forum.
+- **Anti-ajeno en callbacks**: solo el usuario que inicio una tirada puede pulsar sus botones inline. Otros usuarios reciben "Esas no son tus cartas".
 - **Smart selector**: `/tirartarot <pregunta>` analiza keywords (coste cero, sin API) y elige la tirada mas apropiada. Tambien disponible como boton en el menu.
-- **Blockquote expandible**: todas las tiradas de tarot + natales + 7 runas + escudo + I Ching se muestran colapsadas con "Mostrar mas". Controlado por `frozenset` en config, desactivable globalmente con `USE_BLOCKQUOTE=false`.
+- **Blockquote expandible**: todas las respuestas (tarot, runas, I Ching, geomancia, numerologia, natales, oraculo, bibliomancia) se muestran colapsadas con "Mostrar mas". Controlado por `frozenset` en config, desactivable globalmente con `USE_BLOCKQUOTE=false`.
 - **Menu tarot con sub-categorias**: Rapidas / Completas / Especiales. Edita el mismo mensaje, sin spam en el chat.
 
 ## Licencia
