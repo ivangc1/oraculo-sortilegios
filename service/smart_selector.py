@@ -43,6 +43,15 @@ _YES_NO_VERBS = (
     "debo esperar", "debo soltar", "debo seguir", "debo dejarlo",
     "estoy haciendo bien", "lo estoy haciendo mal",
     "soy suficiente", "soy capaz", "tengo oportunidad",
+    "está enamorado", "esta enamorado", "está enamorada", "esta enamorada",
+    "me engaña", "me miente", "me piensa", "me olvida",
+    "le intereso", "me sigue queriendo", "me sigue amando",
+    "es honesto", "es honesta", "es sincero", "es sincera",
+    "es buena persona", "es mala persona",
+    "lo hice bien", "lo hice mal", "es lo correcto",
+    "debo preocuparme", "es peligroso", "es seguro",
+    "es una señal", "lo supero", "lo superaré", "lo superare",
+    "me afecta", "me arrepiento", "confía en mí", "confia en mi",
 )
 _YES_NO_RE = re.compile(
     r"^¿?\s*(" + "|".join(re.escape(v) for v in _YES_NO_VERBS) + r")\b",
@@ -74,6 +83,12 @@ _TEMPORAL_KEYWORDS = {
     "qué me traerá", "que me traera", "qué esperar", "que esperar",
     "en los próximos", "en los proximos", "esta temporada", "esta etapa",
     "rumbo", "dirección de", "en breve", "avance", "periodo", "período",
+    "cuándo cambia", "cuando cambia", "cuándo mejora", "cuando mejora",
+    "cuándo acaba", "cuando acaba", "cuándo llega", "cuando llega",
+    "para cuándo", "para cuando", "cuánto tiempo", "cuanto tiempo",
+    "perspectivas", "perspectiva", "horizonte", "pronóstico", "pronostico",
+    "evolución de", "evolucion de", "últimamente", "ultimamente",
+    "a partir de ahora", "desde ahora",
 }
 
 # Keywords complejos (situacion, relacion, conflicto, decisiones, camino)
@@ -169,6 +184,33 @@ _COMPLEX_KEYWORDS = {
     "vidas pasadas", "vida anterior", "misión del alma", "mision del alma",
     "contrato espiritual", "corte de lazos",
     "aura", "vibración", "vibracion",
+    # Más formas de "cómo"
+    "cómo ganar", "como ganar", "cómo negociar", "como negociar",
+    "cómo convencer", "como convencer", "cómo seducir", "como seducir",
+    "cómo hablar con", "como hablar con", "cómo acercarme", "como acercarme",
+    "cómo aproximarme", "como aproximarme", "cómo conquistar", "como conquistar",
+    # Estados emocionales adicionales
+    "frustración", "frustracion", "frustrado", "frustrada",
+    "agotado", "agotada", "agotamiento", "burnout",
+    "harto", "harta", "hartazgo",
+    "inseguro", "insegura", "inseguridad",
+    "vergüenza", "verguenza", "culpabilidad",
+    "angustia", "desesperación", "desesperacion",
+    "pánico", "panico", "desamor",
+    # Personas y vínculos
+    "con mi amigo", "con mi amiga", "con mi hermano", "con mi hermana",
+    "con mi madre", "con mi padre", "con mis padres", "con mis hijos",
+    "con mi hijo", "con mi hija", "con mi suegra", "con mi suegro",
+    "ex novio", "ex novia", "ex marido", "ex mujer", "ex pareja",
+    "nueva pareja", "nueva relación", "nueva relacion",
+    "triángulo amoroso", "triangulo amoroso", "tercera persona",
+    # Transiciones laborales y vitales
+    "emprender", "autónomo", "autonomo", "freelance",
+    "ascenso", "promoción laboral", "promocion laboral",
+    "despido", "me echan", "me despiden",
+    "renuncia", "dejar el trabajo", "cambio de trabajo",
+    "jubilación", "jubilacion", "retiro profesional",
+    "estudios", "carrera universitaria", "universidad",
 }
 
 _COMPLEX_WORD_THRESHOLD = 30  # >30 palabras → complejo
