@@ -1,6 +1,7 @@
 """Handler del oráculo libre: pregunta directa → Sonnet interpreta."""
 
 import asyncio
+import time
 
 from loguru import logger
 from telegram import Update
@@ -45,7 +46,7 @@ async def oraculo_command(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
         text="¿Qué quieres preguntarle al oráculo?",
         message_thread_id=thread_id,
     )
-    context.user_data["oraculo_awaiting_question"] = True
+    context.user_data["oraculo_awaiting_question"] = time.time()
     context.user_data["oraculo_user"] = user
 
 

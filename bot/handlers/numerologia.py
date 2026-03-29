@@ -5,6 +5,7 @@ Compatibilidad solo pide segunda fecha (camino de vida), no nombre.
 """
 
 import asyncio
+import time
 
 from loguru import logger
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
@@ -227,7 +228,7 @@ async def numerologia_compat_callback(
         "Para la compatibilidad necesito la fecha de nacimiento de la otra persona.\n\n"
         "Escribe la fecha (DD/MM/AAAA):"
     )
-    context.user_data["numerologia_awaiting_compat_date"] = True
+    context.user_data["numerologia_awaiting_compat_date"] = time.time()
 
 
 async def numerologia_compat_date_text(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -255,7 +256,7 @@ async def numerologia_compat_date_text(update: Update, context: ContextTypes.DEF
             text=LIMIT_MESSAGES["invalid_date"],
             message_thread_id=get_thread_id(update),
         )
-        context.user_data["numerologia_awaiting_compat_date"] = True
+        context.user_data["numerologia_awaiting_compat_date"] = time.time()
         return
 
     user = await db_users.get_user(user_id)
