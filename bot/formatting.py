@@ -67,7 +67,12 @@ def format_and_split(raw_text: str, use_blockquote: bool = False) -> list[str]:
         Lista de chunks HTML listos para enviar con parse_mode="HTML"
     """
     formatted = format_response(raw_text)
-    chunks = split_message(formatted)
+    # Reservar espacio para overhead de tags de balanceo y blockquote.
+    # Blockquote: <blockquote expandable>...</blockquote> = 42 chars
+    # Tags balanceo: peor caso </i></b> + <b><i> = ~14 chars
+    # Margen de seguridad: 60 chars
+    overhead = 60 if use_blockquote else 16
+    chunks = split_message(formatted, max_length=4096 - overhead)
 
     # Balancear tags entre chunks
     balanced = []

@@ -143,6 +143,7 @@ def test_format_and_split_long_with_blockquote():
     for chunk in chunks:
         assert "<blockquote expandable>" in chunk
         assert "</blockquote>" in chunk
+        assert len(chunk) <= 4096, f"Chunk excede 4096: {len(chunk)} chars"
 
 
 def test_format_and_split_default_no_blockquote():
@@ -150,6 +151,17 @@ def test_format_and_split_default_no_blockquote():
     raw = "Texto normal"
     chunks = format_and_split(raw)
     assert "<blockquote" not in chunks[0]
+
+
+def test_format_and_split_blockquote_never_exceeds_4096():
+    """Ningun chunk con blockquote + tags balanceados debe exceder 4096."""
+    # Simular texto largo con tags abiertos que fuerzan balanceo
+    raw = "[[T]]" + "X" * 3900 + "[[/T]]\n\n" + "Y" * 3900
+    chunks = format_and_split(raw, use_blockquote=True)
+    for i, chunk in enumerate(chunks):
+        assert len(chunk) <= 4096, (
+            f"Chunk {i} excede 4096: {len(chunk)} chars"
+        )
 
 
 def test_format_and_split_unclosed_italic_in_split():
