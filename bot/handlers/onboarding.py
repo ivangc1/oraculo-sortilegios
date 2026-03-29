@@ -202,51 +202,99 @@ async def ask_city(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
         await _complete_onboarding(update, context, city_result=None)
         return ConversationHandler.END
 
-    # Geocoding
+    # Geocoding — múltiples resultados
     try:
-        from service.calculators.geocoding import geocode_city
-        result = await geocode_city(update.message.text.strip())
+        from service.calculators.geocoding import geocode_city_multi
+        results = await geocode_city_multi(update.message.text.strip())
     except Exception:
-        result = None
+        results = []
 
-    if result is None:
+    if not results:
         await update.message.reply_text(
             LIMIT_MESSAGES["nominatim_down"],
             reply_markup=ForceReply(selective=True),
         )
         return ASK_CITY
 
-    # Confirmar ciudad (ciudades homónimas)
-    context.user_data["onb_city_result"] = {
-        "city_name": result.city_name,
-        "lat": result.lat,
-        "lon": result.lon,
-        "timezone": result.timezone,
-    }
+    # Guardar input original y resultados para cachear después
+    context.user_data["onb_city_input"] = update.message.text.strip()
 
-    # Mostrar nombre completo para confirmar
-    short_name = result.city_name.split(",")[0].strip() if "," in result.city_name else result.city_name
-    await update.message.reply_text(
-        f"¿Te refieres a {result.city_name}?",
-        reply_markup=InlineKeyboardMarkup([
-            [
-                InlineKeyboardButton("Sí", callback_data="onb:city_yes"),
-                InlineKeyboardButton("No, otra ciudad", callback_data="onb:city_no"),
-            ]
-        ]),
-    )
+    if len(results) == 1:
+        # Un solo resultado — confirmar directamente
+        r = results[0]
+        context.user_data["onb_city_result"] = {
+            "city_name": r.city_name, "lat": r.lat,
+            "lon": r.lon, "timezone": r.timezone,
+        }
+        await update.message.reply_text(
+            f"¿Te refieres a {r.city_name}?",
+            reply_markup=InlineKeyboardMarkup([
+                [
+                    InlineKeyboardButton("Sí", callback_data="onb:city_yes"),
+                    InlineKeyboardButton("No, otra ciudad", callback_data="onb:city_no"),
+                ]
+            ]),
+        )
+    else:
+        # Múltiples resultados — botones para elegir
+        context.user_data["onb_city_options"] = [
+            {"city_name": r.city_name, "lat": r.lat,
+             "lon": r.lon, "timezone": r.timezone}
+            for r in results
+        ]
+        buttons = []
+        for i, r in enumerate(results):
+            # Mostrar nombre corto en el botón
+            short = r.city_name if len(r.city_name) <= 45 else r.city_name[:42] + "..."
+            buttons.append([InlineKeyboardButton(short, callback_data=f"onb:city_{i}")])
+        buttons.append([InlineKeyboardButton("Ninguna, otra ciudad", callback_data="onb:city_no")])
+        await update.message.reply_text(
+            "He encontrado varias opciones. ¿Cuál es tu ciudad?",
+            reply_markup=InlineKeyboardMarkup(buttons),
+        )
     return CONFIRM_CITY
 
 
 async def confirm_city_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    """Callback de confirmación de ciudad."""
+    """Callback de confirmación/selección de ciudad."""
     query = update.callback_query
     await query.answer()
 
-    if query.data == "onb:city_yes":
+    # Selección de ciudad por índice (múltiples resultados)
+    if query.data.startswith("onb:city_") and query.data not in ("onb:city_yes", "onb:city_no"):
+        idx = int(query.data.split("_")[-1])
+        options = context.user_data.get("onb_city_options", [])
+        if 0 <= idx < len(options):
+            context.user_data["onb_city_result"] = options[idx]
+            # Cachear resultado seleccionado
+            city_input = context.user_data.get("onb_city_input", "")
+            if city_input:
+                from service.calculators.geocoding import cache_geocoding_result, GeocodingResult
+                r = options[idx]
+                await cache_geocoding_result(city_input, GeocodingResult(
+                    r["city_name"], r["lat"], r["lon"], r["timezone"],
+                ))
+        context.user_data.pop("onb_city_options", None)
         city_result = context.user_data.get("onb_city_result")
         try:
-            await query.edit_message_text(f"Ciudad confirmada.")
+            await query.edit_message_text("Ciudad confirmada.")
+        except Exception:
+            pass
+        await _complete_onboarding(update, context, city_result=city_result)
+        return ConversationHandler.END
+
+    if query.data == "onb:city_yes":
+        city_result = context.user_data.get("onb_city_result")
+        # Cachear resultado confirmado
+        city_input = context.user_data.get("onb_city_input", "")
+        if city_input and city_result:
+            from service.calculators.geocoding import cache_geocoding_result, GeocodingResult
+            await cache_geocoding_result(city_input, GeocodingResult(
+                city_result["city_name"], city_result["lat"],
+                city_result["lon"], city_result["timezone"],
+            ))
+        try:
+            await query.edit_message_text("Ciudad confirmada.")
         except Exception:
             pass
         await _complete_onboarding(update, context, city_result=city_result)

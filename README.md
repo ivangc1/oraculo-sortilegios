@@ -169,6 +169,7 @@ Configurables via `EFFORT_*` en `.env` sin redeploy.
 - **Personalidad Baphomet**: El Pezuñento es omnisciente — NUNCA dice "no se". Tono modulado segun contexto (humor acido para preguntas casuales, gravedad para dolor, autoridad para decisiones vitales). Todos los mensajes mantienen caracter, sin servilismo.
 - **Deteccion dinamica de forum/topics**: el bot se adapta automaticamente a grupos con o sin hilos. Usa `chat.is_forum` para decidir si enviar `message_thread_id`. `ALLOWED_THREAD_ID` solo se comprueba en grupos forum.
 - **Anti-ajeno en callbacks**: solo el usuario que inicio una tirada puede pulsar sus botones inline. Otros usuarios reciben "Esas no son tus cartas".
+- **Geocoding multiples resultados**: ciudades homonimas (Valencia, Santiago...) muestran botones inline con hasta 5 opciones de Nominatim para que el usuario seleccione la correcta.
 - **Smart selector**: `/tirartarot <pregunta>` analiza keywords (coste cero, sin API) y elige la tirada mas apropiada. Tambien disponible como boton en el menu.
 - **Blockquote expandible**: todas las respuestas (tarot, runas, I Ching, geomancia, numerologia, natales, oraculo, bibliomancia) se muestran colapsadas con "Mostrar mas". Controlado por `frozenset` en config, desactivable globalmente con `USE_BLOCKQUOTE=false`.
 - **Menu tarot con sub-categorias**: Rapidas / Completas / Especiales. Edita el mismo mensaje, sin spam en el chat.
