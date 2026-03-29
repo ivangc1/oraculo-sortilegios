@@ -44,7 +44,7 @@ _HELP_TEXT = """🔮 Modos disponibles:
 ❌ /cancelaroraculo — Cancelar operación en curso
 ❓ /ayudaoraculo — Este mensaje
 
-Tienes 5 tiradas diarias + 3 consultas al oráculo."""
+Tira lo que quieras, cuando quieras. El oráculo no cierra."""
 
 
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
