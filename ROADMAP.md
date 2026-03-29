@@ -1987,6 +1987,7 @@ ephe/
 - Seguridad: SQL column whitelist, user ID real, rate limit DM, anti-bypass
 - Anti-ajeno en callbacks: solo el usuario que inició puede pulsar sus botones
 - Detección dinámica de forum/topics
+- Timeout 5min en preguntas pendientes: flags awaiting expiran automáticamente, aviso in-character al usuario
 - Adaptive thinking Sonnet 4.6 con effort por variante
 
 ### Pendiente (mejoras futuras)

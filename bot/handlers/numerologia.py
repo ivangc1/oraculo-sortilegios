@@ -226,7 +226,7 @@ async def numerologia_compat_callback(
 
     await query.edit_message_text(
         "Para la compatibilidad necesito la fecha de nacimiento de la otra persona.\n\n"
-        "Escribe la fecha (DD/MM/AAAA):"
+        "Escribe la fecha (DD/MM/AAAA):\n\n(Tienes 5 minutos antes de que el oráculo se aburra y cierre la mesa.)"
     )
     context.user_data["numerologia_awaiting_compat_date"] = time.time()
 
