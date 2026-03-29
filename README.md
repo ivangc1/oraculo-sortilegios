@@ -126,8 +126,7 @@ tests/                  # 367+ tests
 
 ## Limites de uso
 
-- 5 tiradas diarias (tarot + runas + iching + geomancia pool)
-- 2 numerologia, 1 natal, 3 oraculo por dia
+- Tiradas diarias, numerologia, natal, oraculo: sin limite practico (configurables via .env, por defecto desactivados en produccion)
 - 60s cooldown entre consultas
 - 5min timeout en preguntas pendientes (expiran automaticamente)
 - 200 chars max por pregunta
@@ -172,7 +171,7 @@ Configurables via `EFFORT_*` en `.env` sin redeploy.
 - **Anti-ajeno en callbacks**: solo el usuario que inicio una tirada puede pulsar sus botones inline. Otros usuarios reciben "Esas no son tus cartas".
 - **Geocoding multiples resultados**: ciudades homonimas (Valencia, Santiago...) muestran botones inline con hasta 5 opciones de Nominatim para que el usuario seleccione la correcta.
 - **Smart selector**: `/tirartarot <pregunta>` analiza keywords (coste cero, sin API) y elige la tirada mas apropiada. Tambien disponible como boton en el menu.
-- **Blockquote expandible**: todas las respuestas (tarot, runas, I Ching, geomancia, numerologia, natales, oraculo, bibliomancia) se muestran colapsadas con "Mostrar mas". Controlado por `frozenset` en config, desactivable globalmente con `USE_BLOCKQUOTE=false`.
+- **Blockquote expandible**: todas las respuestas (tarot, runas, I Ching, geomancia, numerologia, natales, oraculo, bibliomancia, /ayudaoraculo) se muestran colapsadas con "Mostrar mas". Controlado por `frozenset` en config, desactivable globalmente con `USE_BLOCKQUOTE=false`.
 - **Menu tarot con sub-categorias**: Rapidas / Completas / Especiales. Edita el mismo mensaje, sin spam en el chat.
 - **Multi-mazo tarot**: Rider-Waite-Smith (PCS 1909, CC0, 300px) y Tarot de Marsella (Lequart ~1890, dominio publico, 800px). Selector de mazo → selector de variante → tirada. Prompts deck-aware con nomenclatura Marsella (La Papisa, El Papa, El Arcano sin Nombre, La Casa de Dios). Imagenes: 76 de TarotCaster (Wikimedia) + 2 Papisa/Papa de Wikimedia directas.
 - **Timeout en preguntas pendientes**: flags `awaiting_*` guardan `time.time()` y expiran a los 5 minutos. Si el usuario no responde, el oraculo cierra la mesa y avisa in-character. Evita captura indefinida de texto.
