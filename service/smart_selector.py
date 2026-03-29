@@ -23,7 +23,7 @@ _YES_NO_VERBS = (
     "debería de", "deberia de", "lograré", "lograre", "conseguiré", "conseguire",
     "superaré", "superare", "saldrá bien", "saldra bien", "irá bien", "ira bien",
     "tiene futuro", "tiene sentido", "es compatible", "somos compatibles",
-    "me conviene", "me perjudica", "es para mí", "es para mi",
+    "me perjudica", "es para mí", "es para mi",
     "es hora de", "hay posibilidad", "hay esperanza", "hay salida",
     "hay solución", "hay solucion", "tiene solución", "tiene solucion",
     "me valora", "me extraña", "me extrana", "me respeta",
@@ -77,7 +77,11 @@ _YES_NO_VERBS = (
     "hay alguien más", "hay alguien mas", "hay otra persona",
     "me están usando", "me estan usando", "me están mintiendo", "me estan mintiendo",
     "seré feliz", "sere feliz", "soy feliz", "sobreviviré", "sobrevivire",
-    "es normal", "es raro", "es una buena señal", "es mala señal",
+    "es normal", "es raro",
+    "vendrá", "vendra", "se irá", "se ira",
+    "se quedará", "se quedara", "nos veremos",
+    "me contratarán", "me contrataran", "me tocará", "me tocara",
+    "aparecerá", "aparecera", "estará", "estara",
 )
 _YES_NO_RE = re.compile(
     r"^¿?\s*(" + "|".join(re.escape(v) for v in _YES_NO_VERBS) + r")\b",
@@ -132,7 +136,8 @@ _TEMPORAL_KEYWORDS = {
     "cuándo voy a", "cuando voy a", "cuándo podré", "cuando podre",
     "cuándo encontraré", "cuando encontrare",
     "el año que viene", "el ano que viene",
-    "la semana que viene", "el mes que viene", "el año que viene",
+    "la semana que viene", "el mes que viene",
+    "pronto", "de aquí a", "de aqui a", "a medio plazo", "en adelante",
     "en enero", "en febrero", "en marzo", "en abril", "en mayo",
     "en junio", "en julio", "en agosto", "en septiembre",
     "en octubre", "en noviembre", "en diciembre",
@@ -352,6 +357,20 @@ _COMPLEX_KEYWORDS = {
     "amarre", "endulzamiento", "despojo", "limpia espiritual",
     "me hicieron un trabajo", "trabajo de brujería", "trabajo de brujeria",
     "velón", "velon", "sahumerio",
+    # Indecisión y duda
+    "no sé si", "no se si", "me debato entre", "dudo entre",
+    "no sé qué elegir", "no se que elegir", "no me decido", "no me aclaro",
+    # Saturación emocional
+    "no puedo con", "me supera", "estoy al límite", "estoy al limite",
+    "no doy más", "no doy mas", "no aguanto", "no aguanto más", "no aguanto mas",
+    "me desborda", "me sobrepasa", "estoy saturado", "estoy saturada",
+    # Patrones repetitivos
+    "siempre me pasa", "siempre igual", "otra vez lo mismo",
+    "patrón que se repite", "patron que se repite",
+    # Relaciones modernas / jerga digital
+    "ghosting", "mi crush", "me bloqueó", "me bloqueo",
+    "no me contesta", "me dejó en visto", "me dejo en visto",
+    "me dejó de hablar", "me dejo de hablar", "red flag", "bandera roja",
 }
 
 _COMPLEX_WORD_THRESHOLD = 30  # >30 palabras → complejo
