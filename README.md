@@ -173,6 +173,7 @@ Configurables via `EFFORT_*` en `.env` sin redeploy.
 - **Smart selector**: `/tirartarot <pregunta>` analiza keywords (coste cero, sin API) y elige la tirada mas apropiada. Tambien disponible como boton en el menu.
 - **Blockquote expandible**: todas las respuestas (tarot, runas, I Ching, geomancia, numerologia, natales, oraculo, bibliomancia) se muestran colapsadas con "Mostrar mas". Controlado por `frozenset` en config, desactivable globalmente con `USE_BLOCKQUOTE=false`.
 - **Menu tarot con sub-categorias**: Rapidas / Completas / Especiales. Edita el mismo mensaje, sin spam en el chat.
+- **Multi-mazo tarot**: Rider-Waite-Smith (PCS 1909, CC0, 300px) y Tarot de Marsella (Lequart ~1890, dominio publico, 800px). Selector de mazo → selector de variante → tirada. Prompts deck-aware con nomenclatura Marsella (La Papisa, El Papa, El Arcano sin Nombre, La Casa de Dios). Imagenes: 76 de TarotCaster (Wikimedia) + 2 Papisa/Papa de Wikimedia directas.
 
 ## Licencia
 
