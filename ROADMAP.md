@@ -966,18 +966,25 @@ async def handle_feedback(update, context):
 
 ### 11.13 Webhook vs Long Polling → Long polling dev, webhook producción
 
-### 11.14 Geocoding: ciudades homónimas
+### 11.14 Geocoding: ciudades homónimas — múltiples resultados
 
-Si Nominatim devuelve una ciudad y el usuario dice "No, otra", pedir que sea más específico:
+`geocode_city_multi()` devuelve hasta 5 resultados de Nominatim. Si hay más de uno, se muestran como botones inline:
 
 ```
-Bot: "¿Te refieres a Santiago del Estero, Argentina?"
-→ [Sí] [No, otra ciudad]
+Usuario: "Valencia"
 
-Si "No":
-Bot: "Escríbelo más completo, por ejemplo: Santiago de Chile, Santiago de Compostela."
-→ Usuario reescribe con más detalle
+Bot: "He encontrado varias opciones. ¿Cuál es tu ciudad?"
+→ [Valencia, Comunidad Valenciana, España]
+→ [Valencia, Carabobo, Venezuela]
+→ [Valencia, Negros Oriental, Filipinas]
+→ [Ninguna, otra ciudad]
 ```
+
+Si solo hay un resultado, funciona como antes: "¿Te refieres a X?" → [Sí] / [No, otra ciudad].
+
+El resultado seleccionado se cachea en SQLite para futuras consultas.
+
+Implementado en los 4 handlers: onboarding (grupo), dm_onboarding, profile, dm_upd_profile.
 
 ### 11.15 Geocoding: Nominatim caído durante onboarding
 
@@ -1553,7 +1560,7 @@ Antes de lanzar, ejecutar manualmente y evaluar calidad narrativa:
 - [x] Onboarding: completo / sin hora / incompleto / timeout / post-restart (ConversationHandler + SQLite partial)
 - [x] Petición en curso + nuevo comando → "aún en proceso" (bot/concurrency.py)
 - [x] Msg >4096 (bot/formatting.py split_message, test_formatting.py)
-- [x] Ciudad homónima → "escríbelo más completo" (onboarding.py confirm_city_callback)
+- [x] Ciudad homónima → múltiples resultados como botones inline (onboarding, dm_onboarding, profile)
 - [x] Fecha/hora inválida → mensaje amigable (test_validators.py, nunca técnico)
 - [x] /cancelaroraculo todos los flujos (ConversationHandler fallbacks)
 - [x] Concurrencia (_active_requests + semaphore, test_queue_timeout.py)
@@ -1908,7 +1915,7 @@ ephe/
 | Efemérides ausentes | Baja | Descargar .se1 |
 | Runas: coordenadas incorrectas | Media | Verificar visual de las 24 runas contra referencia |
 | Placidus lat extrema | Baja | Whole Sign fallback |
-| Nominatim homónimas | Media | Pedir más específico |
+| Nominatim homónimas | Media | Múltiples resultados como botones inline (hasta 5) |
 | Nominatim rate limit | Media | Caché + lock |
 | Lecturas genéricas | Media | Feedback → iterar |
 | Truncadas | Media | Cierre graceful + ajustar max_tokens |
@@ -1980,7 +1987,7 @@ ephe/
 - Adaptive thinking Sonnet 4.6 con effort por variante
 
 ### Pendiente (mejoras futuras)
-Memoria entre tiradas, compatibilidad tarot, tránsitos, sinastría, revolución solar, fases lunares, modo educativo, dashboard web, migración modelo, foto tirada → interpretación, Marsella, oráculo historial, avisos lunaciones, webhook (si long polling), retención datos, múltiples resultados geocoding como botones, Telegram Mini App para UI visual.
+Memoria entre tiradas, compatibilidad tarot, tránsitos, sinastría, revolución solar, fases lunares, modo educativo, dashboard web, foto tirada → interpretación, Marsella, Thoth (arte original), oráculo historial, avisos lunaciones, webhook (si long polling), retención datos, Telegram Mini App para UI visual.
 
 ---
 
