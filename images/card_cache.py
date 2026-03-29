@@ -4,7 +4,7 @@ El with cierra el file handle, copy() mantiene datos en RAM.
 exif_transpose() normaliza orientación EXIF antes de cachear.
 Concurrencia: lru_cache es seguro en asyncio single-thread.
 
-Soporte multi-mazo: assets/tarot/ (rws), assets/tarot_marsella/ (marsella).
+Soporte multi-mazo: assets/tarot_rws/ (Rider-Waite-Smith), assets/tarot_marsella/ (Marsella).
 """
 
 from functools import lru_cache
@@ -16,7 +16,7 @@ _ASSETS_BASE = Path(__file__).parent.parent / "assets"
 
 # Directorio de assets por mazo
 _DECK_DIRS = {
-    "rws": _ASSETS_BASE / "tarot",
+    "rws": _ASSETS_BASE / "tarot_rws",
     "marsella": _ASSETS_BASE / "tarot_marsella",
 }
 
