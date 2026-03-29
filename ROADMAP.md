@@ -1619,12 +1619,9 @@ Antes de lanzar, ejecutar manualmente y evaluar calidad narrativa:
 - [x] /admins [← Volver] → grid original edit message (admins_callback "back")
 - [x] /start en grupo → presentación + registrado vs no registrado (test_handlers_basic.py)
 - [x] /start en DM → "solo funciono en La Taberna" (test_handlers_basic.py)
-- [ ] Todos los modos end-to-end (requiere despliegue con API key real)
-- [ ] Onboarding simultáneo 2 usuarios (requiere grupo real)
-- [ ] ForceReply: onboarding funciona en grupo CON privacy mode ON (requiere grupo real)
-- [ ] ForceReply: flujo pregunta funciona en grupo con privacy mode ON (requiere grupo real)
-- [ ] ForceReply: compatibilidad (segunda fecha) funciona con privacy ON (requiere grupo real)
-- [ ] ForceReply: actualizarperfil funciona con privacy ON (requiere grupo real)
+- [x] Todos los modos end-to-end (desplegado y verificado en producción)
+- [x] Onboarding simultáneo 2 usuarios (verificado en producción)
+- [x] ForceReply ELIMINADO — flujos migrados a user_data flags + edición de mensajes
 
 ---
 
@@ -1976,14 +1973,20 @@ ephe/
 
 ## 21. Mejoras futuras
 
-### Ya implementado (Semana 4)
+### Ya implementado (Semana 4+)
 - Tarot: Herradura (7), Relación (6), Estrella (7), Cruz Simple (5), Sí/No reforzado (3), Tirada del día (1) — total 9 variantes
 - Runas: Cinco Runas (5), Siete Runas (7) — total 5 variantes
-- Smart selector: `/tarot <pregunta>` analiza keywords y elige la tirada (coste cero)
-- Menú tarot con sub-categorías (Rápidas / Completas / Especiales) + selector de mazo (RWS / Marsella)
-- Blockquote expandible por variante para lecturas largas
+- Smart selector: `/tirartarot <pregunta>` analiza keywords y elige la tirada (coste cero)
+- Menú tarot con sub-categorías (Rápidas / Completas / Especiales)
+- Multi-mazo tarot: Rider-Waite-Smith (PCS 1909, CC0, 300px) + Tarot de Marsella (Lequart ~1890, dominio público, 800px). Selector de mazo → variante → tirada. Prompts deck-aware con nomenclatura Marsella (La Papisa, El Papa, El Arcano sin Nombre, La Casa de Dios). 76 imágenes TarotCaster + 2 Papisa/Papa Wikimedia. Imágenes RWS normalizadas a 300px
+- Blockquote expandible por variante para todas las lecturas (tarot, runas, I Ching, geomancia, numerología, natales, oráculo, bibliomancia)
+- Bibliomancia: encoding UTF-8 + blockquote
+- Geocoding múltiples resultados: ciudades homónimas muestran hasta 5 botones inline (Nominatim)
+- Personalidad El Pezuñento reescrita: omnisciencia, registro emocional (5 modos), provocador con calidez inesperada, vocabulario castellano peninsular con actitud
 - Onboarding en DM con deep links
 - Seguridad: SQL column whitelist, user ID real, rate limit DM, anti-bypass
+- Anti-ajeno en callbacks: solo el usuario que inició puede pulsar sus botones
+- Detección dinámica de forum/topics
 - Adaptive thinking Sonnet 4.6 con effort por variante
 
 ### Pendiente (mejoras futuras)
