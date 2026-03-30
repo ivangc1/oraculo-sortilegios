@@ -199,6 +199,9 @@ _COMPLEX_KEYWORDS = {
     "depresión", "depresion", "ansiedad crónica", "ansiedad cronica",
     # Vida y propósito profundo
     "qué hacer con mi vida", "que hacer con mi vida",
+    "meta de vida", "meta en la vida", "mi meta",
+    "mi objetivo", "objetivo de vida", "objetivo en la vida",
+    "mi misión", "mi mision", "mi propósito", "mi proposito",
     "sentido de mi vida", "sentido de la vida", "sin sentido",
     "identidad", "quién soy", "quien soy",
     "entre dos", "dos personas", "dos opciones", "dos caminos",
