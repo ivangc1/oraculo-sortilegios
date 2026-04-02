@@ -20,6 +20,11 @@ class Settings(BaseSettings):
     ALLOWED_THREAD_ID: int | None = None
     ADMIN_USER_ID: int
 
+    # Telegram MTProto (Telethon) — necesario para /adminlog
+    # Obtener en https://my.telegram.org
+    TELEGRAM_API_ID: int = 0
+    TELEGRAM_API_HASH: str = ""
+
     # Anthropic
     ANTHROPIC_API_KEY: str
     ANTHROPIC_API_VERSION: str = "2023-06-01"

@@ -24,4 +24,9 @@ LIMIT_MESSAGES = {
     "dm_rate_limited": "Demasiados intentos. Espera un rato antes de volver.",
     "dm_mid_flow": "Estamos a mitad de algo. Termina primero o usa /cancelaroraculo.",
     "awaiting_expired": "Se te ha pasado el arroz. Si quieres consultar, vuelve a empezar.",
+    "adminlog_no_results": "El registro está limpio. Nadie ha hecho nada digno de mención.",
+    "adminlog_not_configured": "El ojo que todo lo ve necesita credenciales MTProto. Configúralas y vuelve.",
+    "adminlog_no_permission": "No tengo permiso para husmear en los registros de este grupo.",
+    "adminlog_invalid_filter": "Ese filtro no existe. Los válidos son: {filters}.",
+    "adminlog_error": "Algo falló al consultar los registros. Los espíritus no cooperan.",
 }
