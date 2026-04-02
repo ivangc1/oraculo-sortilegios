@@ -1,8 +1,7 @@
-"""Dashboard admin: /stats, /version, /adminlog. Solo ADMIN_USER_ID.
+"""Dashboard admin: /stats, /version. Solo ADMIN_USER_ID.
 
 No-admin → respuesta in-character (no silencio).
 /stats limitado a top 5. Si >4096, split.
-/adminlog consulta el admin log de Telegram via Telethon (MTProto).
 """
 
 import time
@@ -102,81 +101,3 @@ async def version_command(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
         f"Env: {settings.ENV}",
         reply_to_message_id=update.message.message_id,
     )
-
-
-async def adminlog_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Handler para /adminlog — solo admin. Consulta admin log via Telethon."""
-    settings: Settings = context.bot_data["settings"]
-    if not await middleware_check(update, context, settings):
-        return
-
-    if update.effective_user.id != settings.ADMIN_USER_ID:
-        await update.message.reply_text(
-            LIMIT_MESSAGES["admin_only"],
-            reply_to_message_id=update.message.message_id,
-        )
-        return
-
-    from service.telethon_client import TelethonClient, VALID_FILTERS
-
-    telethon_client: TelethonClient | None = context.bot_data.get("telethon_client")
-    if not telethon_client or not telethon_client.is_connected:
-        await update.message.reply_text(
-            LIMIT_MESSAGES["adminlog_not_configured"],
-            reply_to_message_id=update.message.message_id,
-        )
-        return
-
-    # Parsear filtro opcional: /adminlog pin, /adminlog ban, etc.
-    filter_type = None
-    if context.args:
-        filter_type = context.args[0].lower()
-        if filter_type not in VALID_FILTERS:
-            await update.message.reply_text(
-                LIMIT_MESSAGES["adminlog_invalid_filter"].format(
-                    filters=", ".join(VALID_FILTERS)
-                ),
-                reply_to_message_id=update.message.message_id,
-            )
-            return
-
-    try:
-        entries = await telethon_client.get_admin_log(
-            chat_id=settings.ALLOWED_CHAT_ID,
-            filter_type=filter_type,
-            limit=10,
-        )
-    except PermissionError:
-        await update.message.reply_text(
-            LIMIT_MESSAGES["adminlog_no_permission"],
-            reply_to_message_id=update.message.message_id,
-        )
-        return
-    except Exception:
-        await update.message.reply_text(
-            LIMIT_MESSAGES["adminlog_error"],
-            reply_to_message_id=update.message.message_id,
-        )
-        return
-
-    if not entries:
-        await update.message.reply_text(
-            LIMIT_MESSAGES["adminlog_no_results"],
-            reply_to_message_id=update.message.message_id,
-        )
-        return
-
-    # Formatear resultados
-    filter_label = f" (filtro: {filter_type})" if filter_type else ""
-    lines = [f"📋 Admin Log{filter_label}", ""]
-    for entry in entries:
-        date_str = entry.date.strftime("%d/%m %H:%M")
-        target_str = f" → {entry.target}" if entry.target else ""
-        lines.append(f"{date_str} | {entry.admin_name} | {entry.action}{target_str}")
-
-    text = "\n".join(lines)
-    chunks = split_message(text)
-    for chunk in chunks:
-        await update.message.reply_text(
-            chunk, reply_to_message_id=update.message.message_id,
-        )

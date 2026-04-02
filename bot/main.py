@@ -108,22 +108,6 @@ async def post_init(application: Application) -> None:
     # Inicializar DB
     await Database.get()
 
-    # Telethon client (opcional — solo si credenciales MTProto configuradas)
-    if settings.TELEGRAM_API_ID and settings.TELEGRAM_API_HASH:
-        from service.telethon_client import TelethonClient
-        telethon = TelethonClient(
-            api_id=settings.TELEGRAM_API_ID,
-            api_hash=settings.TELEGRAM_API_HASH,
-            bot_token=settings.BOT_TOKEN,
-        )
-        try:
-            await telethon.connect()
-            application.bot_data["telethon_client"] = telethon
-        except Exception as e:
-            logger.error(f"Telethon connection failed: {e}")
-    else:
-        logger.info("Telethon credentials not configured, /adminlog disabled")
-
     # Alerta de arranque
     await send_alert(
         application.bot,
@@ -141,9 +125,6 @@ async def post_shutdown(application: Application) -> None:
     anthropic_service: AnthropicService | None = application.bot_data.get("anthropic_service")
     if anthropic_service:
         await anthropic_service.close()
-    telethon_client = application.bot_data.get("telethon_client")
-    if telethon_client:
-        await telethon_client.disconnect()
     logger.info("Bot apagado correctamente")
 
 
@@ -222,7 +203,7 @@ def main() -> None:
     from bot.handlers.start import start_command
     from bot.handlers.help import help_command
     from bot.handlers.profile import miperfil_command, borrarme_command
-    from bot.handlers.admin import stats_command, version_command, adminlog_command
+    from bot.handlers.admin import stats_command, version_command
     from bot.handlers.tarot import tarot_command
     from bot.handlers.runas import runas_command
     from bot.handlers.iching import iching_command
@@ -239,7 +220,6 @@ def main() -> None:
     app.add_handler(CommandHandler("borrarme", borrarme_command))
     app.add_handler(CommandHandler("stats", stats_command))
     app.add_handler(CommandHandler("version", version_command))
-    app.add_handler(CommandHandler("adminlog", adminlog_command))
     app.add_handler(CommandHandler("tirartarot", tarot_command))
     app.add_handler(CommandHandler("runa", runas_command))
     app.add_handler(CommandHandler("iching", iching_command))
