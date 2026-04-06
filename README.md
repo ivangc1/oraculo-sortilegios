@@ -129,7 +129,7 @@ tests/                  # 384+ tests
 - Tiradas diarias, numerologia, natal, oraculo: sin limite practico (configurables via .env, por defecto desactivados en produccion)
 - 60s cooldown entre consultas
 - 5min timeout en preguntas pendientes (expiran automaticamente)
-- 200 chars max por pregunta
+- 500 chars max por pregunta
 - Spending limit $25/mes
 - 3 semaforo concurrente API (configurable)
 
