@@ -6,10 +6,10 @@ from service.models import InterpretationRequest, UserProfile
 def test_question_truncated_at_200():
     req = InterpretationRequest(
         mode="oraculo", variant="libre",
-        question="X" * 300,
+        question="X" * 600,
         user_profile=UserProfile(alias="Test"),
     )
-    assert len(req.question) == 200
+    assert len(req.question) == 500
 
 
 def test_question_stripped():

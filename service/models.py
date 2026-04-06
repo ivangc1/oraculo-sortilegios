@@ -74,8 +74,8 @@ class InterpretationRequest(BaseModel):
         if v is None:
             return None
         v = v.strip()
-        if len(v) > 200:
-            v = v[:200]
+        if len(v) > 500:
+            v = v[:500]
         return v
 
     @classmethod
