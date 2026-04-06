@@ -79,7 +79,7 @@ def _get_random_fragment(text_key: str) -> str | None:
     if not text_data:
         return None
 
-    n_block = _rng.randint(3, 7)
+    n_block = 1
 
     if isinstance(text_data, dict):
         # CORAN: dict de secciones

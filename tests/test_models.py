@@ -43,10 +43,10 @@ def test_interpretation_request_sanitize_question():
     req = InterpretationRequest(
         mode="tarot",
         variant="1_carta",
-        question="A" * 300,
+        question="A" * 600,
         user_profile=UserProfile(alias="Test"),
     )
-    assert len(req.question) == 200
+    assert len(req.question) == 500
 
 
 def test_interpretation_request_question_strip():

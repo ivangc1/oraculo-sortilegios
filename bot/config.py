@@ -36,7 +36,7 @@ class Settings(BaseSettings):
     DAILY_NATAL_LIMIT: int = 1
     DAILY_ORACULO_LIMIT: int = 3
     COOLDOWN_SECONDS: int = 60
-    MAX_QUESTION_LENGTH: int = 200
+    MAX_QUESTION_LENGTH: int = 500
 
     # UX
     USE_BLOCKQUOTE: bool = True  # Blockquote expandible en lecturas largas (por variante)
