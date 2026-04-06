@@ -111,7 +111,7 @@ def _get_random_fragment(text_key: str) -> str | None:
             else:
                 lines.append(str(v))
         fragment_text = "\n".join(lines)
-        ref = f"fragmento {start + 1}-{start + n_block}"
+        ref = f"fragmento {start + 1}"
     else:
         return None
 
@@ -125,7 +125,7 @@ def _get_random_fragment(text_key: str) -> str | None:
                 other = [s for s in sections if s != section]
                 section = _rng.choice(other)
                 verses = text_data[section]
-                n_block = min(len(verses), _rng.randint(3, 7))
+                n_block = 1
                 start = _rng.randint(0, max(0, len(verses) - n_block))
                 selected = verses[start:start + n_block]
                 lines = [str(v[1]) if isinstance(v, list) and len(v) >= 2 else str(v) for v in selected]
@@ -136,7 +136,7 @@ def _get_random_fragment(text_key: str) -> str | None:
             selected = text_data[start:start + n_block]
             lines = [str(v.get("texto", v)) if isinstance(v, dict) else str(v) for v in selected]
             fragment_text = "\n".join(lines)
-            ref = f"fragmento {start + 1}-{start + n_block}"
+            ref = f"fragmento {start + 1}"
 
     _LAST_FRAGMENT[text_key] = fragment_text
 
