@@ -35,10 +35,10 @@ Bot de Telegram para el grupo **La Taberna de los Sortilegios** (~2,600 miembros
 | Modelo | `claude-sonnet-4-6` (adaptive thinking desactivado, pendiente estabilidad API) |
 | Validacion | pydantic 2.12 + pydantic-settings 2.13 |
 | Base de datos | SQLite3 + aiosqlite 0.22 (WAL mode) |
-| Astrologia | kerykeion 5.12 (tropical + sidereal Lahiri nativo) |
+| Astrologia | kerykeion 5.12.7 (tropical + sidereal Lahiri nativo) |
 | Geocoding | geopy 2.4 (Nominatim) |
-| Timezone | timezonefinder 8.2 + zoneinfo |
-| Imagenes | Pillow 12.1 |
+| Timezone | timezonefinder 8.2.2 + zoneinfo |
+| Imagenes | Pillow 12.2 |
 | Aleatoriedad | random.SystemRandom |
 | Logging | loguru 0.7 |
 | Testing | pytest 9.0 + pytest-asyncio 1.3 |
