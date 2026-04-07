@@ -65,6 +65,7 @@ async def natal_callback(
     """Callback desde menú natal."""
     query = update.callback_query
     await query.answer()
+    await query.edit_message_reply_markup(reply_markup=None)
     settings: Settings = context.bot_data["settings"]
     user_id = query.from_user.id
     user = await db_users.get_user(user_id)

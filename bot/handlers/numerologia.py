@@ -78,7 +78,8 @@ async def numerologia_informe_callback(
         )
         return
 
-    # Ya tiene nombre → ejecutar
+    # Ya tiene nombre → ejecutar (quitar botones del menú)
+    await query.edit_message_reply_markup(reply_markup=None)
     await _execute_informe(update, context, user, settings)
 
 

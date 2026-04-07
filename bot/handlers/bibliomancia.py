@@ -257,7 +257,9 @@ async def _send_fragment_from_callback(update, query, context, settings: Setting
     chunks = _split_long_message(fragment)
     first = wrap_blockquote(chunks[0]) if use_bq else chunks[0]
     try:
-        await query.edit_message_text(first, parse_mode="HTML" if use_bq else None)
+        await query.edit_message_text(
+            first, parse_mode="HTML" if use_bq else None, reply_markup=None,
+        )
     except BadRequest:
         pass
 

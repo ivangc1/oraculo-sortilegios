@@ -134,7 +134,7 @@ async def tarot_callback(
         # Tirada del dia: ejecutar sin pregunta
         mark_user_busy(user_id)
         try:
-            await query.edit_message_text("Tirando las cartas...")
+            await query.edit_message_text("Tirando las cartas...", reply_markup=None)
             await _execute_tarot_reading(update, context, user, variant, None, settings)
         finally:
             release_user(user_id)
@@ -187,12 +187,16 @@ async def tarot_question_callback(
     if answer == "yes":
         # Editamos el mensaje existente (no crea mensaje nuevo → no aparece en general)
         # El handler de texto captura la respuesta vía user_data flag
-        await query.edit_message_text("✍️ Escribe tu pregunta para las cartas:\n\n(Tienes 5 minutos antes de que el oráculo se aburra y cierre la mesa.)")
+        await query.edit_message_text(
+            "✍️ Escribe tu pregunta para las cartas:\n\n"
+            "(Tienes 5 minutos antes de que el oráculo se aburra y cierre la mesa.)",
+            reply_markup=None,
+        )
         context.user_data["tarot_awaiting_question"] = time.time()
         return
 
     # Sin pregunta → ejecutar tirada directamente
-    await query.edit_message_text("Tirando las cartas...")
+    await query.edit_message_text("Tirando las cartas...", reply_markup=None)
     await _execute_tarot_reading(update, context, user, variant, None, settings)
 
 
