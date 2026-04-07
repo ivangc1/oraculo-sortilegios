@@ -20,7 +20,7 @@ Bot de Telegram para el grupo **La Taberna de los Sortilegios** (~2,600 miembros
 | `/consulta` | Registro | Redirige a DM para onboarding privado |
 | `/startoraculo` | Presentacion | Intro del oraculo en grupo |
 | `/ayudaoraculo` | Ayuda | Lista de todos los comandos |
-| `/miperfil` | Perfil | Ver datos registrados |
+| `/miperfil` | Perfil | Envia datos registrados por DM (privacidad) |
 | `/actualizarperfil` | Perfil | Redirige a DM para actualizar hora/ciudad |
 | `/borrarme` | Perfil | Eliminar perfil y historial |
 | `/cancelaroraculo` | Control | Cancelar operacion en curso |
