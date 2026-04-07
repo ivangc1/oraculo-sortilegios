@@ -44,6 +44,7 @@ async def iching_execute(
     query = update.callback_query
     if query:
         await query.answer()
+        await query.edit_message_reply_markup(reply_markup=None)
 
     settings: Settings = context.bot_data["settings"]
     user_id = (query.from_user if query else update.effective_user).id
