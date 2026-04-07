@@ -166,7 +166,7 @@ class Settings(BaseSettings):
         ("runas", "cruz"),
         ("runas", "cinco"),
         ("runas", "siete"),
-        ("geomancia", "figura"),
+        ("geomancia", "1_figura"),
         ("geomancia", "escudo"),
         ("iching", "hexagrama"),
         ("oraculo", "libre"),
