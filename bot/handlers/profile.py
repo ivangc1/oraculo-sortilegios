@@ -29,7 +29,7 @@ _TIME_RE = re.compile(r"^(\d{1,2}):(\d{2})$")
 
 
 async def miperfil_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Muestra perfil del usuario."""
+    """Muestra perfil del usuario por DM (nunca en grupo por privacidad)."""
     settings: Settings = context.bot_data["settings"]
     if not await middleware_check(update, context, settings):
         return
@@ -68,10 +68,26 @@ async def miperfil_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -
     lines.append("✏️ /actualizarperfil para cambiar datos")
     lines.append("🗑 /borrarme para eliminar tu perfil")
 
-    await update.message.reply_text(
-        "\n".join(lines),
-        reply_to_message_id=update.message.message_id,
-    )
+    profile_text = "\n".join(lines)
+
+    # Enviar por DM para no exponer datos personales en el grupo
+    try:
+        await context.bot.send_message(
+            chat_id=update.effective_user.id,
+            text=profile_text,
+        )
+        # Confirmación breve en grupo
+        if update.effective_chat.type != "private":
+            await update.message.reply_text(
+                "Te he enviado tu perfil por privado. Mira tus DMs.",
+                reply_to_message_id=update.message.message_id,
+            )
+    except Exception:
+        # Si no puede enviar DM (usuario no ha iniciado chat con el bot)
+        await update.message.reply_text(
+            "No puedo enviarte un mensaje privado. Escríbeme primero al DM y luego repite /miperfil.",
+            reply_to_message_id=update.message.message_id,
+        )
 
 
 async def borrarme_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
