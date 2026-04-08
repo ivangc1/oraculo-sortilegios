@@ -33,7 +33,7 @@ _DATA_ENCODING = "utf-8"
 
 
 def _load_texts() -> None:
-    """Carga los 4 textos sagrados desde bibliomancia_datos.py."""
+    """Carga los 5 textos sagrados desde bibliomancia_datos.py."""
     global _TEXTS
     if _TEXTS is not None:
         return
@@ -55,6 +55,7 @@ def _load_texts() -> None:
         "coran": namespace.get("CORAN", {}),
         "gita": namespace.get("GITA", {}),
         "evangelio": namespace.get("EVANGELIO", {}),
+        "liber": namespace.get("LIBER_AL", {}),
     }
 
     logger.info(
@@ -62,7 +63,8 @@ def _load_texts() -> None:
         f"Biblia={len(_TEXTS['biblia'])} secciones, "
         f"Corán={len(_TEXTS['coran'])} suras, "
         f"Gita={len(_TEXTS['gita'])} capítulos, "
-        f"Evangelio={len(_TEXTS['evangelio'])} secciones"
+        f"Evangelio={len(_TEXTS['evangelio'])} secciones, "
+        f"Liber AL={len(_TEXTS['liber'])} capítulos"
     )
 
 
@@ -145,6 +147,7 @@ def _get_random_fragment(text_key: str) -> str | None:
         "coran": f"📖 Corán — {ref}",
         "gita": f"📖 Bhagavad Gita — {ref}",
         "evangelio": f"📖 Evangelio de Tomás — {ref}",
+        "liber": f"📖 Liber AL vel Legis — {ref}",
     }
     header = labels.get(text_key, f"📖 {ref}")
 
@@ -190,6 +193,7 @@ async def bibliomancia_command(update: Update, context: ContextTypes.DEFAULT_TYP
         key_map = {
             "biblia": "biblia", "coran": "coran", "corán": "coran",
             "gita": "gita", "evangelio": "evangelio",
+            "liber": "liber", "thelema": "liber", "crowley": "liber",
         }
         text_key = key_map.get(arg)
         if text_key:

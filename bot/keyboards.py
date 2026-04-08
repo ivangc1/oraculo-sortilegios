@@ -45,6 +45,7 @@ CALLBACKS = {
     "bl:co": ("bibliomancia", "coran"),
     "bl:gi": ("bibliomancia", "gita"),
     "bl:ev": ("bibliomancia", "evangelio"),
+    "bl:la": ("bibliomancia", "liber"),
     # Admins (back)
     "a:bk": ("admins", "back"),
 }
@@ -186,6 +187,9 @@ def bibliomancia_keyboard() -> InlineKeyboardMarkup:
         [
             InlineKeyboardButton("📖 Gita", callback_data="bl:gi"),
             InlineKeyboardButton("📖 Evangelio de Tomás", callback_data="bl:ev"),
+        ],
+        [
+            InlineKeyboardButton("📖 Liber AL vel Legis", callback_data="bl:la"),
         ],
     ])
 
