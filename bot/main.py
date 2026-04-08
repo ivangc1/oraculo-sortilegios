@@ -372,7 +372,7 @@ def main() -> None:
 
         # Bibliomancia
         if data.startswith("bl:"):
-            key_map = {"bl:bi": "biblia", "bl:co": "coran", "bl:gi": "gita", "bl:ev": "evangelio"}
+            key_map = {"bl:bi": "biblia", "bl:co": "coran", "bl:gi": "gita", "bl:ev": "evangelio", "bl:la": "liber"}
             text_key = key_map.get(data)
             if text_key:
                 await bibliomancia_callback(update, context, text_key)
