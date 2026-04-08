@@ -34,8 +34,6 @@ def _clean_verse(text: str) -> str:
     text = re.sub(r"([.!?»])\s*\d+([A-Za-záéíóúñÁÉÍÓÚÑ¡¿«—])", r"\1 \2", text)
     # Numeros pegados a guion largo (53— → —)
     text = re.sub(r"\s+\d+—", " —", text)
-    # Numeros de versiculo en medio del texto (1-3 digitos pegados a letra)
-    text = re.sub(r" \d{1,3}(?=[A-Za-záéíóúñÁÉÍÓÚÑ¡¿«])", " ", text)
     return text
 
 
