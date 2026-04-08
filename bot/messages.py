@@ -24,4 +24,10 @@ LIMIT_MESSAGES = {
     "dm_rate_limited": "Demasiados intentos. Espera un rato antes de volver.",
     "dm_mid_flow": "Estamos a mitad de algo. Termina primero o usa /cancelaroraculo.",
     "awaiting_expired": "Se te ha pasado el arroz. Si quieres consultar, vuelve a empezar.",
+    "report_sent": "Anotado. Los guardianes lo verán.",
+    "report_no_target": "Responde a un mensaje para reportarlo, o usa /reportar @usuario motivo.",
+    "report_cooldown": "Ya has reportado hace poco. Espera un rato.",
+    "report_self": "¿Te reportas a ti mismo? Interesante, pero no.",
+    "report_admin": "Los guardianes no se reportan entre ellos.",
+    "report_error": "No he podido enviar el reporte. Inténtalo después.",
 }

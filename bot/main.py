@@ -204,6 +204,7 @@ def main() -> None:
     from bot.handlers.help import help_command
     from bot.handlers.profile import miperfil_command, borrarme_command
     from bot.handlers.admin import stats_command, version_command
+    from bot.handlers.report import reportar_command
     from bot.handlers.tarot import tarot_command
     from bot.handlers.runas import runas_command
     from bot.handlers.iching import iching_command
@@ -220,6 +221,7 @@ def main() -> None:
     app.add_handler(CommandHandler("borrarme", borrarme_command))
     app.add_handler(CommandHandler("stats", stats_command))
     app.add_handler(CommandHandler("version", version_command))
+    app.add_handler(CommandHandler("reportar", reportar_command))
     app.add_handler(CommandHandler("tirartarot", tarot_command))
     app.add_handler(CommandHandler("runa", runas_command))
     app.add_handler(CommandHandler("iching", iching_command))

@@ -20,6 +20,18 @@ class Settings(BaseSettings):
     ALLOWED_THREAD_ID: int | None = None
     ADMIN_USER_ID: int
 
+    # Reportes — IDs de admins que reciben notificaciones de /reportar
+    # Formato en .env: REPORT_ADMIN_IDS_RAW=123456,789012
+    REPORT_ADMIN_IDS_RAW: str = ""
+    REPORT_COOLDOWN_SECONDS: int = 300  # 5 minutos entre reportes
+
+    @property
+    def report_admin_ids(self) -> list[int]:
+        """Lista de admin IDs para reportes. Fallback a ADMIN_USER_ID si vacío."""
+        if not self.REPORT_ADMIN_IDS_RAW:
+            return [self.ADMIN_USER_ID]
+        return [int(x.strip()) for x in self.REPORT_ADMIN_IDS_RAW.split(",") if x.strip()]
+
     # Anthropic
     ANTHROPIC_API_KEY: str
     ANTHROPIC_API_VERSION: str = "2023-06-01"
