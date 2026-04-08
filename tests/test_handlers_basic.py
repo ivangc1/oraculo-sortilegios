@@ -47,6 +47,7 @@ def test_help_has_bibliomancia_books():
     assert "Corán" in _HELP_TEXT
     assert "Gita" in _HELP_TEXT
     assert "Evangelio de Tomás" in _HELP_TEXT
+    assert "Liber AL" in _HELP_TEXT
 
 
 # === Mensajes in-character ===

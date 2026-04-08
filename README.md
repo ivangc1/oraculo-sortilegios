@@ -16,7 +16,7 @@ Bot de Telegram para el grupo **La Taberna de los Sortilegios** (~2,600 miembros
 | `/natal` | Carta natal tropical | Placidus (Whole Sign si lat >60) |
 | `/vedica` | Carta natal vedica | Lahiri ayanamsa, Nakshatras, Dashas |
 | `/oraculo` | Pregunta libre | Sonnet interpreta directamente |
-| `/bibliomancia` | Textos sagrados | Biblia, Coran, Gita, Evangelio de Tomas |
+| `/bibliomancia` | Textos sagrados | Biblia, Coran, Gita, Evangelio de Tomas, Liber AL vel Legis |
 | `/consulta` | Registro | Redirige a DM para onboarding privado |
 | `/startoraculo` | Presentacion | Intro del oraculo en grupo |
 | `/ayudaoraculo` | Ayuda | Lista de todos los comandos |
