@@ -13,4 +13,5 @@ ayudaoraculo - Modos disponibles y comandos
 miperfil - Ver tu perfil
 actualizarperfil - Actualizar hora o ciudad
 borrarme - Eliminar tu perfil
+reportar - Reportar usuario o mensaje a los admins
 cancelaroraculo - Cancelar operacion en curso

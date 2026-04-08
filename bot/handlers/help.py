@@ -41,6 +41,7 @@ _HELP_TEXT = """🔮 Modos disponibles:
 
 🆕 /consulta — Registrarte para empezar
 📋 /miperfil · ✏️ /actualizarperfil · 🗑 /borrarme
+🚨 /reportar — Reportar usuario o mensaje a los guardianes
 ❌ /cancelaroraculo — Cancelar operación en curso
 ❓ /ayudaoraculo — Este mensaje
 
