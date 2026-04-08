@@ -25,6 +25,15 @@ from bot.typing import get_thread_id
 
 _rng = random.SystemRandom()
 
+
+def _clean_verse(text: str) -> str:
+    """Limpia números de versículo incrustados en datos de BIBLIA/EVANGELIO."""
+    text = re.sub(r"^\d+\s*", "", text)
+    text = re.sub(r"([.!?»])\s*\d+([A-Za-záéíóúñÁÉÍÓÚÑ¡¿«—])", r"\1 \2", text)
+    text = re.sub(r"\s+\d+—", " —", text)
+    return text
+
+
 # Datos cargados en memoria al primer uso
 _TEXTS: dict[str, dict] | None = None
 _LAST_FRAGMENT: dict[str, str] = {}  # {texto_key: último fragmento enviado}
@@ -112,8 +121,8 @@ def _get_random_fragment(text_key: str) -> str | None:
                 # GITA: {"id": N, "verso": N, "texto": "..."}
                 lines.append(str(v.get("texto", v)))
             else:
-                # BIBLIA/EVANGELIO: quitar número pegado al inicio
-                lines.append(re.sub(r"^\d+\s*", "", str(v)))
+                # BIBLIA/EVANGELIO: quitar números de versículo incrustados
+                lines.append(_clean_verse(str(v)))
         fragment_text = "\n".join(lines)
         ref = f"fragmento {start + 1}"
     else:
@@ -138,7 +147,7 @@ def _get_random_fragment(text_key: str) -> str | None:
         elif isinstance(text_data, list) and len(text_data) > n_block:
             start = _rng.randint(0, max(0, len(text_data) - n_block))
             selected = text_data[start:start + n_block]
-            lines = [str(v.get("texto", v)) if isinstance(v, dict) else re.sub(r"^\d+\s*", "", str(v)) for v in selected]
+            lines = [str(v.get("texto", v)) if isinstance(v, dict) else _clean_verse(str(v)) for v in selected]
             fragment_text = "\n".join(lines)
             ref = f"fragmento {start + 1}"
 
