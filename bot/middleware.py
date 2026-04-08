@@ -59,6 +59,9 @@ async def middleware_check(update: Update, context: ContextTypes.DEFAULT_TYPE, s
             # Comandos permitidos en DM
             if cmd in ("/start", "/startoraculo", "/cancelaroraculo"):
                 return True
+            # Admin: /stats y /version en DM
+            if cmd in ("/stats", "/version") and user and user.id == settings.ADMIN_USER_ID:
+                return True
         # Todo lo demas en DM → rechazo (tiradas, etc.)
         try:
             await message.reply_text(
