@@ -9,6 +9,7 @@ Mensajes >4096: split con párrafos.
 """
 
 import random
+import re
 import textwrap
 
 from loguru import logger
@@ -111,7 +112,8 @@ def _get_random_fragment(text_key: str) -> str | None:
                 # GITA: {"id": N, "verso": N, "texto": "..."}
                 lines.append(str(v.get("texto", v)))
             else:
-                lines.append(str(v))
+                # BIBLIA/EVANGELIO: quitar número pegado al inicio
+                lines.append(re.sub(r"^\d+\s*", "", str(v)))
         fragment_text = "\n".join(lines)
         ref = f"fragmento {start + 1}"
     else:
@@ -136,7 +138,7 @@ def _get_random_fragment(text_key: str) -> str | None:
         elif isinstance(text_data, list) and len(text_data) > n_block:
             start = _rng.randint(0, max(0, len(text_data) - n_block))
             selected = text_data[start:start + n_block]
-            lines = [str(v.get("texto", v)) if isinstance(v, dict) else str(v) for v in selected]
+            lines = [str(v.get("texto", v)) if isinstance(v, dict) else re.sub(r"^\d+\s*", "", str(v)) for v in selected]
             fragment_text = "\n".join(lines)
             ref = f"fragmento {start + 1}"
 
