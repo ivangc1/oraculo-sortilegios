@@ -37,7 +37,7 @@ _HELP_TEXT = """🔮 Modos disponibles:
 🔮 /oraculo — Pregunta libre al oráculo
 
 📖 /bibliomancia — Fragmento de texto sagrado
-   Biblia · Corán · Gita · Evangelio de Tomás
+   Biblia · Corán · Gita · Evangelio de Tomás · Liber AL
 
 🆕 /consulta — Registrarte para empezar
 📋 /miperfil · ✏️ /actualizarperfil · 🗑 /borrarme

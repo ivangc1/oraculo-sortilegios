@@ -424,11 +424,12 @@ Si un modo se trunca >30%/día → ajustar sin redeploy.
 Código existente migrado desde `/opt/evangelio/` (evangeliobot.py + datos.py ~6MB).
 
 **Dos vías de acceso (patrón browse + directo):**
-- `/bibliomancia` → Grid de botones inline: `[Biblia] [Corán] [Gita] [Evangelio de Tomás]`
+- `/bibliomancia` → Grid de botones inline: `[Biblia] [Corán] [Gita] [Evangelio de Tomás] [Liber AL vel Legis]`
 - `/bibliomancia biblia` → Fragmento aleatorio directo
 - `/bibliomancia coran` → Fragmento aleatorio directo
 - `/bibliomancia gita` → Fragmento aleatorio directo
 - `/bibliomancia evangelio` → Fragmento aleatorio directo
+- `/bibliomancia liber` → Fragmento aleatorio directo (también: thelema, crowley)
 
 **Implementación:**
 - Datos cargados en memoria desde `datos.py` al arrancar (CORAN, EVANGELIO, BIBLIA, GITA)
@@ -742,6 +743,7 @@ CALLBACKS = {
     "bl:co": ("bibliomancia", "coran"),
     "bl:gi": ("bibliomancia", "gita"),
     "bl:ev": ("bibliomancia", "evangelio"),
+    "bl:la": ("bibliomancia", "liber"),
     # Admins (a:0 a a:19 — índice del admin)
     "a:0": ("admins", "tam"),
     # ... a:1 a a:19
@@ -1604,7 +1606,7 @@ Antes de lanzar, ejecutar manualmente y evaluar calidad narrativa:
 - [x] /version por usuario no-admin → "solo para el guardián"
 - [x] Migración grupo→supergrupo → alerta con IDs (bot/middleware.py handle_migration)
 - [x] Imagen Cruz Celta <10MB (test_tarot_images.py, verificado 369KB con cartas reales)
-- [x] /bibliomancia → grid de 4 botones (bot/handlers/bibliomancia.py)
+- [x] /bibliomancia → grid de 5 botones (bot/handlers/bibliomancia.py)
 - [x] /bibliomancia biblia → fragmento directo (test_bibliomancia.py)
 - [x] /bibliomancia coran → fragmento directo (test_bibliomancia.py)
 - [x] /bibliomancia gita → fragmento directo (test_bibliomancia.py)
@@ -1705,7 +1707,7 @@ Antes de lanzar, ejecutar manualmente y evaluar calidad narrativa:
 
 **Día 4-5: Oráculo + Extras + Admin** — COMPLETADO (28 tests)
 - [x] Oráculo + sub-prompt + ForceReply + inline /oraculo ¿pregunta?
-- [x] /bibliomancia: handler browse+directo, 4 textos (BIBLIA/CORAN/GITA/EVANGELIO), anti-repetición, split >4096
+- [x] /bibliomancia: handler browse+directo, 5 textos (BIBLIA/CORAN/GITA/EVANGELIO/LIBER_AL), anti-repetición, split >4096
 - [x] /admins: grid 2 columnas + bio + mención tg://user + volver + búsqueda
 - [x] /start: presentación in-character (grupo vs DM, registrado vs no)
 - [x] /stats (top 5, solo admin, no-admin → in-character) + /version
@@ -1842,7 +1844,7 @@ bot-taberna/
 │   ├── runas.json                     # 24 Elder Futhark + Wyrd
 │   ├── iching_hexagrams.json          # 64 hexagramas
 │   ├── nakshatras.json                # Natales védicas
-│   ├── bibliomancia_datos.py          # ~6MB, CORAN/EVANGELIO/BIBLIA/GITA
+│   ├── bibliomancia_datos.py          # ~6MB, CORAN/EVANGELIO/BIBLIA/GITA/LIBER_AL
 │   ├── admins_private.json            # IDs reales + bios. EN .GITIGNORE.
 │   └── admins_private.example.json    # En repo, datos fake, formato referencia
 ├── tests/                              # + conftest, queue_timeout, drawn_data, sun_sign
