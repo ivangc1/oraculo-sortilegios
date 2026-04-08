@@ -28,9 +28,14 @@ _rng = random.SystemRandom()
 
 def _clean_verse(text: str) -> str:
     """Limpia números de versículo incrustados en datos de BIBLIA/EVANGELIO."""
+    # Numero al inicio
     text = re.sub(r"^\d+\s*", "", text)
+    # Numeros tras puntuacion (.4Y → . Y)
     text = re.sub(r"([.!?»])\s*\d+([A-Za-záéíóúñÁÉÍÓÚÑ¡¿«—])", r"\1 \2", text)
+    # Numeros pegados a guion largo (53— → —)
     text = re.sub(r"\s+\d+—", " —", text)
+    # Numeros de versiculo en medio del texto (1-3 digitos pegados a letra)
+    text = re.sub(r" \d{1,3}(?=[A-Za-záéíóúñÁÉÍÓÚÑ¡¿«])", " ", text)
     return text
 
 
