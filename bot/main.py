@@ -213,6 +213,8 @@ def main() -> None:
     from bot.handlers.natal import natal_command, vedica_command
     from bot.handlers.oraculo import oraculo_command
     from bot.handlers.bibliomancia import bibliomancia_command
+    from bot.handlers.demonio import demonio_command
+    from bot.handlers.angel import angel_command
 
     app.add_handler(CommandHandler("start", start_command))  # Deep links + DM
     app.add_handler(CommandHandler("startoraculo", start_command))
@@ -231,6 +233,8 @@ def main() -> None:
     app.add_handler(CommandHandler("vedica", vedica_command))
     app.add_handler(CommandHandler("oraculo", oraculo_command))
     app.add_handler(CommandHandler("bibliomancia", bibliomancia_command))
+    app.add_handler(CommandHandler("demonio", demonio_command))
+    app.add_handler(CommandHandler("angel", angel_command))
 
 
     # 4. Callback handlers para modos con menú inline

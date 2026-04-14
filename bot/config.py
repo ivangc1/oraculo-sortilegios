@@ -12,7 +12,7 @@ class Settings(BaseSettings):
 
     # Entorno
     ENV: str = "dev"
-    BOT_VERSION: str = "1.176"
+    BOT_VERSION: str = "1.177"
 
     # Telegram
     BOT_TOKEN: str
@@ -189,6 +189,8 @@ class Settings(BaseSettings):
         ("bibliomancia", "gita"),
         ("bibliomancia", "evangelio"),
         ("bibliomancia", "liber"),
+        ("demonio", "consulta"),
+        ("angel", "consulta"),
     })
 
     def use_blockquote_for(self, mode: str, variant: str) -> bool:
