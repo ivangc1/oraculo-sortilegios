@@ -295,3 +295,30 @@ def test_sub_prompt_with_demon_has_base_instructions():
     assert "Ars Goetia" in prompt or "Goetia" in prompt
     assert "NUNCA" in prompt  # Instrucciones
     assert "CÓMO RESPONDER" in prompt
+
+
+# === Sellos (F2) ===
+
+def test_sigil_path_function():
+    """_sigil_path devuelve Path o None sin crashear."""
+    from bot.handlers.demonio import _sigil_path
+    result = _sigil_path(1)
+    # Puede ser None (assets no descargados aún) o Path existente
+    assert result is None or result.exists()
+
+
+def test_sigil_path_all_demons():
+    """_sigil_path funciona para los 72 demonios sin error."""
+    from bot.handlers.demonio import _sigil_path
+    for n in range(1, 73):
+        result = _sigil_path(n)
+        # No debe fallar; devolver None está bien si no hay archivo
+        assert result is None or result.suffix == ".png"
+
+
+def test_sigil_path_invalid_number():
+    """_sigil_path con número inválido devuelve None."""
+    from bot.handlers.demonio import _sigil_path
+    assert _sigil_path(0) is None
+    assert _sigil_path(73) is None
+    assert _sigil_path(999) is None
