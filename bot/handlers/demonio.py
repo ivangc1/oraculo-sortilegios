@@ -155,6 +155,19 @@ def _parse_args(args: list[str], user_id: int) -> tuple[dict, str | None]:
     return _get_random_demon(user_id), " ".join(args).strip()
 
 
+def _sigil_path(demon_number: int) -> Path | None:
+    """Devuelve el path del sello del demonio si existe, None si no.
+
+    Los sellos se descargan con scripts/download_sigils.py y se guardan
+    en assets/goetia_sigils/NN.png (nombrado por número de demonio).
+    """
+    path = (
+        Path(__file__).parent.parent.parent
+        / "assets" / "goetia_sigils" / f"{demon_number:02d}.png"
+    )
+    return path if path.exists() else None
+
+
 def _format_demon(demon: dict) -> str:
     """Formatea la ficha de un demonio para Telegram (marcadores [[T]][[C]])."""
     angel_num = demon.get("corresponding_angel")
@@ -224,7 +237,23 @@ async def demonio_command(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
 
     demon, question = _parse_args(args, user_id)
 
-    # 1. Enviar ficha estática siempre
+    # 1. Enviar sello (si existe localmente)
+    sigil = _sigil_path(demon["number"])
+    if sigil:
+        try:
+            with open(sigil, "rb") as f:
+                await context.bot.send_photo(
+                    chat_id=chat_id,
+                    photo=f,
+                    caption=f"🔻 Sello de {demon['name']}",
+                    message_thread_id=thread_id,
+                    reply_to_message_id=msg.message_id,
+                )
+        except (BadRequest, Forbidden) as e:
+            logger.warning(f"No se pudo enviar sello de {demon['name']}: {e}")
+            # Continuar con la ficha igual
+
+    # 2. Enviar ficha estática
     ficha_text = _format_demon(demon)
     chunks = format_and_split(
         ficha_text, use_blockquote=settings.use_blockquote_for("demonio", "consulta"),
