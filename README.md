@@ -17,6 +17,8 @@ Bot de Telegram para el grupo **La Taberna de los Sortilegios** (~2,600 miembros
 | `/vedica` | Carta natal vedica | Lahiri ayanamsa, Nakshatras, Dashas |
 | `/oraculo` | Pregunta libre | Sonnet interpreta directamente |
 | `/bibliomancia` | Textos sagrados | Biblia, Coran, Gita, Evangelio de Tomas, Liber AL vel Legis |
+| `/demonio` | Demonologia | Los 72 demonios del Ars Goetia (nombre/numero/aleatorio) |
+| `/angel` | Angelologia | Los 72 angeles del Shem HaMephorash (nombre/numero/aleatorio) |
 | `/consulta` | Registro | Redirige a DM para onboarding privado |
 | `/startoraculo` | Presentacion | Intro del oraculo en grupo |
 | `/ayudaoraculo` | Ayuda | Lista de todos los comandos |
@@ -122,7 +124,7 @@ generators/             # SystemRandom, sin repeticion
 images/                 # Pillow: tarot, runas, hexagramas, geomancia
 database/               # SQLite singleton, WAL, migraciones
 data/                   # JSONs + datos estaticos
-tests/                  # 392+ tests
+tests/                  # 419+ tests
 ```
 
 ## Limites de uso

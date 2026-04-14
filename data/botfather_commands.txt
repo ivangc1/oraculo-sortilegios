@@ -9,6 +9,8 @@ natal - Carta natal tropical
 vedica - Carta natal vedica (Jyotish)
 oraculo - Pregunta libre al oraculo
 bibliomancia - Fragmento de texto sagrado
+demonio - Los 72 demonios de la Goetia
+angel - Los 72 angeles del Shem HaMephorash
 ayudaoraculo - Modos disponibles y comandos
 miperfil - Ver tu perfil
 actualizarperfil - Actualizar hora o ciudad

@@ -39,6 +39,12 @@ _HELP_TEXT = """🔮 Modos disponibles:
 📖 /bibliomancia — Fragmento de texto sagrado
    Biblia · Corán · Gita · Evangelio de Tomás · Liber AL
 
+🔻 /demonio — Los 72 demonios de la Goetia
+   /demonio <nombre> · /demonio <número> · /demonio aleatorio
+
+🔺 /angel — Los 72 ángeles del Shem HaMephorash
+   /angel <nombre> · /angel <número> · /angel aleatorio
+
 🆕 /consulta — Registrarte para empezar
 📋 /miperfil · ✏️ /actualizarperfil · 🗑 /borrarme
 🚨 /reportar — Reportar usuario o mensaje a los guardianes
