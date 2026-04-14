@@ -11,7 +11,9 @@ from bot.handlers.demonio import (
     _get_random_demon,
     _normalize,
     _load_data,
+    _parse_args,
 )
+from service.prompts.demonio import get_sub_prompt as demon_sub_prompt
 
 
 # Cargar datos antes de los tests
@@ -207,3 +209,89 @@ def test_format_demon_has_markers():
     text = _format_demon(demon)
     assert "[[T]]" in text
     assert "[[C]]" in text
+
+
+# === Parseo de args ===
+
+def test_parse_args_empty():
+    """Sin args → random, sin pregunta."""
+    demon, q = _parse_args([], user_id=10001)
+    assert demon is not None
+    assert q is None
+
+
+def test_parse_args_aleatorio():
+    """['aleatorio'] → random, sin pregunta."""
+    demon, q = _parse_args(["aleatorio"], user_id=10002)
+    assert demon is not None
+    assert q is None
+
+
+def test_parse_args_aleatorio_with_question():
+    """['aleatorio', '¿pregunta?'] → random + pregunta."""
+    demon, q = _parse_args(["aleatorio", "¿cómo", "va?"], user_id=10003)
+    assert demon is not None
+    assert q == "¿cómo va?"
+
+
+def test_parse_args_by_name():
+    """['bael'] → Bael, sin pregunta."""
+    demon, q = _parse_args(["bael"], user_id=10004)
+    assert demon["number"] == 1
+    assert q is None
+
+
+def test_parse_args_by_name_with_question():
+    """['bael', '¿pregunta?'] → Bael + pregunta."""
+    demon, q = _parse_args(["bael", "¿me", "conviene?"], user_id=10005)
+    assert demon["number"] == 1
+    assert q == "¿me conviene?"
+
+
+def test_parse_args_by_number():
+    """['1'] → Bael por número."""
+    demon, q = _parse_args(["1"], user_id=10006)
+    assert demon["number"] == 1
+    assert q is None
+
+
+def test_parse_args_by_number_with_question():
+    """['1', '¿pregunta?'] → Bael por número + pregunta."""
+    demon, q = _parse_args(["32", "¿me", "ayudará?"], user_id=10007)
+    assert demon["number"] == 32
+    assert q == "¿me ayudará?"
+
+
+def test_parse_args_only_question():
+    """['palabra', 'que', 'no', 'es', 'demonio'] → random + toda la cadena como pregunta."""
+    demon, q = _parse_args(["¿qué", "me", "depara", "hoy?"], user_id=10008)
+    assert demon is not None
+    assert q == "¿qué me depara hoy?"
+
+
+# === Sub-prompt ===
+
+def test_sub_prompt_without_demon():
+    """Sub-prompt base sin demonio."""
+    prompt = demon_sub_prompt(None)
+    assert "Goetia" in prompt
+    assert "DEMONIO CONSULTADO" not in prompt
+
+
+def test_sub_prompt_with_demon_includes_name():
+    """Sub-prompt con demonio incluye nombre y atributos."""
+    demon = GOETIA[0]  # Bael
+    prompt = demon_sub_prompt(demon)
+    assert "Bael" in prompt
+    assert "DEMONIO CONSULTADO" in prompt
+    assert "Rey" in prompt
+    assert "66" in prompt  # Legiones
+
+
+def test_sub_prompt_with_demon_has_base_instructions():
+    """Sub-prompt con demonio incluye las instrucciones base."""
+    demon = GOETIA[0]
+    prompt = demon_sub_prompt(demon)
+    assert "Ars Goetia" in prompt or "Goetia" in prompt
+    assert "NUNCA" in prompt  # Instrucciones
+    assert "CÓMO RESPONDER" in prompt

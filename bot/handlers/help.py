@@ -41,9 +41,11 @@ _HELP_TEXT = """🔮 Modos disponibles:
 
 🔻 /demonio — Los 72 demonios de la Goetia
    /demonio <nombre> · /demonio <número> · /demonio aleatorio
+   /demonio <nombre> <pregunta> → El Pezuñento interpreta
 
 🔺 /angel — Los 72 ángeles del Shem HaMephorash
    /angel <nombre> · /angel <número> · /angel aleatorio
+   /angel <nombre> <pregunta> → Interpretación a través del ángel
 
 🆕 /consulta — Registrarte para empezar
 📋 /miperfil · ✏️ /actualizarperfil · 🗑 /borrarme

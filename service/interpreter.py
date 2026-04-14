@@ -19,8 +19,10 @@ class InterpreterService:
         """Construye el user message con sub-prompt + datos + perfil + pregunta."""
         parts = []
 
-        # Sub-prompt del modo
-        sub_prompt = self._get_sub_prompt(request.mode, request.variant, request.deck)
+        # Sub-prompt del modo (puede usar extra_data para modos contextuales)
+        sub_prompt = self._get_sub_prompt(
+            request.mode, request.variant, request.deck, request.extra_data,
+        )
         if sub_prompt:
             parts.append(f"<instrucciones_modo>\n{sub_prompt}\n</instrucciones_modo>")
 
@@ -46,8 +48,16 @@ class InterpreterService:
 
         return "\n\n".join(parts)
 
-    def _get_sub_prompt(self, mode: str, variant: str, deck: str | None = None) -> str | None:
-        """Carga sub-prompt según modo/variante. Importaciones lazy."""
+    def _get_sub_prompt(
+        self, mode: str, variant: str,
+        deck: str | None = None,
+        extra_data: dict | None = None,
+    ) -> str | None:
+        """Carga sub-prompt según modo/variante. Importaciones lazy.
+
+        Para modos contextuales (demonio, angel), extra_data contiene
+        el dict de la entidad consultada y se pasa al sub-prompt.
+        """
         try:
             if mode == "tarot":
                 from service.prompts.tarot import get_sub_prompt
@@ -74,6 +84,14 @@ class InterpreterService:
             elif mode == "oraculo":
                 from service.prompts.oraculo import get_sub_prompt
                 return get_sub_prompt()
+            elif mode == "demonio":
+                from service.prompts.demonio import get_sub_prompt
+                demon = (extra_data or {}).get("demon")
+                return get_sub_prompt(demon)
+            elif mode == "angel":
+                from service.prompts.angel import get_sub_prompt
+                angel = (extra_data or {}).get("angel")
+                return get_sub_prompt(angel)
         except ImportError:
             pass
         return None
