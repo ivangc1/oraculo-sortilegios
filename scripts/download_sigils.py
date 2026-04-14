@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import sys
 import time
+import urllib.error
 import urllib.request
 from pathlib import Path
 
@@ -99,8 +100,12 @@ SIGILS: dict[int, str] = {
 }
 
 
-def download_sigil(number: int, filename: str, dest_dir: Path) -> tuple[bool, str]:
+def download_sigil(
+    number: int, filename: str, dest_dir: Path, max_retries: int = 5,
+) -> tuple[bool, str]:
     """Descarga un sello del Ars Goetia.
+
+    Hace retry con backoff exponencial en errores 429 (rate limit).
 
     Returns:
         (ok, mensaje_estado)
@@ -110,19 +115,36 @@ def download_sigil(number: int, filename: str, dest_dir: Path) -> tuple[bool, st
         return True, f"  {number:02d} ya existe ({dest.stat().st_size} bytes) — salto"
 
     url = BASE_URL + filename
-    try:
-        req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
-        with urllib.request.urlopen(req, timeout=30) as resp:
-            data = resp.read()
-    except Exception as e:
-        return False, f"  {number:02d} ERROR al descargar '{filename}': {e}"
+    last_error = None
 
-    # Validar que es PNG válido
-    if not data.startswith(b"\x89PNG"):
-        return False, f"  {number:02d} ERROR: '{filename}' no es PNG ({len(data)} bytes)"
+    for attempt in range(max_retries):
+        try:
+            req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
+            with urllib.request.urlopen(req, timeout=30) as resp:
+                data = resp.read()
 
-    dest.write_bytes(data)
-    return True, f"  {number:02d} descargado '{filename}' ({len(data)} bytes)"
+            # Validar que es PNG válido
+            if not data.startswith(b"\x89PNG"):
+                return False, f"  {number:02d} ERROR: '{filename}' no es PNG ({len(data)} bytes)"
+
+            dest.write_bytes(data)
+            return True, f"  {number:02d} descargado '{filename}' ({len(data)} bytes)"
+
+        except urllib.error.HTTPError as e:
+            last_error = e
+            if e.code == 429:
+                # Rate limit: backoff exponencial 5s, 10s, 20s, 40s, 80s
+                wait = 5 * (2 ** attempt)
+                print(f"  {number:02d} rate limit, esperando {wait}s antes de reintentar...")
+                time.sleep(wait)
+                continue
+            # Otro error HTTP: no reintentar
+            return False, f"  {number:02d} ERROR HTTP {e.code} en '{filename}': {e}"
+        except Exception as e:
+            last_error = e
+            return False, f"  {number:02d} ERROR al descargar '{filename}': {e}"
+
+    return False, f"  {number:02d} ERROR tras {max_retries} intentos: {last_error}"
 
 
 def main() -> int:
@@ -144,7 +166,7 @@ def main() -> int:
             ok_count += 1
         else:
             failures.append((number, filename, msg))
-        time.sleep(0.2)  # Rate limit suave con Wikimedia
+        time.sleep(1.5)  # Rate limit amistoso con Wikimedia (evita 429)
 
     print("=" * 60)
     print(f"Total: {ok_count}/72 descargados")
