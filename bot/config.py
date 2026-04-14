@@ -12,7 +12,7 @@ class Settings(BaseSettings):
 
     # Entorno
     ENV: str = "dev"
-    BOT_VERSION: str = "1.177"
+    BOT_VERSION: str = "1.178"
 
     # Telegram
     BOT_TOKEN: str
@@ -79,6 +79,8 @@ class Settings(BaseSettings):
     EFFORT_RUNAS_CINCO: str = "high"
     EFFORT_RUNAS_SIETE: str = "high"
     EFFORT_ORACULO: str = "medium"
+    EFFORT_DEMONIO: str = "high"
+    EFFORT_ANGEL: str = "high"
 
     # max_tokens por modo (configurables sin redeploy)
     MAX_TOKENS_TAROT_1: int = 700
@@ -103,6 +105,8 @@ class Settings(BaseSettings):
     MAX_TOKENS_RUNAS_CINCO: int = 1600
     MAX_TOKENS_RUNAS_SIETE: int = 2200
     MAX_TOKENS_ORACULO: int = 1000
+    MAX_TOKENS_DEMONIO: int = 1500
+    MAX_TOKENS_ANGEL: int = 1500
 
     def get_max_tokens(self, mode: str, variant: str) -> int:
         """Devuelve max_tokens para un modo/variante."""
@@ -129,6 +133,8 @@ class Settings(BaseSettings):
             ("natal", "tropical"): self.MAX_TOKENS_NATAL_TROPICAL,
             ("natal", "vedica"): self.MAX_TOKENS_NATAL_VEDICA,
             ("oraculo", "libre"): self.MAX_TOKENS_ORACULO,
+            ("demonio", "consulta"): self.MAX_TOKENS_DEMONIO,
+            ("angel", "consulta"): self.MAX_TOKENS_ANGEL,
         }
         return key_map.get((mode, variant), 600)
 
@@ -157,6 +163,8 @@ class Settings(BaseSettings):
             ("natal", "tropical"): self.EFFORT_NATAL_TROPICAL,
             ("natal", "vedica"): self.EFFORT_NATAL_VEDICA,
             ("oraculo", "libre"): self.EFFORT_ORACULO,
+            ("demonio", "consulta"): self.EFFORT_DEMONIO,
+            ("angel", "consulta"): self.EFFORT_ANGEL,
         }
         return key_map.get((mode, variant), "medium")
 

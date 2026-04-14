@@ -7,7 +7,9 @@ from bot.handlers.angel import (
     _get_random_angel,
     _normalize,
     _load_data,
+    _parse_args,
 )
+from service.prompts.angel import get_sub_prompt as angel_sub_prompt
 
 
 _load_data()
@@ -157,3 +159,66 @@ def test_format_angel_has_markers():
     text = _format_angel(angel)
     assert "[[T]]" in text
     assert "[[C]]" in text
+
+
+# === Parseo de args ===
+
+def test_parse_args_angel_empty():
+    """Sin args → random, sin pregunta."""
+    angel, q = _parse_args([], user_id=20001)
+    assert angel is not None
+    assert q is None
+
+
+def test_parse_args_angel_by_name():
+    """['vehuiah'] → Vehuiah."""
+    angel, q = _parse_args(["vehuiah"], user_id=20002)
+    assert angel["number"] == 1
+    assert q is None
+
+
+def test_parse_args_angel_by_name_with_question():
+    """['vehuiah', '¿pregunta?'] → Vehuiah + pregunta."""
+    angel, q = _parse_args(["vehuiah", "¿cómo", "empezar?"], user_id=20003)
+    assert angel["number"] == 1
+    assert q == "¿cómo empezar?"
+
+
+def test_parse_args_angel_by_number():
+    """['1'] → Vehuiah por número."""
+    angel, q = _parse_args(["1"], user_id=20004)
+    assert angel["number"] == 1
+
+
+def test_parse_args_angel_only_question():
+    """['pregunta libre'] → random + pregunta."""
+    angel, q = _parse_args(["¿qué", "necesito", "hoy?"], user_id=20005)
+    assert angel is not None
+    assert q == "¿qué necesito hoy?"
+
+
+# === Sub-prompt ===
+
+def test_angel_sub_prompt_without_angel():
+    """Sub-prompt base sin ángel."""
+    prompt = angel_sub_prompt(None)
+    assert "Shem" in prompt
+    assert "ÁNGEL CONSULTADO" not in prompt
+
+
+def test_angel_sub_prompt_with_angel_includes_name():
+    """Sub-prompt con ángel incluye nombre y atributos."""
+    angel = SHEM[0]  # Vehuiah
+    prompt = angel_sub_prompt(angel)
+    assert "Vehuiah" in prompt
+    assert "ÁNGEL CONSULTADO" in prompt
+    assert "Serafines" in prompt
+
+
+def test_angel_sub_prompt_with_angel_has_base_instructions():
+    """Sub-prompt con ángel incluye las instrucciones base."""
+    angel = SHEM[0]
+    prompt = angel_sub_prompt(angel)
+    assert "Shem" in prompt
+    assert "NUNCA" in prompt
+    assert "CÓMO RESPONDER" in prompt

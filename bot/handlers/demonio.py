@@ -1,42 +1,55 @@
 """Handler de /demonio: consulta los 72 demonios del Ars Goetia.
 
-Tres modos:
-- /demonio → aleatorio
-- /demonio aleatorio → explícito aleatorio
-- /demonio bael / /demonio 1 → búsqueda por nombre o número
+Cuatro modos:
+- /demonio → aleatorio sin pregunta
+- /demonio <nombre|numero|aleatorio> → selección sin pregunta
+- /demonio <nombre|numero> <pregunta> → selección + LLM interpreta
+- /demonio <pregunta> → aleatorio + LLM interpreta
 
-Datos en data/goetia_datos.py (72 entradas).
-Anti-repetición por usuario (no repite el último mostrado a ese user).
+Sin pregunta: solo ficha estática (€0 API).
+Con pregunta: ficha + interpretación LLM usando los atributos del demonio
+como lente contextual.
+
+Datos en data/goetia_datos.py (72 entradas). Anti-repetición por usuario.
 """
 
 from __future__ import annotations
 
+import asyncio
 import random
 import unicodedata
 from pathlib import Path
 
 from loguru import logger
 from telegram import Update
+from telegram.error import BadRequest, Forbidden
 from telegram.ext import ContextTypes
 
+from bot.concurrency import is_user_busy, mark_user_busy, release_user, get_semaphore
 from bot.config import Settings
 from bot.formatting import format_and_split
+from bot.keyboards import feedback_keyboard
+from bot.limits import check_limits, record_cooldown
 from bot.messages import LIMIT_MESSAGES
 from bot.middleware import middleware_check
-from bot.typing import get_thread_id
+from bot.typing import get_thread_id, with_typing
+from database import usage as db_usage
+from database import users as db_users
+from service.interpreter import InterpreterService
+from service.models import InterpretationRequest, UserProfile
 
 _rng = random.SystemRandom()
 
-# Cache global de datos
+# Cache global
 _GOETIA: list | None = None
 _SHEM: list | None = None
 
-# Anti-repetición: user_id -> último número mostrado
+# Anti-repetición por usuario
 _LAST_DEMON: dict[int, int] = {}
 
 
 def _load_data() -> None:
-    """Carga perezosa de los datos de Goetia y Shem."""
+    """Carga perezosa de datos de Goetia y Shem."""
     global _GOETIA, _SHEM
     if _GOETIA is not None and _SHEM is not None:
         return
@@ -78,14 +91,12 @@ def _find_demon(query: str) -> dict | None:
 
     q = _normalize(query)
 
-    # Por número
     if q.isdigit():
         n = int(q)
         if 1 <= n <= len(_GOETIA):
             return _GOETIA[n - 1]
         return None
 
-    # Por nombre o variante
     for d in _GOETIA:
         if _normalize(d["name"]) == q:
             return d
@@ -105,19 +116,53 @@ def _get_random_demon(user_id: int) -> dict:
     return chosen
 
 
-def _format_demon(demon: dict) -> str:
-    """Formatea la ficha de un demonio para mostrar en Telegram.
+def _parse_args(args: list[str], user_id: int) -> tuple[dict, str | None]:
+    """Parsea los argumentos del comando.
 
-    Usa marcadores [[T]] y [[C]] que format_and_split convierte a HTML.
+    Returns:
+        (demon, question): el demonio seleccionado y pregunta opcional.
+
+    Casos:
+    - [] → random, sin pregunta
+    - ["aleatorio"] → random, sin pregunta
+    - ["aleatorio", ...pregunta] → random, con pregunta
+    - ["bael"] → Bael, sin pregunta
+    - ["bael", ...pregunta] → Bael, con pregunta
+    - ["1"] → demonio 1, sin pregunta
+    - [...pregunta que no es nombre] → random, con pregunta
     """
-    # Buscar ángel correspondiente para mostrar el par
+    _load_data()
+
+    if not args:
+        return _get_random_demon(user_id), None
+
+    first = args[0]
+
+    # Explícito "aleatorio"
+    if _normalize(first) == "aleatorio":
+        demon = _get_random_demon(user_id)
+        question = " ".join(args[1:]).strip() if len(args) > 1 else None
+        return demon, question or None
+
+    # Probar si el primero es un nombre/número válido
+    demon = _find_demon(first)
+    if demon is not None:
+        _LAST_DEMON[user_id] = demon["number"]
+        question = " ".join(args[1:]).strip() if len(args) > 1 else None
+        return demon, question or None
+
+    # No es un demonio → tratar todo como pregunta, random
+    return _get_random_demon(user_id), " ".join(args).strip()
+
+
+def _format_demon(demon: dict) -> str:
+    """Formatea la ficha de un demonio para Telegram (marcadores [[T]][[C]])."""
     angel_num = demon.get("corresponding_angel")
     angel_ref = ""
     if angel_num and _SHEM and 1 <= angel_num <= len(_SHEM):
         angel = _SHEM[angel_num - 1]
         angel_ref = f"\n\n🔺 [[T]]Ángel correspondiente:[[/T]] [[C]]{angel['name']}[[/C]] ({angel['choir']}) — /angel {angel_num}"
 
-    # Regencia
     regencia_parts = []
     if demon.get("day_night"):
         regencia_parts.append(demon["day_night"].capitalize())
@@ -142,12 +187,11 @@ def _format_demon(demon: dict) -> str:
         f"📜 [[T]]Descripción:[[/T]] {demon['description']}",
     ]
 
-    text = "\n".join(lines) + angel_ref
-    return text
+    return "\n".join(lines) + angel_ref
 
 
 async def demonio_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Handler de /demonio — consulta demonio del Ars Goetia."""
+    """Handler de /demonio — ficha estática, opcionalmente con interpretación LLM."""
     settings: Settings = context.bot_data["settings"]
     if not await middleware_check(update, context, settings):
         return
@@ -158,31 +202,33 @@ async def demonio_command(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
     thread_id = get_thread_id(update)
     msg = update.message
 
-    # Parsear args
     args = context.args if context.args else []
 
-    if not args or (len(args) == 1 and _normalize(args[0]) == "aleatorio"):
-        demon = _get_random_demon(user_id)
-    else:
-        # Intentar buscar por el primer argumento (puede ser nombre compuesto si hay espacios)
-        query = " ".join(args)
-        demon = _find_demon(query)
+    # Parsear: si el primero es un token reservado (nombre/número/aleatorio),
+    # lo procesamos; si no, todo es pregunta → random.
+    if args:
+        first = args[0]
+        if _normalize(first) != "aleatorio":
+            # Comprobar si el primero es un demonio válido antes de parsear
+            candidate = _find_demon(first)
+            if candidate is None and len(args) >= 1:
+                # No es un demonio. Todo el texto es pregunta → random.
+                # EXCEPCIÓN: si hay solo 1 argumento (p.ej. "bael" malescrito),
+                # lo tratamos como not_found explícito.
+                if len(args) == 1:
+                    await msg.reply_text(
+                        LIMIT_MESSAGES["demon_not_found"],
+                        reply_to_message_id=msg.message_id,
+                    )
+                    return
 
-        if demon is None:
-            await msg.reply_text(
-                LIMIT_MESSAGES["demon_not_found"],
-                reply_to_message_id=msg.message_id,
-            )
-            return
-        # Actualizar anti-repetición también en búsquedas directas
-        _LAST_DEMON[user_id] = demon["number"]
+    demon, question = _parse_args(args, user_id)
 
-    # Formatear y enviar
-    text = _format_demon(demon)
+    # 1. Enviar ficha estática siempre
+    ficha_text = _format_demon(demon)
     chunks = format_and_split(
-        text, use_blockquote=settings.use_blockquote_for("demonio", "consulta"),
+        ficha_text, use_blockquote=settings.use_blockquote_for("demonio", "consulta"),
     )
-
     for chunk in chunks:
         await context.bot.send_message(
             chat_id=chat_id,
@@ -192,4 +238,115 @@ async def demonio_command(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
             reply_to_message_id=msg.message_id,
         )
 
-    logger.info(f"Demonio consultado: user={user_id} → {demon['number']} ({demon['name']})")
+    # 2. Sin pregunta: terminar aquí
+    if not question:
+        logger.info(f"Demonio consultado (sin pregunta): user={user_id} → {demon['number']} ({demon['name']})")
+        return
+
+    # 3. Con pregunta: verificar concurrencia y límites, llamar LLM
+    if is_user_busy(user_id):
+        await context.bot.send_message(
+            chat_id, text=LIMIT_MESSAGES["request_in_progress"],
+            message_thread_id=thread_id,
+        )
+        return
+
+    limit_key = await check_limits(user_id, "demonio", settings)
+    if limit_key:
+        await context.bot.send_message(
+            chat_id, text=LIMIT_MESSAGES[limit_key],
+            message_thread_id=thread_id,
+        )
+        return
+
+    # Sanitizar pregunta
+    if len(question) > settings.MAX_QUESTION_LENGTH:
+        question = question[:settings.MAX_QUESTION_LENGTH]
+
+    mark_user_busy(user_id)
+    try:
+        user = await db_users.get_user(user_id)
+        profile = UserProfile.from_db_or_guest(user, update)
+
+        request = InterpretationRequest(
+            mode="demonio", variant="consulta",
+            question=question, user_profile=profile,
+            max_tokens=settings.get_max_tokens("demonio", "consulta"),
+            effort=settings.get_effort("demonio", "consulta"),
+            extra_data={"demon": demon},
+        )
+
+        interpreter: InterpreterService = context.bot_data["interpreter_service"]
+        semaphore = get_semaphore()
+
+        async def _interpret():
+            async with semaphore:
+                return await interpreter.interpret(request)
+
+        try:
+            response = await asyncio.wait_for(
+                with_typing(chat_id, context.bot, _interpret()),
+                timeout=settings.QUEUE_TIMEOUT,
+            )
+        except asyncio.TimeoutError:
+            await context.bot.send_message(
+                chat_id, text=LIMIT_MESSAGES["queue_timeout"],
+                message_thread_id=thread_id,
+            )
+            return
+
+        if response.error:
+            error_key = {
+                "timeout": "queue_timeout", "rate_limit": "rate_limit",
+                "empty_response": "empty_response",
+            }.get(response.error, "api_error")
+            await context.bot.send_message(
+                chat_id, text=LIMIT_MESSAGES.get(error_key, LIMIT_MESSAGES["api_error"]),
+                message_thread_id=thread_id,
+            )
+            return
+
+        text = response.text
+        if response.truncated:
+            text += LIMIT_MESSAGES["truncated"]
+
+        chunks = format_and_split(
+            text, use_blockquote=settings.use_blockquote_for("demonio", "consulta"),
+        )
+        text_msg = None
+        for chunk in chunks:
+            text_msg = await context.bot.send_message(
+                chat_id, text=chunk, parse_mode="HTML",
+                message_thread_id=thread_id,
+            )
+
+        drawn_data = {
+            "demon_number": demon["number"],
+            "demon_name": demon["name"],
+            "question_length": len(question),
+        }
+        usage_id = await db_usage.record_usage(
+            user_id=user_id, mode="demonio", variant="consulta",
+            tokens_input=response.tokens_input, tokens_output=response.tokens_output,
+            cost_usd=response.cost_usd, cached=response.cached, truncated=response.truncated,
+            drawn_data=drawn_data,
+        )
+
+        if text_msg:
+            try:
+                await context.bot.send_message(
+                    chat_id, text="¿Qué te ha parecido la lectura?",
+                    reply_markup=feedback_keyboard(usage_id),
+                    reply_to_message_id=text_msg.message_id,
+                    message_thread_id=thread_id,
+                )
+            except (BadRequest, Forbidden):
+                pass
+
+        record_cooldown(user_id)
+        logger.info(
+            f"Demonio con pregunta: user={user_id} → {demon['number']} "
+            f"({demon['name']}) | pregunta='{question[:50]}'"
+        )
+    finally:
+        release_user(user_id)
