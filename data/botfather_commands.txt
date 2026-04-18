@@ -11,6 +11,9 @@ oraculo - Pregunta libre al oraculo
 bibliomancia - Fragmento de texto sagrado
 demonio - Los 72 demonios de la Goetia
 angel - Los 72 angeles del Shem HaMephorash
+sello - Solo el sigilo de un demonio Goetia
+firma - Firma hebrea de un angel del Shem
+invocar - Habla con un demonio o angel en primera persona
 ayudaoraculo - Modos disponibles y comandos
 miperfil - Ver tu perfil
 actualizarperfil - Actualizar hora o ciudad

@@ -12,7 +12,7 @@ class Settings(BaseSettings):
 
     # Entorno
     ENV: str = "dev"
-    BOT_VERSION: str = "1.184"
+    BOT_VERSION: str = "1.186"
 
     # Telegram
     BOT_TOKEN: str
@@ -81,6 +81,7 @@ class Settings(BaseSettings):
     EFFORT_ORACULO: str = "medium"
     EFFORT_DEMONIO: str = "high"
     EFFORT_ANGEL: str = "high"
+    EFFORT_INVOCAR: str = "high"
 
     # max_tokens por modo (configurables sin redeploy)
     MAX_TOKENS_TAROT_1: int = 700
@@ -107,6 +108,7 @@ class Settings(BaseSettings):
     MAX_TOKENS_ORACULO: int = 1000
     MAX_TOKENS_DEMONIO: int = 1500
     MAX_TOKENS_ANGEL: int = 1500
+    MAX_TOKENS_INVOCAR: int = 1800
 
     def get_max_tokens(self, mode: str, variant: str) -> int:
         """Devuelve max_tokens para un modo/variante."""
@@ -135,6 +137,7 @@ class Settings(BaseSettings):
             ("oraculo", "libre"): self.MAX_TOKENS_ORACULO,
             ("demonio", "consulta"): self.MAX_TOKENS_DEMONIO,
             ("angel", "consulta"): self.MAX_TOKENS_ANGEL,
+            ("invocar", "consulta"): self.MAX_TOKENS_INVOCAR,
         }
         return key_map.get((mode, variant), 600)
 
@@ -165,6 +168,7 @@ class Settings(BaseSettings):
             ("oraculo", "libre"): self.EFFORT_ORACULO,
             ("demonio", "consulta"): self.EFFORT_DEMONIO,
             ("angel", "consulta"): self.EFFORT_ANGEL,
+            ("invocar", "consulta"): self.EFFORT_INVOCAR,
         }
         return key_map.get((mode, variant), "medium")
 
@@ -199,6 +203,7 @@ class Settings(BaseSettings):
         ("bibliomancia", "liber"),
         ("demonio", "consulta"),
         ("angel", "consulta"),
+        ("invocar", "consulta"),
     })
 
     def use_blockquote_for(self, mode: str, variant: str) -> bool:

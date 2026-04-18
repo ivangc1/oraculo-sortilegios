@@ -92,6 +92,11 @@ class InterpreterService:
                 from service.prompts.angel import get_sub_prompt
                 angel = (extra_data or {}).get("angel")
                 return get_sub_prompt(angel)
+            elif mode == "invocar":
+                from service.prompts.invocar import get_sub_prompt
+                entity = (extra_data or {}).get("entity")
+                entity_type = (extra_data or {}).get("entity_type")
+                return get_sub_prompt(entity, entity_type)
         except ImportError:
             pass
         return None

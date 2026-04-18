@@ -169,7 +169,10 @@
       "Bash(python scripts/compose_goetia_cards.py)",
       "Bash(mv assets/goetia_portraits_lebreton/24_Naberius.jpg /tmp/gallica/24_Naberius_user_prefers_ia.jpg)",
       "Bash(mv assets/goetia_portraits_lebreton/33_Gaap.jpg /tmp/gallica/33_Gaap_user_prefers_ia.jpg)",
-      "Bash(python -m pytest tests/test_demonio.py)"
+      "Bash(python -m pytest tests/test_demonio.py)",
+      "Bash(python -c \"from PIL import ImageFont; f = ImageFont.truetype\\('times.ttf', 48\\); print\\('Times OK'\\); f2 = ImageFont.truetype\\('david.ttf', 48\\) if False else None; import os; print\\([x for x in os.listdir\\('C:/Windows/Fonts'\\) if 'hebrew' in x.lower\\(\\) or 'david' in x.lower\\(\\) or 'miriam' in x.lower\\(\\) or 'narkiss' in x.lower\\(\\)][:5]\\)\")",
+      "Bash(python scripts/generate_shem_firmas.py)",
+      "Bash(python -m pytest tests/test_sello_firma_invocar.py tests/test_demonio.py -v)"
     ]
   }
 }
