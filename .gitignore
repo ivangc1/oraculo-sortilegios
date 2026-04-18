@@ -12,3 +12,10 @@ ephe/
 *.log.gz
 logs/
 .pytest_cache/
+
+# Artefactos intermedios del pipeline Goetia (regenerables con scripts/)
+# - goetia_portraits/ es solo intermedio; goetia_cards/ es el output final usado por el bot
+assets/goetia_portraits/
+
+# Lock de tareas programadas (runtime)
+.claude/scheduled_tasks.lock
