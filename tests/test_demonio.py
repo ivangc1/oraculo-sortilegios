@@ -322,3 +322,56 @@ def test_sigil_path_invalid_number():
     assert _sigil_path(0) is None
     assert _sigil_path(73) is None
     assert _sigil_path(999) is None
+
+
+# === Cartas (retrato + sigilo) ===
+
+def test_card_path_function():
+    """_card_path devuelve Path o None sin crashear."""
+    from bot.handlers.demonio import _card_path
+    result = _card_path(1)
+    assert result is None or result.exists()
+
+
+def test_card_path_all_demons():
+    """_card_path funciona para los 72 demonios sin error."""
+    from bot.handlers.demonio import _card_path
+    for n in range(1, 73):
+        result = _card_path(n)
+        assert result is None or result.suffix == ".png"
+
+
+def test_card_path_invalid_number():
+    """_card_path con número inválido devuelve None."""
+    from bot.handlers.demonio import _card_path
+    assert _card_path(0) is None
+    assert _card_path(73) is None
+    assert _card_path(999) is None
+
+
+def test_demon_image_path_prefers_card_over_sigil():
+    """_demon_image_path prioriza carta sobre sigilo cuando ambos existen."""
+    from bot.handlers.demonio import _demon_image_path, _card_path, _sigil_path
+    # Para los demonios con ambos assets presentes, debe devolver la carta
+    for n in range(1, 73):
+        card = _card_path(n)
+        sigil = _sigil_path(n)
+        path, kind = _demon_image_path(n)
+        if card is not None:
+            assert path == card
+            assert kind == "card"
+        elif sigil is not None:
+            assert path == sigil
+            assert kind == "sigil"
+        else:
+            assert path is None
+            assert kind == "none"
+
+
+def test_demon_image_path_invalid_number():
+    """_demon_image_path con número inválido devuelve (None, 'none')."""
+    from bot.handlers.demonio import _demon_image_path
+    path, kind = _demon_image_path(0)
+    assert path is None and kind == "none"
+    path, kind = _demon_image_path(999)
+    assert path is None and kind == "none"

@@ -155,17 +155,46 @@ def _parse_args(args: list[str], user_id: int) -> tuple[dict, str | None]:
     return _get_random_demon(user_id), " ".join(args).strip()
 
 
+_ASSETS_DIR = Path(__file__).parent.parent.parent / "assets"
+
+
+def _card_path(demon_number: int) -> Path | None:
+    """Devuelve el path de la carta completa del demonio (retrato + sigilo).
+
+    Las cartas se componen con scripts/compose_goetia_cards.py y se guardan
+    en assets/goetia_cards/NN.png a 1024x1536 con el sigilo canónico en la
+    esquina superior derecha sobre un retrato de Le Breton (1863) o IA
+    regenerado en el mismo estilo.
+    """
+    path = _ASSETS_DIR / "goetia_cards" / f"{demon_number:02d}.png"
+    return path if path.exists() else None
+
+
 def _sigil_path(demon_number: int) -> Path | None:
     """Devuelve el path del sello del demonio si existe, None si no.
 
     Los sellos se descargan con scripts/download_sigils.py y se guardan
     en assets/goetia_sigils/NN.png (nombrado por número de demonio).
+
+    Fallback histórico: si la carta completa no está disponible, se envía
+    solo el sigilo para no romper la UX.
     """
-    path = (
-        Path(__file__).parent.parent.parent
-        / "assets" / "goetia_sigils" / f"{demon_number:02d}.png"
-    )
+    path = _ASSETS_DIR / "goetia_sigils" / f"{demon_number:02d}.png"
     return path if path.exists() else None
+
+
+def _demon_image_path(demon_number: int) -> tuple[Path | None, str]:
+    """Retorna (path, tipo) priorizando carta completa sobre sigilo suelto.
+
+    Tipo: "card" | "sigil" | "none" — útil para logging y para elegir caption.
+    """
+    card = _card_path(demon_number)
+    if card is not None:
+        return card, "card"
+    sigil = _sigil_path(demon_number)
+    if sigil is not None:
+        return sigil, "sigil"
+    return None, "none"
 
 
 def _format_demon(demon: dict) -> str:
@@ -237,20 +266,29 @@ async def demonio_command(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
 
     demon, question = _parse_args(args, user_id)
 
-    # 1. Enviar sello (si existe localmente)
-    sigil = _sigil_path(demon["number"])
-    if sigil:
+    # 1. Enviar imagen del demonio (carta completa si existe, si no solo sigilo)
+    image_path, image_type = _demon_image_path(demon["number"])
+    if image_path is not None:
+        if image_type == "card":
+            caption = (
+                f"🔻 Nº {demon['number']} — {demon['name']}\n"
+                f"{demon['rank']} del Infierno · {demon['legions']} legiones"
+            )
+        else:
+            caption = f"🔻 Sello de {demon['name']}"
         try:
-            with open(sigil, "rb") as f:
+            with open(image_path, "rb") as f:
                 await context.bot.send_photo(
                     chat_id=chat_id,
                     photo=f,
-                    caption=f"🔻 Sello de {demon['name']}",
+                    caption=caption,
                     message_thread_id=thread_id,
                     reply_to_message_id=msg.message_id,
                 )
         except (BadRequest, Forbidden) as e:
-            logger.warning(f"No se pudo enviar sello de {demon['name']}: {e}")
+            logger.warning(
+                f"No se pudo enviar {image_type} de {demon['name']}: {e}"
+            )
             # Continuar con la ficha igual
 
     # 2. Enviar ficha estática
