@@ -51,6 +51,7 @@ from bot.handlers.demonio import (
     _load_data as _load_demon_data,
     _normalize,
 )
+from bot.handlers.firma import _firma_path
 from bot.keyboards import feedback_keyboard
 from bot.limits import check_limits, record_cooldown
 from bot.messages import LIMIT_MESSAGES
@@ -179,16 +180,31 @@ async def _send_entity_image(
             )
         return
 
-    # Ángel: de momento placeholder (firma real cuando /firma esté lista)
-    # TODO: cuando existan assets/shem_firmas/NN.png, enviarlos aquí.
+    # Ángel: enviar la firma hebrea del Shem (assets/shem_firmas/NN.png)
+    firma = _firma_path(entity["number"])
+    caption = (
+        f"🔺 Invocación de {entity['name']}\n"
+        f"Nº {entity['number']} · {entity['choir']} · "
+        f"{entity.get('name_hebrew', '')}"
+    )
+    if firma is not None:
+        try:
+            with open(firma, "rb") as f:
+                await context.bot.send_photo(
+                    chat_id=chat_id,
+                    photo=f,
+                    caption=caption,
+                    message_thread_id=thread_id,
+                    reply_to_message_id=reply_to,
+                )
+            return
+        except (BadRequest, Forbidden) as e:
+            logger.warning(f"No se pudo enviar firma de {entity['name']}: {e}")
+            # fallback a mensaje de texto
     try:
         await context.bot.send_message(
             chat_id=chat_id,
-            text=(
-                f"🔺 Invocación de {entity['name']}\n"
-                f"Nº {entity['number']} · {entity['choir']} · "
-                f"{entity.get('name_hebrew', '')}"
-            ),
+            text=caption,
             message_thread_id=thread_id,
             reply_to_message_id=reply_to,
         )
