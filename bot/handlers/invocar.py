@@ -2,7 +2,7 @@
 
 A diferencia de /demonio y /angel (que interpretan CON la entidad como lente),
 /invocar hace que Claude HABLE COMO la entidad, en primera persona, con su
-personalidad canónica.
+personalidad canónica. SIEMPRE llama al LLM — esa es la semántica de "invocar".
 
 Modos de uso:
 - /invocar <nombre> [pregunta]
@@ -16,8 +16,9 @@ Modos de uso:
 - /invocar <número> [pregunta]
     Por defecto trata el número como demonio Goetia.
 
-Sin pregunta: muestra solo la carta/ficha del ente (€0 API).
-Con pregunta: Claude responde en primera persona como ese ser.
+Sin pregunta: el ente se presenta en primera persona — manifestación inaugural
+(el LLM se llama igualmente; /invocar no existiría si no fuera así).
+Con pregunta: el ente responde en primera persona como ese ser.
 
 Reutiliza:
 - _find_demon, _get_random_demon, _load_data, _normalize, _demon_image_path,
@@ -255,15 +256,80 @@ async def invocar_command(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
             message_thread_id=thread_id, reply_to_message_id=msg.message_id,
         )
 
-    # 3. Sin pregunta: terminar aquí (muestra info del ente, €0 API)
+    # 3. Sin pregunta: mismo patrón que /oraculo. Mostrar welcome custom
+    #    del ente y guardar estado por 5 min esperando la pregunta del
+    #    invocante por texto libre. Al llegar la pregunta, el handler
+    #    invocar_question_text disparará el LLM con la personalidad inyectada.
     if not question:
+        import time
+        welcome = _build_invocation_welcome(entity, entity_type)
+        await context.bot.send_message(
+            chat_id=chat_id,
+            text=welcome,
+            parse_mode="HTML",
+            message_thread_id=thread_id,
+        )
+        context.user_data["invocar_awaiting_question"] = time.time()
+        context.user_data["invocar_user"] = await db_users.get_user(user_id)
+        context.user_data["invocar_entity"] = entity
+        context.user_data["invocar_entity_type"] = entity_type
         logger.info(
-            f"Invocar sin pregunta: user={user_id} → "
+            f"Invocar pending: user={user_id} → "
             f"{entity_type} {entity['number']} ({entity['name']})"
         )
         return
 
-    # 4. Con pregunta: concurrencia + límites + LLM roleplay
+    # 4. Con pregunta inline: ejecutar LLM inmediatamente.
+    await _execute_invocar_llm(
+        update, context, user_id, chat_id, thread_id, msg,
+        entity, entity_type, question, settings,
+    )
+
+
+def _build_invocation_welcome(entity: dict, entity_type: str) -> str:
+    """Construye el mensaje de bienvenida personalizado por ente cuando
+    /invocar se llama sin pregunta. Distinto del welcome genérico de
+    /oraculo — cada demonio/ángel tiene su propia manifestación.
+    """
+    name = entity["name"]
+    personality = entity.get("personality") or ""
+    # Primera frase de personality como apertura en la voz del ente
+    first_sentence = personality.split(".")[0].strip() if personality else ""
+
+    if entity_type == "demonio":
+        rank = entity.get("rank", "espíritu")
+        legions = entity.get("legions", "?")
+        header = f"🔻 <b>{name}</b> se manifiesta ante ti."
+        subtitle = f"<i>{rank} del Infierno · {legions} legiones.</i>"
+    else:  # angel
+        choir = entity.get("choir", "coro angélico")
+        attribute = entity.get("attribute", "")
+        header = f"🔺 <b>{name}</b> desciende ante ti."
+        subtitle = f"<i>{choir} · {attribute}.</i>"
+
+    voice_line = f"<blockquote>{first_sentence}.</blockquote>" if first_sentence else ""
+
+    prompt_line = (
+        "¿Qué quieres preguntarle?\n"
+        "<i>(Tienes 5 minutos antes de que se disipe y el portal se cierre.)</i>"
+    )
+
+    return "\n\n".join(filter(None, [header, subtitle, voice_line, prompt_line]))
+
+
+async def _execute_invocar_llm(
+    update: Update,
+    context: ContextTypes.DEFAULT_TYPE,
+    user_id: int,
+    chat_id: int,
+    thread_id: int | None,
+    msg,
+    entity: dict,
+    entity_type: str,
+    question: str,
+    settings: Settings,
+) -> None:
+    """Ejecuta la llamada al LLM con la personalidad del ente ya determinada."""
     if is_user_busy(user_id):
         await context.bot.send_message(
             chat_id, text=LIMIT_MESSAGES["request_in_progress"],
@@ -376,3 +442,35 @@ async def invocar_command(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
         )
     finally:
         release_user(user_id)
+
+
+async def invocar_question_text(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Recibe la pregunta del invocante vía texto libre cuando hay un
+    /invocar pendiente. Dispara el LLM con la personalidad del ente
+    que estaba aguardando en context.user_data.
+    """
+    if not context.user_data.get("invocar_awaiting_question"):
+        return
+
+    settings: Settings = context.bot_data["settings"]
+    entity = context.user_data.get("invocar_entity")
+    entity_type = context.user_data.get("invocar_entity_type")
+    question = update.message.text
+
+    if not question or not entity or not entity_type:
+        return
+
+    # Limpia el estado pendiente
+    context.user_data["invocar_awaiting_question"] = False
+    context.user_data["invocar_entity"] = None
+    context.user_data["invocar_entity_type"] = None
+
+    user_id = update.effective_user.id
+    chat_id = update.effective_chat.id
+    thread_id = get_thread_id(update)
+    msg = update.message
+
+    await _execute_invocar_llm(
+        update, context, user_id, chat_id, thread_id, msg,
+        entity, entity_type, question.strip(), settings,
+    )

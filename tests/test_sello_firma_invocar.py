@@ -177,3 +177,64 @@ def test_invocar_subprompt_demon_vs_angel_differ():
     assert prompt_d != prompt_a
     assert "Infierno" in prompt_d
     assert "Infierno" not in prompt_a
+
+
+# === /invocar welcome builder (flujo pending sin pregunta) ===
+
+
+def test_invocar_welcome_demon_contains_name_rank_legions():
+    """El welcome de demonio incluye nombre, rango y legiones."""
+    _load_demon_data()
+    from bot.handlers.demonio import _GOETIA
+    from bot.handlers.invocar import _build_invocation_welcome
+    bael = _GOETIA[0]  # Bael: Rey, 66 legiones
+    welcome = _build_invocation_welcome(bael, "demonio")
+    assert "Bael" in welcome
+    assert "Rey" in welcome
+    assert "66" in welcome
+    assert "5 minutos" in welcome
+
+
+def test_invocar_welcome_angel_contains_name_choir_attribute():
+    """El welcome de ángel incluye nombre, coro y atributo."""
+    _load_angel_data()
+    from bot.handlers.angel import _SHEM
+    from bot.handlers.invocar import _build_invocation_welcome
+    vehuiah = _SHEM[0]  # Vehuiah: Serafines
+    welcome = _build_invocation_welcome(vehuiah, "angel")
+    assert "Vehuiah" in welcome
+    assert "Serafines" in welcome
+    assert "5 minutos" in welcome
+
+
+def test_invocar_welcome_demon_uses_personality():
+    """El welcome incluye la primera frase del personality canónico."""
+    _load_demon_data()
+    from bot.handlers.demonio import _GOETIA
+    from bot.handlers.invocar import _build_invocation_welcome
+    bael = _GOETIA[0]
+    welcome = _build_invocation_welcome(bael, "demonio")
+    # La primera frase de Bael personality: "Voz ronca de autoridad absoluta..."
+    assert "Voz ronca" in welcome or "autoridad" in welcome
+
+
+def test_invocar_welcome_is_distinct_per_entity():
+    """El welcome es distinto para dos demonios distintos."""
+    _load_demon_data()
+    from bot.handlers.demonio import _GOETIA
+    from bot.handlers.invocar import _build_invocation_welcome
+    w1 = _build_invocation_welcome(_GOETIA[0], "demonio")  # Bael
+    w3 = _build_invocation_welcome(_GOETIA[2], "demonio")  # Vassago
+    assert w1 != w3
+    assert "Bael" in w1 and "Vassago" in w3
+
+
+def test_invocar_welcome_all_72_demons_build_ok():
+    """Construir welcome para los 72 demonios no revienta."""
+    _load_demon_data()
+    from bot.handlers.demonio import _GOETIA
+    from bot.handlers.invocar import _build_invocation_welcome
+    for demon in _GOETIA:
+        welcome = _build_invocation_welcome(demon, "demonio")
+        assert isinstance(welcome, str) and len(welcome) > 50
+        assert demon["name"] in welcome

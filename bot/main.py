@@ -254,6 +254,7 @@ def main() -> None:
     )
     from bot.handlers.natal import natal_callback
     from bot.handlers.oraculo import oraculo_question_text
+    from bot.handlers.invocar import invocar_question_text
     from bot.handlers.bibliomancia import bibliomancia_callback
 
     # Dispatcher de callbacks por prefijo
@@ -419,6 +420,7 @@ def main() -> None:
         for key, handler in [
             ("tarot_awaiting_question", tarot_question_text),
             ("oraculo_awaiting_question", oraculo_question_text),
+            ("invocar_awaiting_question", invocar_question_text),
             ("numerologia_awaiting_name", numerologia_name_text),
             ("numerologia_awaiting_compat_date", numerologia_compat_date_text),
         ]:
