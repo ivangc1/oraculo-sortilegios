@@ -119,12 +119,18 @@ def build_firma(angel: dict, canvas: Image.Image) -> Image.Image:
     # Línea separadora corta
     draw.line((W // 2 - 60, 240, W // 2 + 60, 240), fill=INK_SOFT, width=2)
 
-    # Nombre hebreo enorme en el centro
+    # Nombre hebreo enorme en el centro.
+    # PIL no hace BiDi shaping — dibuja glifos en orden de storage
+    # (izquierda a derecha), pero Hebreo se lee derecha a izquierda.
+    # Como los nombres Shem son lineales y sin ligaduras, invertimos
+    # la cadena para que visualmente quede en el orden de lectura
+    # correcto (el primer char del nombre aparezca a la derecha).
     hebrew = angel.get("name_hebrew", "")
     if hebrew:
-        bbox = draw.textbbox((0, 0), hebrew, font=font_hebrew)
+        hebrew_visual = hebrew[::-1]
+        bbox = draw.textbbox((0, 0), hebrew_visual, font=font_hebrew)
         th = bbox[3] - bbox[1]
-        center_text(draw, hebrew, font_hebrew, (H - th) // 2 - 120, W, INK)
+        center_text(draw, hebrew_visual, font_hebrew, (H - th) // 2 - 120, W, INK)
 
     # Nombre latino en cursiva debajo
     name_y = H // 2 + 140
