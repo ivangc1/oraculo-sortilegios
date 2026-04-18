@@ -32,4 +32,5 @@ LIMIT_MESSAGES = {
     "report_error": "No he podido enviar el reporte. Inténtalo después.",
     "demon_not_found": "Ese demonio no habita en mi Goetia. Prueba con otro nombre o número (1-72).",
     "angel_not_found": "No conozco a ese ángel del Shem. Prueba con otro nombre o número (1-72).",
+    "invocar_not_found": "No pude identificar a esa entidad. Usa /invocar <nombre> o /invocar demonio|angel <nombre|número>.",
 }
