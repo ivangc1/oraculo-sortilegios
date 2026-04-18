@@ -17,8 +17,11 @@ Bot de Telegram para el grupo **La Taberna de los Sortilegios** (~2,600 miembros
 | `/vedica` | Carta natal vedica | Lahiri ayanamsa, Nakshatras, Dashas |
 | `/oraculo` | Pregunta libre | Sonnet interpreta directamente |
 | `/bibliomancia` | Textos sagrados | Biblia, Coran, Gita, Evangelio de Tomas, Liber AL vel Legis |
-| `/demonio` | Demonologia | 72 demonios Goetia, ficha o interpretacion LLM si hay pregunta |
+| `/demonio` | Demonologia | 72 demonios Goetia, carta + sigilo + ficha, opcional interpretacion LLM |
 | `/angel` | Angelologia | 72 angeles Shem, ficha o interpretacion LLM si hay pregunta |
+| `/sello` | Demonologia | Solo el sigilo canonico Goetia 1904, sin retrato ni ficha (€0 API) |
+| `/firma` | Angelologia | Firma hebrea del angel Shem sobre pergamino (€0 API) |
+| `/invocar` | Roleplay | La entidad (demonio o angel) habla en primera persona como ese ser |
 | `/consulta` | Registro | Redirige a DM para onboarding privado |
 | `/startoraculo` | Presentacion | Intro del oraculo en grupo |
 | `/ayudaoraculo` | Ayuda | Lista de todos los comandos |
@@ -124,8 +127,27 @@ generators/             # SystemRandom, sin repeticion
 images/                 # Pillow: tarot, runas, hexagramas, geomancia
 database/               # SQLite singleton, WAL, migraciones
 data/                   # JSONs + datos estaticos
-tests/                  # 438+ tests
+assets/                 # Imagenes estaticas
+  goetia_sigils/        # 72 sigilos canonicos (Wikimedia, PD)
+  goetia_cards/         # 72 cartas (retrato + sigilo esquina sup. derecha)
+  goetia_portraits_lebreton/  # 32 grabados originales Le Breton 1863 (PD)
+  shem_firmas/          # 72 firmas hebreas sobre pergamino
+tests/                  # 464+ tests
 ```
+
+### Pipeline Goetia (72 cartas)
+
+Cada demonio tiene una carta 1024x1536 con retrato + sigilo. El flujo:
+
+1. **`scripts/download_sigils.py`** — 72 sigilos Goetia 1904 desde Wikimedia Commons.
+2. **`scripts/download_lebreton.py`** — 32 planchas Le Breton del Dictionnaire Infernal 1863 (Wikimedia, dominio publico).
+3. **`scripts/remove_gemini_watermark.py`** — limpia la marca de agua ◇ de Gemini en las 40 imagenes IA regeneradas (parche de pergamino muestreado, sin IA).
+4. **`scripts/rename_goetia_regen.py`** — normaliza nomenclatura a `NN_Nombre.png`.
+5. **`scripts/normalize_goetia_portraits.py`** — unifica las 72 a 1024x1536 (2:3 vertical) con textura de pergamino homogenea.
+6. **`scripts/compose_goetia_cards.py`** — pega el sigilo canonico en esquina superior derecha (multiply blend).
+7. **`scripts/generate_shem_firmas.py`** — 72 firmas hebreas del Shem sobre pergamino (Times New Roman, PIL).
+
+Verificacion empirica contra el PDF de Gallica BNF: Le Breton ilustro 35 de los 72 Goetia en el DI 1863. Se usan 32 auténticos + 40 IA regeneradas por fidelidad a Mathers (algunos Le Breton son bustos minimalistas o interpretan iconografia que Goetia describe distinto).
 
 ## Limites de uso
 
