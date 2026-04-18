@@ -39,7 +39,7 @@ _HELP_TEXT = """🔮 Modos disponibles:
 📖 /bibliomancia — Fragmento de texto sagrado
    Biblia · Corán · Gita · Evangelio de Tomás · Liber AL
 
-🔻 /demonio — Los 72 demonios de la Goetia (carta + ficha)
+🔻 /demonio — Los 72 demonios de la Goetia (carta + sigilo + ficha)
    /demonio <nombre> · /demonio <número> · /demonio aleatorio
    /demonio <nombre> <pregunta> → El Pezuñento interpreta
 
@@ -47,15 +47,15 @@ _HELP_TEXT = """🔮 Modos disponibles:
    /angel <nombre> · /angel <número> · /angel aleatorio
    /angel <nombre> <pregunta> → Interpretación a través del ángel
 
-🩶 /sello — Solo el sigilo del demonio (sin retrato, limpio)
+🩶 /sello — Solo el sigilo del demonio, sin retrato ni ficha
    /sello <nombre|número> · /sello aleatorio
 
 🕊 /firma — Firma hebrea del ángel sobre pergamino
    /firma <nombre|número> · /firma aleatorio
 
 🜲 /invocar — La entidad habla en primera persona
-   /invocar <nombre> [pregunta]
-   /invocar demonio|angel <nombre|número> [pregunta]
+   /invocar <nombre> [pregunta]          · auto-detecta demonio o ángel
+   /invocar demonio|angel <id> [pregunta] · fuerza tipo (útil con números)
 
 🆕 /consulta — Registrarte para empezar
 📋 /miperfil · ✏️ /actualizarperfil · 🗑 /borrarme

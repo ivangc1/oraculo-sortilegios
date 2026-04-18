@@ -480,6 +480,66 @@ El comando `/admins` fue eliminado. El directorio de admins ya no es funcionalid
 - Texto estático, tono Baphomet, breve.
 - NO consume API de Anthropic.
 
+### 7.13 /demonio — Ars Goetia (72 demonios, carta + sigilo + ficha)
+
+Sistema demonológico basado en la *Lemegeton / Clavicula Salomonis Regis* (Mathers 1904) cruzado con el *Dictionnaire Infernal* de Collin de Plancy (1863) ilustrado por Louis Le Breton.
+
+**Modos de uso:**
+- `/demonio` → aleatorio sin pregunta (solo carta + ficha)
+- `/demonio <nombre|número>` → selección específica
+- `/demonio <nombre|número> <pregunta>` → LLM interpreta con lente del demonio
+- `/demonio <pregunta>` → aleatorio + interpretación LLM
+
+**Datos:** `data/goetia_datos.py` (72 entradas) con 13 campos por demonio: rango, legiones, regencia (día/noche, planeta, zodíaco, elemento), apariencia, poderes, descripción, ángel correspondiente (pareo 1:1 con Shem).
+
+**Assets:**
+- `assets/goetia_cards/NN.png` (1024x1536, carta = retrato + sigilo esquina superior derecha).
+- `assets/goetia_sigils/NN.png` (sigilo canónico Goetia 1904, 450x450, fallback).
+- `assets/goetia_portraits_lebreton/NN_Nombre.{jpg,png}` (32 planchas originales Le Breton 1863, fuente).
+
+**Verificación empírica Gallica BNF:** Le Breton ilustró 35 de los 72 Goetia en el DI 1863. 32 se usan tal cual; 3 (#20 Pursan, #24 Naberius, #33 Gaap) se sustituyen por IA regenerada para respetar la descripción iconográfica de Mathers. Los 37 restantes del Goetia no fueron ilustrados por Le Breton y se regeneran con IA siguiendo el mismo estilo (grabado decimonónico sobre pergamino envejecido).
+
+### 7.14 /angel — Shem HaMephorash (72 ángeles)
+
+Sistema angelical basado en el Shem HaMephorash cabalístico (Éxodo 14:19-21, tres versículos de 72 letras) con correspondencias tradicionales (Kircher, Zohar).
+
+**Datos:** `data/shem_datos.py` — 72 ángeles con nombre hebreo, coro (Serafines, Querubines, Tronos, Dominaciones, Virtudes, Potestades, Principados, Arcángeles, Ángeles), atributo divino, salmo, día y hora de regencia, virtud, y demonio correspondiente.
+
+**Modos:** idénticos a `/demonio`.
+
+### 7.15 /sello — Solo el sigilo del demonio (€0 API)
+
+Imagen limpia 450x450 del sigilo canónico Goetia 1904, sin retrato ni ficha textual. Útil para:
+- Tatuajes, prints, grabados.
+- Meditación / evocación sin "ruido" visual.
+- Copy-paste limpio del símbolo.
+
+Sin LLM. Respuesta inmediata.
+
+### 7.16 /firma — Firma hebrea del ángel (€0 API)
+
+Imagen 1024x1536 con el nombre hebreo del ángel Shem HaMephorash sobre pergamino envejecido, acompañado del coro (SERAFINES, QUERUBINES…), atributo divino y referencia al salmo.
+
+Las 72 firmas se pre-generan con `scripts/generate_shem_firmas.py` usando Times New Roman (soporta hebreo) y la misma textura de pergamino del pipeline Goetia.
+
+Sin LLM. Respuesta inmediata.
+
+### 7.17 /invocar — La entidad habla en primera persona
+
+A diferencia de `/demonio` y `/angel` (que interpretan *con* la entidad como lente), `/invocar` hace que Claude **encarne** al ser invocado y responda en primera persona con su personalidad, rango y dominios canónicos.
+
+**Modos:**
+- `/invocar <nombre>` — auto-detecta (demonio si matchea Goetia, ángel si matchea Shem).
+- `/invocar demonio|angel <nombre|número>` — fuerza tipo (útil con números, que existen en ambos sets).
+- `/invocar <entidad> <pregunta>` — encarnación con pregunta, Claude responde en 1ª persona.
+
+**Sub-prompt dedicado** en `service/prompts/invocar.py`:
+- Contextos específicos para demonio (rango/legiones/apariencia/poderes) vs ángel (coro/atributo/virtud/salmo).
+- Instrucciones: "Eres [Nombre], no Claude. Habla en primera persona. Mantén registro decimonónico. No rompas personaje. No hagas disclaimers legales/médicos."
+- Ejemplo: `/invocar Bael dime cómo ganar` → *"Soy Bael, primer Rey del Este, que comando sesenta y seis legiones…"*
+
+Token budget: 1800 (más holgado que `/demonio` porque la encarnación tiende a ser más extensa).
+
 ---
 
 ## 8. Assets de Imágenes
