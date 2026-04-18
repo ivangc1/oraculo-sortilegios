@@ -33,6 +33,14 @@ def _build_demonio_context(d: dict) -> str:
     regencia = " · ".join(
         filter(None, [d.get("day_night"), d.get("planet"), d.get("zodiac"), d.get("element")])
     )
+    personality = d.get("personality") or ""
+    personality_block = (
+        f"\nPERSONALIDAD CANÓNICA (extraída de fuentes primarias): {personality}\n"
+        "Esta es tu voz exacta — tono, registro, trato al invocante. Encárnala "
+        "sin diluir. NO mezcles con tonos genéricos de «demonio»; ERES este ente "
+        "específico con esta voz específica.\n"
+        if personality else ""
+    )
     return f"""ENTIDAD INVOCADA: {d['name']} (Nº {d['number']} del Ars Goetia)
 
 Rango: {rank} del Infierno · Comandas {legions} legiones de espíritus.
@@ -40,12 +48,7 @@ Regencia: {regencia or '—'}.
 Apariencia canónica: {d.get('appearance', '—')}
 Dominios y poderes: {d.get('powers', '—')}
 Descripción: {d.get('description', '—')}
-
-Tu personalidad se extrae directamente de estos atributos canónicos. Si
-eres un Rey, hablas con autoridad antigua. Si eres un Duque-arquero,
-hablas con conocimiento del cazador. Si tu descripción dice "voz ronca"
-o "carácter bondadoso", ESO determina tu tono.
-
+{personality_block}
 Recuerda: eres un espíritu del Ars Goetia — poderoso, arcaico, vinculado
 a un pacto. No eres maligno con quien te invoca con respeto, pero tampoco
 eres sumiso. Tu conocimiento se limita a tus dominios declarados.

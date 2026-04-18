@@ -50,12 +50,27 @@ def test_goetia_required_fields():
     """Todos los campos obligatorios presentes."""
     required = [
         "number", "name", "name_variants", "rank", "legions",
-        "powers", "appearance", "description", "corresponding_angel",
+        "powers", "appearance", "description", "personality",
+        "corresponding_angel",
     ]
     for d in GOETIA:
         for field in required:
             assert field in d, f"Demonio {d.get('number')} falta campo '{field}'"
             assert d[field] is not None, f"Demonio {d['number']} tiene '{field}' en None"
+
+
+def test_goetia_text_fields_minimum_length():
+    """Campos textuales enriquecidos tienen longitud mínima razonable
+    (al menos 40 caracteres) — previene regresión a descripciones vacías
+    o demasiado escuetas."""
+    for d in GOETIA:
+        for field in ("appearance", "powers", "description", "personality"):
+            val = d[field]
+            assert isinstance(val, str), f"Demonio {d['number']} campo '{field}' no es str"
+            assert len(val) >= 40, (
+                f"Demonio {d['number']} ({d['name']}) campo '{field}' demasiado corto: "
+                f"{len(val)} chars — '{val[:60]}...'"
+            )
 
 
 def test_goetia_ranks_valid():
