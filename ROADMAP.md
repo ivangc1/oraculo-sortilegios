@@ -1028,7 +1028,7 @@ class Settings(BaseSettings):
     ALLOWED_CHAT_ID: int
     ALLOWED_THREAD_ID: int | None = None
     ADMIN_USER_ID: int
-    BOT_VERSION: str = "1.182"
+    BOT_VERSION: str = "1.187"
     MONTHLY_SPENDING_LIMIT: float = 25.0
     DAILY_ALERT_THRESHOLD: float = 5.0
     QUEUE_TIMEOUT: float = 45.0
