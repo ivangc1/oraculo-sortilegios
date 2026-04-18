@@ -522,6 +522,8 @@ Imagen 1024x1536 con el nombre hebreo del ángel Shem HaMephorash sobre pergamin
 
 Las 72 firmas se pre-generan con `scripts/generate_shem_firmas.py` usando Times New Roman (soporta hebreo) y la misma textura de pergamino del pipeline Goetia.
 
+**CRÍTICO — BiDi en PIL**: Pillow no aplica BiDi shaping automático. Dibuja los glifos en orden de storage (izquierda a derecha), pero Hebreo se lee de derecha a izquierda. Si pasas la cadena tal cual a `draw.text()`, el nombre queda visualmente invertido respecto a como lo renderiza Telegram (que sí hace BiDi en captions). Solución: como los nombres del Shem son lineales sin ligaduras, basta con invertir la cadena `hebrew[::-1]` antes de dibujar. El resultado visual queda correcto: primera letra del nombre a la derecha, última a la izquierda.
+
 Sin LLM. Respuesta inmediata.
 
 ### 7.17 /invocar — La entidad habla en primera persona
