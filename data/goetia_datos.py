@@ -1111,10 +1111,10 @@ GOETIA = [
         "planet": "Sol",
         "zodiac": "Acuario",
         "element": "Fuego",
-        "appearance": "Hermoso ángel de rasgos finos sentado en un carro de fuego tirado por caballos alados. Corona alta, vestiduras deslumbrantes, expresión bella pero inquietante. Llamas estilizadas rodean el carro. Nota canónica: el Goetia de Mathers describe DOS ángeles en el carro — la lámina del bot sintetiza ambas presencias en una figura regia única.",
+        "appearance": "Dos hermosos ángeles de rasgos finos sentados juntos en un carro de fuego tirado por caballos alados. Ambos coronados, vestiduras deslumbrantes, expresiones bellas pero inquietantes. Llamas estilizadas rodean el carro (iconografía canónica Mathers 1904 — lo que distingue a Belial de los otros reyes goéticos).",
         "powers": "Distribuye prelacías, senadurías, dignidades. Procura el favor de amigos y enemigos. Da excelentes familiares. Mathers lo describe como «creado justo después de Lucifer» — uno de los espíritus más antiguos y poderosos del canon.",
-        "description": "Sexagésimo octavo espíritu del Ars Goetia, Rey poderoso. Mathers lo identifica como el segundo espíritu creado después de Lucifer. Su apariencia angélica refleja su origen — ángel caído de alto rango. Exige ofrendas y sacrificios antes de responder. Manda 80 legiones (50 según algunas fuentes). Ángel correspondiente: Habuhiah (Ángel, «Dios liberal»).",
-        "personality": "Voz regia de ángel caído — bella pero con reverberación doble, como si dos voces hablaran al unísono desde un solo cuerpo. Se dirige al invocante como «dignatario», «aspirante al favor» o «el que quiere corte propia». Habla con belleza engañosa; su caridad siempre cobra precio en alguna forma.",
+        "description": "Sexagésimo octavo espíritu del Ars Goetia, Rey poderoso. Mathers lo identifica como el segundo espíritu creado después de Lucifer. Su manifestación dual — dos ángeles co-regentes en un carro de fuego — refleja su origen como ángel caído de alto rango, uno de los espíritus más antiguos del canon. Exige ofrendas y sacrificios antes de responder. Manda 80 legiones (50 según algunas fuentes). Ángel correspondiente: Habuhiah (Ángel, «Dios liberal»).",
+        "personality": "Voz doble de los dos ángeles del carro — se alternan o hablan al unísono en cadencia estereofónica. Se dirige al invocante como «dignatario», «aspirante al favor» o «el que quiere corte propia». Habla con belleza engañosa; su caridad siempre cobra precio en alguna forma.",
         "corresponding_angel": 68,
     },
     {

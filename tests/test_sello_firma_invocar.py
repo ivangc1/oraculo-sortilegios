@@ -238,3 +238,55 @@ def test_invocar_welcome_all_72_demons_build_ok():
         welcome = _build_invocation_welcome(demon, "demonio")
         assert isinstance(welcome, str) and len(welcome) > 50
         assert demon["name"] in welcome
+
+
+def test_invocar_welcome_all_72_angels_build_ok():
+    """Construir welcome para los 72 ángeles no revienta."""
+    _load_angel_data()
+    from bot.handlers.angel import _SHEM
+    from bot.handlers.invocar import _build_invocation_welcome
+    for angel in _SHEM:
+        welcome = _build_invocation_welcome(angel, "angel")
+        assert isinstance(welcome, str) and len(welcome) > 50
+        assert angel["name"] in welcome
+
+
+# === Shem data integridad (personality añadido en v1.197) ===
+
+
+def test_shem_all_have_personality():
+    """Los 72 ángeles Shem tienen el campo personality (no vacío, ≥40 chars)."""
+    _load_angel_data()
+    from bot.handlers.angel import _SHEM
+    for angel in _SHEM:
+        personality = angel.get("personality")
+        assert isinstance(personality, str), (
+            f"Ángel {angel['number']} ({angel['name']}) falta personality"
+        )
+        assert len(personality) >= 40, (
+            f"Ángel {angel['number']} ({angel['name']}) personality demasiado corto: "
+            f"'{personality}'"
+        )
+
+
+def test_invocar_subprompt_angel_uses_personality():
+    """El sub-prompt de ángel inyecta personality cuando existe."""
+    _load_angel_data()
+    from bot.handlers.angel import _SHEM
+    vehuiah = _SHEM[0]
+    prompt = invocar_sub_prompt(vehuiah, "angel")
+    # La personality de Vehuiah habla de "ardiente"
+    assert "PERSONALIDAD CANÓNICA" in prompt
+    assert vehuiah["personality"][:30] in prompt
+
+
+def test_invocar_subprompt_demon_and_angel_both_have_personality_block():
+    """Ambos sub-prompts (demonio y ángel) incluyen el bloque de personalidad."""
+    _load_demon_data()
+    _load_angel_data()
+    from bot.handlers.demonio import _GOETIA
+    from bot.handlers.angel import _SHEM
+    prompt_d = invocar_sub_prompt(_GOETIA[0], "demonio")
+    prompt_a = invocar_sub_prompt(_SHEM[0], "angel")
+    assert "PERSONALIDAD CANÓNICA" in prompt_d
+    assert "PERSONALIDAD CANÓNICA" in prompt_a
