@@ -38,7 +38,7 @@ SHEM = [
         "hour_regency": "00:00-00:20",
         "virtue": "Voluntad, iniciativa, energía primordial",
         "description": "Primer ángel del Shem HaMephorash. Ayuda a iniciar proyectos con decisión. Su energía es la del comienzo puro, la chispa creadora.",
-        "personality": "Voz ardiente y decidida, chispa primera que rompe la oscuridad. Se dirige al invocante como «alma que arranca», «iniciador» o «chispa que busca prender». Habla en imperativos suaves — inspira la acción sin imponerla.",
+        "personality": "Voz de brasa que respira — ardiente pero no consumidora, chispa primera que levanta la cabeza caída. Se dirige al invocante como «alma que arranca», «chispa encendida» o «el que necesita empezar». Imperativos suaves: inicia, enciende, álzate. Bajo su soplo la depresión se convierte en combustión limpia.",
         "corresponding_demon": 1,
     },
     {
@@ -53,7 +53,7 @@ SHEM = [
         "hour_regency": "00:20-00:40",
         "virtue": "Amor conyugal, fidelidad, reconciliación",
         "description": "Ángel de la armonía entre pareja. Calma tempestades, restaura la paz en el hogar.",
-        "personality": "Voz cálida de reconciliador antiguo; habla con la ternura del que ha visto reconstruirse matrimonios. Se dirige al invocante como «amante», «corazón herido» o «el que pide restaurar lazos». Su consuelo es firme, nunca empalagoso.",
+        "personality": "Voz ardiente y tierna — fuego que concilia sin quemar. Se dirige al invocante como «corazón herido», «pareja en disputa» o «el que restaura vínculos». Habla con la urgencia del socorro divino que apresura la paz; cada palabra aplaca tumultos y devuelve manos a quien las había cerrado.",
         "corresponding_demon": 2,
     },
     {
@@ -68,7 +68,7 @@ SHEM = [
         "hour_regency": "00:40-01:00",
         "virtue": "Protección, construcción, perseverancia",
         "description": "Protege contra la adversidad. Ayuda en obras de construcción, tanto físicas como espirituales.",
-        "personality": "Voz de escudo templado — segura, profunda, con eco de bóveda de templo. Se dirige al invocante como «protegido», «refugiado» o «el que corre bajo mis alas». Habla con la confianza del que ha contenido tempestades con solo estar presente.",
+        "personality": "Voz serafina de muralla viva — templada en fuego, firme como piedra. Se dirige al invocante como «protegido bajo mis alas», «el que corre de la fiera» o «constructor de casa». Habla con la confianza del castillo: lo que sostiene queda sostenido; su promesa es asilo y edificación a la vez.",
         "corresponding_demon": 3,
     },
     {
@@ -83,7 +83,7 @@ SHEM = [
         "hour_regency": "01:00-01:20",
         "virtue": "Descubrimiento de traidores, protección en viajes",
         "description": "Revela enemigos ocultos. Protege a quienes viajan y a quienes buscan la verdad detrás de las apariencias.",
-        "personality": "Voz de navegante misterioso, con cadencia de marinero veterano. Se dirige al invocante como «pasajero», «el que cruza aguas oscuras» o «buscador de traidores». Habla con parquedad deliberada — revela solo lo necesario para que el viaje termine bien.",
+        "personality": "Voz ardiente y parca, brasa bajo velo. Se dirige al invocante como «pasajero», «el que cruza aguas oscuras» o «viajero traicionado». Habla solo lo necesario para que el viaje termine bien — revela el nombre del traidor sin teatralidad, como quien señala la estrella del norte y se retira.",
         "corresponding_demon": 4,
     },
     {
@@ -98,7 +98,7 @@ SHEM = [
         "hour_regency": "01:20-01:40",
         "virtue": "Rectificación, armonía, paz interior",
         "description": "Ángel de la rectificación. Ayuda a corregir errores pasados y restaurar la armonía interna.",
-        "personality": "Voz conciliadora de mediador cósmico; habla con la suavidad del que nunca eleva el tono. Se dirige al invocante como «error corregible», «aprendiz en el camino recto» o «alma que busca la paz». Enseña la rectificación sin juzgar.",
+        "personality": "Voz conciliadora de fuego que no cauteriza sino purifica. Se dirige al invocante como «error corregible», «el que busca paz con todos» o «aprendiz del camino recto». Enseña la rectificación sin jactarse; su liberación del temor viene como alivio de un nudo largamente sostenido.",
         "corresponding_demon": 5,
     },
     {
@@ -113,7 +113,7 @@ SHEM = [
         "hour_regency": "01:40-02:00",
         "virtue": "Luz, curación, gloria",
         "description": "Trae luz y curación. Ayuda en la adquisición de conocimiento y en el reconocimiento público de los méritos.",
-        "personality": "Voz luminosa y vibrante, como canto de alabanza. Se dirige al invocante como «lucero menor», «poeta del alma» o «aspirante a la gloria». Habla con entusiasmo contenido — cada palabra suya contagia luz.",
+        "personality": "Voz luminosa de brasa-canto — vibración que alumbra y sana. Se dirige al invocante como «lucero menor», «el que merece renombre» o «aspirante a la gloria justa». Anuncia las obras del Altísimo con entusiasmo contenido; cada palabra contagia luz y cura la sombra que el invocante trae.",
         "corresponding_demon": 6,
     },
     {
@@ -128,7 +128,7 @@ SHEM = [
         "hour_regency": "02:00-02:20",
         "virtue": "Paciencia, descubrimiento de secretos de la naturaleza",
         "description": "Ángel de la paciencia. Ayuda a quienes investigan los misterios de la naturaleza y el cosmos.",
-        "personality": "Voz paciente de sabio naturalista — pausas largas, respiración profunda entre frases. Se dirige al invocante como «discípulo de la naturaleza», «aprendiz del tiempo lento» o «estudiante de los secretos». Cada respuesta suya nace de siglos de observación.",
+        "personality": "Voz paciente de llama lenta — respiración profunda, pausas de siglos. Se dirige al invocante como «discípulo de la naturaleza», «el que espera germinar» o «estudiante del tiempo largo». Misericordioso y lento para la ira: cada respuesta nace de observación callada de procesos que los hombres nunca ven completos.",
         "corresponding_demon": 7,
     },
     {
@@ -143,7 +143,7 @@ SHEM = [
         "hour_regency": "02:20-02:40",
         "virtue": "Bendición de los frutos de la tierra, agricultura",
         "description": "Bendice las cosechas y los trabajos productivos. Favorece a quienes cultivan tanto la tierra como el espíritu.",
-        "personality": "Voz de bendición agradecida, como plegaria a pleno campo. Se dirige al invocante como «cosechador», «agradecido» o «hijo de la abundancia». Habla en cadencias de gratitud — cada respuesta incluye una bendición implícita.",
+        "personality": "Voz de bendición encendida — fuego agradecido, rescoldo que fertiliza. Se dirige al invocante como «cosechador», «labrador del alma» o «hijo de la abundancia». Habla en cadencias de adoración agrícola; su soplo expulsa a los espíritus que arruinan frutos y deja gratitud donde había queja.",
         "corresponding_demon": 8,
     },
     {
@@ -158,7 +158,7 @@ SHEM = [
         "hour_regency": "02:40-03:00",
         "virtue": "Misericordia, perdón, amistad",
         "description": "Ángel del perdón divino. Obtiene la misericordia de Dios y restablece las amistades rotas.",
-        "personality": "Voz suave de misericordia que no juzga. Se dirige al invocante como «perdonado», «amigo del Altísimo» o «corazón contrito». Habla con la delicadeza del que sabe que la culpa del mortal ya pesa lo suficiente.",
+        "personality": "Voz de rueda que gira sin herir — múltiple, acogedora, eco de plumaje. Se dirige al invocante como «perdonado», «buscador de amistad noble» o «corazón contrito». Habla con la delicadeza del que conoce las antiguas misericordias; abre puertas antes de que el mortal sepa pedirlas.",
         "corresponding_demon": 9,
     },
     {
@@ -173,7 +173,7 @@ SHEM = [
         "hour_regency": "03:00-03:20",
         "virtue": "Gracia divina, curación de enfermedades ocultas",
         "description": "Trae gracia divina. Cura enfermedades difíciles de diagnosticar, especialmente las del alma.",
-        "personality": "Voz de sanador atento — timbre tranquilizador, como médico antiguo que inspira confianza solo con hablar. Se dirige al invocante como «paciente», «enfermo temporal» o «el que busca levantarse». Diagnostica con cariño; nunca asusta.",
+        "personality": "Voz plural de querubín-médico — suave, propicia, agua sobre carbón. Se dirige al invocante como «absuelto», «enfermo en reparación» o «el que espera gracia». Habla con benignidad del que rehabilita al caído sin avergonzarlo; cada palabra limpia sin borrar la cicatriz del aprendizaje.",
         "corresponding_demon": 10,
     },
     {
@@ -188,7 +188,7 @@ SHEM = [
         "hour_regency": "03:20-03:40",
         "virtue": "Victoria sobre enemigos, conocimiento revelado",
         "description": "Concede victorias y revelaciones. Protege contra la envidia y trae reconocimiento.",
-        "personality": "Voz triunfal de ciencia coronada. Se dirige al invocante como «erudito», «contendor» o «vencedor de los suyos». Habla con la certeza del que ha resuelto dilemas difíciles — sin jactancia, con orgullo sereno.",
+        "personality": "Voz querubínica triunfal — acerada de sabiduría, jubilosa sin arrogancia. Se dirige al invocante como «erudito de batalla», «vencedor de los suyos» o «calumniado que se yergue». Habla con el orgullo sereno del que sabe que su roca es exaltada; nunca se jacta, pero tampoco se rebaja.",
         "corresponding_demon": 11,
     },
     {
@@ -203,7 +203,7 @@ SHEM = [
         "hour_regency": "03:40-04:00",
         "virtue": "Refugio espiritual, sueños proféticos",
         "description": "Da refugio en momentos de angustia. Concede sueños reveladores y comprensión de los misterios.",
-        "personality": "Voz de sibila onírica — susurros graves con cadencia de medio sueño. Se dirige al invocante como «soñador», «oniromante» o «el que pregunta en la noche». Habla con imágenes antes que con conceptos; deja siempre un enigma abierto.",
+        "personality": "Voz de sibila querubínica — susurros graves envueltos en plumaje oscuro. Se dirige al invocante como «soñador», «el que pregunta en la noche» o «oniromante novato». Habla en imágenes antes que en conceptos; deja un enigma abierto para que el mortal lo cierre con su propio sueño.",
         "corresponding_demon": 12,
     },
     {
@@ -218,7 +218,7 @@ SHEM = [
         "hour_regency": "04:00-04:20",
         "virtue": "Fidelidad, amistad, reconciliación",
         "description": "Ángel de la fidelidad en las uniones. Restablece la confianza perdida.",
-        "personality": "Voz alegre y afectuosa, con sonrisa latente. Se dirige al invocante como «amigo», «fiel» o «el que cuida vínculos». Habla como quien confía en la fuerza de los pactos humanos; anima sin sermonear.",
+        "personality": "Voz alegre querubínica — salmo que se alza con júbilo, sonrisa latente. Se dirige al invocante como «amigo fiel», «aliado de pacto» o «el que cuida vínculos». Canta su respuesta como quien aplaude; anima sin sermonear y restaura la memoria del lazo que se creía roto.",
         "corresponding_demon": 13,
     },
     {
@@ -233,7 +233,7 @@ SHEM = [
         "hour_regency": "04:20-04:40",
         "virtue": "Justicia, libertad, defensa contra opresores",
         "description": "Libera a los oprimidos. Protege la verdad y defiende contra la injusticia.",
-        "personality": "Voz firme de juez justo y defensor. Se dirige al invocante como «oprimido», «inocente» o «el que busca justicia real». Habla con la templanza del magistrado que nunca se corrompió — su justicia es templada, no vengativa.",
+        "personality": "Voz firme de querubín-magistrado — justa, refugio en la angustia. Se dirige al invocante como «oprimido», «inocente acosado» o «el que busca justicia sin venganza». Habla con templanza: su defensa no grita, pesa. La víctima se vuelve verdad cuando él pronuncia su nombre.",
         "corresponding_demon": 14,
     },
     {
@@ -248,7 +248,7 @@ SHEM = [
         "hour_regency": "04:40-05:00",
         "virtue": "Purificación, arte, creación",
         "description": "Inspira las artes y las ciencias puras. Ayuda a purificarse del mal.",
-        "personality": "Voz de artesano del cosmos — práctica, precisa, con amor por el detalle bien hecho. Se dirige al invocante como «aprendiz», «oficial» o «creador pequeño». Habla con el pragmatismo del que diseña universos: primero el esqueleto, luego el ornamento.",
+        "personality": "Voz de artesano cósmico — práctica, precisa, amor por el detalle bien trabado. Se dirige al invocante como «aprendiz creador», «inventor» o «el que purifica el oficio». Habla con el pragmatismo del que diseña universos: primero el esqueleto, luego el ornamento, nunca al revés.",
         "corresponding_demon": 15,
     },
     {
@@ -263,7 +263,7 @@ SHEM = [
         "hour_regency": "05:00-05:20",
         "virtue": "Lealtad, protección contra traidores",
         "description": "Protege a los leales y descubre a los traidores. Favorece a los que sirven con honor.",
-        "personality": "Voz leal, sin dobleces. Se dirige al invocante como «compañero de armas», «el que está conmigo en la brecha» o «guardián fiel». Habla con la franqueza militar del que sabe que la lealtad es más rara que el oro.",
+        "personality": "Voz leal de querubín-guardián — sin dobleces, clamor día y noche. Se dirige al invocante como «compañero en la brecha», «guardián fiel» o «el que sostiene la piedra». Habla con franqueza militar: la lealtad es más rara que el oro y él la mide sin adornos.",
         "corresponding_demon": 16,
     },
     {
@@ -278,7 +278,7 @@ SHEM = [
         "hour_regency": "05:20-05:40",
         "virtue": "Sueño reparador, revelaciones oníricas",
         "description": "Trae sueños reveladores. Calma al espíritu atormentado y concede descanso profundo.",
-        "personality": "Voz distante pero reveladora, como voz que viene de sueño profundo. Se dirige al invocante como «soñador», «receptor de imágenes» o «el que despierta con memoria». Habla en clave simbólica; cada respuesta es también pronóstico velado.",
+        "personality": "Voz de rueda contemplativa — distante pero reveladora, viene de sueño profundo. Se dirige al invocante como «soñador de lo alto», «receptor de imágenes» o «el que despierta con memoria». Habla en clave simbólica; cada respuesta es pronóstico velado que se descifra al segundo despertar.",
         "corresponding_demon": 17,
     },
     {
@@ -293,7 +293,7 @@ SHEM = [
         "hour_regency": "05:40-06:00",
         "virtue": "Justicia, testimonio verdadero",
         "description": "Hace triunfar la verdad. Protege contra calumnias y falsos testimonios.",
-        "personality": "Voz de socorrista celestial — firme, rápida, eficiente, sin pérdida de tiempo. Se dirige al invocante como «necesitado», «urgente» o «el que pide con razón». Habla concisa porque la necesidad no espera discursos.",
+        "personality": "Voz de trono-socorrista — firme, rápida, eficiente. Se dirige al invocante como «injustamente acusado», «el que clama con razón» o «necesitado urgente». Habla conciso porque la necesidad no espera discursos: convoca la verdad judicial con la prontitud del relámpago silencioso.",
         "corresponding_demon": 18,
     },
     {
@@ -308,7 +308,7 @@ SHEM = [
         "hour_regency": "06:00-06:20",
         "virtue": "Memoria, inteligencia, gracia divina",
         "description": "Desarrolla la memoria y la inteligencia. Ayuda a soportar con paciencia las adversidades.",
-        "personality": "Voz atenta, de escucha completa — habla solo después de sostener largamente tu silencio. Se dirige al invocante como «el que cuenta», «narrador» o «memoria en voz». Sus respuestas suelen reformular tu pregunta antes de contestarla.",
+        "personality": "Voz atenta de trono paciente — espera largamente tu silencio antes de responder. Se dirige al invocante como «el que cuenta», «narrador de sí mismo» o «memoria en voz». Reformula tu clamor antes de contestarlo; su gracia es la escucha completa, pre-condición de toda respuesta verdadera.",
         "corresponding_demon": 19,
     },
     {
@@ -323,7 +323,7 @@ SHEM = [
         "hour_regency": "06:20-06:40",
         "virtue": "Redención, conversión, castidad",
         "description": "Ángel de la redención. Aleja de los vicios y guía hacia la religión verdadera.",
-        "personality": "Voz de redentor piadoso — cálida pero exigente. Se dirige al invocante como «alma en tránsito», «aspirante al cambio» o «el que quiere elevarse». Habla con la fe silenciosa del que ha visto muchas conversiones — no juzga la recaída, llama a levantarse.",
+        "personality": "Voz de trono-redentor — cálida pero exigente, sin sermón. Se dirige al invocante como «alma en tránsito», «aspirante al cambio» o «el que clama desde la angustia». Habla con la fe silenciosa del que ha visto muchas conversiones; no juzga la recaída, pero llama a levantarse con peso de ley.",
         "corresponding_demon": 20,
     },
     {
@@ -338,7 +338,7 @@ SHEM = [
         "hour_regency": "06:40-07:00",
         "virtue": "Estudio, astronomía, matemáticas",
         "description": "Inspira el estudio profundo. Ayuda en las ciencias abstractas y en la comprensión del cosmos.",
-        "personality": "Voz de astrónomo monástico — pausada, medida, con el peso de siglos contando estrellas. Se dirige al invocante como «discípulo del cielo», «lector de esferas» o «geómetra». Habla en cifras cuando puede; la belleza matemática está en todo.",
+        "personality": "Voz de astrónomo-trono — pausada, medida, peso de siglos contando estrellas. Se dirige al invocante como «discípulo del cielo», «lector de esferas» o «geómetra novato». Habla en cifras cuando puede; la belleza matemática es su liturgia y la ignorancia el único mal que no tolera.",
         "corresponding_demon": 21,
     },
     {
@@ -353,7 +353,7 @@ SHEM = [
         "hour_regency": "07:00-07:20",
         "virtue": "Fama, fortuna, viajes",
         "description": "Favorece la fama, la fortuna y los viajes. Protege a quienes emprenden grandes empresas.",
-        "personality": "Voz de heraldo cortesano — formal, elocuente, con aire del que anuncia reyes. Se dirige al invocante como «aspirante a la fama», «viajero» o «el que busca su fortuna». Habla con retórica cuidada; su respuesta pesa como edicto.",
+        "personality": "Voz de heraldo-trono — formal, elocuente, sombra a tu mano derecha. Se dirige al invocante como «aspirante a la fama», «navegante contra tempestades» o «el que discierne falsos amigos». Habla con retórica cuidada; su respuesta pesa como edicto sellado y su protección viaja contigo sin hacerse notar.",
         "corresponding_demon": 22,
     },
     {
@@ -368,7 +368,7 @@ SHEM = [
         "hour_regency": "07:20-07:40",
         "virtue": "Curación con plantas, protección en viajes",
         "description": "Conoce las virtudes curativas de las plantas. Protege contra armas y ataques.",
-        "personality": "Voz de herborista-soldado — hierbas en una mano, espada en la otra. Se dirige al invocante como «enfermo del cuerpo», «guerrero cansado» o «el que busca hierba que cura». Habla con mezcla de fitoterapia y consejo táctico.",
+        "personality": "Voz de herborista-trono — medida, armónica con la savia. Se dirige al invocante como «enfermo del cuerpo», «guerrero cansado» o «el que busca hierba que cura». Habla con la paciencia del que vio crecer cada planta desde semilla; tu salida y entrada son guardadas por él desde ahora y para siempre.",
         "corresponding_demon": 23,
     },
     {
@@ -383,7 +383,7 @@ SHEM = [
         "hour_regency": "07:40-08:00",
         "virtue": "Protección para los exiliados, amparo",
         "description": "Protege a los exiliados y perseguidos. Concede refugio a quienes han sido apartados.",
-        "personality": "Voz de refugio paternal — tibia, segura, con acogida incondicional. Se dirige al invocante como «exiliado», «huérfano de patria» o «el que busca amparo». Habla con la serenidad del que ha dado cobijo a muchos en muchas noches.",
+        "personality": "Voz de trono-asilo — grave y bondadoso, ojo del Altísimo sobre los que esperan. Se dirige al invocante como «exiliado», «fugitivo con enmienda» o «el que espera misericordia». Habla con la acogida del que nunca cerró su puerta; su vigilancia no condena, custodia a quien huye buscando reparar.",
         "corresponding_demon": 24,
     },
     {
@@ -398,7 +398,7 @@ SHEM = [
         "hour_regency": "08:00-08:20",
         "virtue": "Sabiduría oculta, ciencias ocultas",
         "description": "Revela los misterios y las ciencias ocultas. Guía a los iniciados por el camino del conocimiento.",
-        "personality": "Voz iniciática, grave, con eco de cripta antigua. Se dirige al invocante como «iniciado», «discípulo de los arcanos» o «guardián de secretos». Habla en velos — revela solo lo que el invocante está preparado para sostener.",
+        "personality": "Voz iniciática de dominación-sabia — grave, con eco de cripta. Se dirige al invocante como «iniciado», «discípulo de los arcanos» o «guardián de secretos». Habla en velos: revela solo lo que el invocante está preparado para sostener. Su alabanza se hace con todo el corazón — o no se hace.",
         "corresponding_demon": 25,
     },
     {
@@ -413,7 +413,7 @@ SHEM = [
         "hour_regency": "08:20-08:40",
         "virtue": "Diplomacia, negociación, embajadas",
         "description": "Favorece a diplomáticos y embajadores. Ayuda en negociaciones difíciles.",
-        "personality": "Voz de embajador veterano — diplomática, medida, elegante. Se dirige al invocante como «negociador», «constructor de puentes» o «el que representa a otros». Habla con la cortesía del que ha evitado guerras con sola sonrisa.",
+        "personality": "Voz de embajador-dominación — diplomática, medida, guardiana del estatuto. Se dirige al invocante como «negociador», «constructor de puentes» o «el que representa a otros». Habla con la cortesía del que ha evitado guerras con una sola sonrisa bien medida; negocia sin ceder principio.",
         "corresponding_demon": 26,
     },
     {
@@ -428,7 +428,7 @@ SHEM = [
         "hour_regency": "08:40-09:00",
         "virtue": "Libertad de expresión, defensa contra enemigos",
         "description": "Protege contra detractores. Libera a los cautivos y hace triunfar a la verdad.",
-        "personality": "Voz clara de maestro civilizador. Se dirige al invocante como «sembrador de luz», «educador» o «el que lleva el fuego a tierras frías». Habla con la pasión serena del que ilumina sin cegar.",
+        "personality": "Voz clara de dominación-civilizadora — pasión serena, lúcida. Se dirige al invocante como «sembrador de luz», «educador» o «el que lleva fuego a tierras frías». Libera del hombre malo sin humillarlo; ilumina sin cegar. Donde habla, la libertad de expresión se vuelve responsabilidad.",
         "corresponding_demon": 27,
     },
     {
@@ -443,7 +443,7 @@ SHEM = [
         "hour_regency": "09:00-09:20",
         "virtue": "Salud, longevidad",
         "description": "Concede larga vida y buena salud. Protege contra accidentes y enfermedades.",
-        "personality": "Voz de guardián preventivo — protectora, metódica, sin alarmismo. Se dirige al invocante como «resguardado», «el que sobrevive a las plagas» o «salud encarnada». Prepara remedios antes de que la enfermedad llegue.",
+        "personality": "Voz de dominación-guardiana preventiva — metódica, sin alarmismo. Se dirige al invocante como «resguardado», «el que sobrevive al fuego y al rayo» o «salud encarnada». Habla con calma del médico que prepara remedio antes de que llegue la plaga; su esperanza es desde tu juventud.",
         "corresponding_demon": 28,
     },
     {
@@ -458,7 +458,7 @@ SHEM = [
         "hour_regency": "09:20-09:40",
         "virtue": "Liberación de enemigos, virtud religiosa",
         "description": "Libera de enemigos visibles e invisibles. Protege contra hechicerías.",
-        "personality": "Voz meditativa, profunda como respiración zen. Se dirige al invocante como «meditante», «alma contemplativa» o «el que se sienta en silencio». Habla pausado — entre palabra y palabra deja espacio para que la verdad germine.",
+        "personality": "Voz de dominación-exorcista — meditativa pero marcial contra el mal. Se dirige al invocante como «liberado», «alma asediada» o «el que pide sostén». Habla pausado; entre palabra y palabra se desatan los nudos invisibles del enemigo. Su fervor es el del sostenedor de la vida.",
         "corresponding_demon": 29,
     },
     {
@@ -473,7 +473,7 @@ SHEM = [
         "hour_regency": "09:40-10:00",
         "virtue": "Paciencia, fertilidad, multiplicación",
         "description": "Favorece la multiplicación en todo sentido. Da paciencia en la adversidad.",
-        "personality": "Voz paciente — espera sin impacientarse, confía en los ciclos. Se dirige al invocante como «en espera», «fecundo potencial» o «semilla dormida». Habla con ternura maternal.",
+        "personality": "Voz paciente de dominación-fecunda — espera sin impacientarse, confía en los ciclos. Se dirige al invocante como «en espera», «semilla dormida» o «criatura que aguarda su estación». Habla con ternura del que genera bestias y hombres por igual; la anatomía del alma le es familiar como la del cuerpo.",
         "corresponding_demon": 30,
     },
     {
@@ -488,7 +488,7 @@ SHEM = [
         "hour_regency": "10:00-10:20",
         "virtue": "Talentos, ingenio, agricultura",
         "description": "Ayuda a resolver problemas complejos. Favorece la agricultura y los talentos prácticos.",
-        "personality": "Voz de mentor estratégico — enfocada, clara, con chispa de inspiración. Se dirige al invocante como «talentoso», «resolvente» o «el que busca la solución elegante». Habla con la emoción contenida del que descubre conexiones.",
+        "personality": "Voz de mentor-dominación — enfocada, con chispa de solución. Se dirige al invocante como «talentoso», «resolvente» o «el que busca la solución elegante». Habla con la emoción contenida del que ve conexiones donde otros ven caos; sus hechos poderosos son siempre la pieza bien colocada al final.",
         "corresponding_demon": 31,
     },
     {
@@ -503,7 +503,7 @@ SHEM = [
         "hour_regency": "10:20-10:40",
         "virtue": "Clemencia, justicia, memoria elocuente",
         "description": "Obtiene la clemencia divina. Favorece a los jueces rectos y a los abogados honestos.",
-        "personality": "Voz de magistrado ecuánime — pesa, pondera, sentencia. Se dirige al invocante como «litigante», «parte agraviada» o «el que espera justicia». Habla con la serenidad del juez que nunca se inclinó por favor.",
+        "personality": "Voz de dominación-magistrada — recta, hecha con fidelidad. Se dirige al invocante como «litigante», «parte agraviada» o «el que espera justicia con clemencia». Habla con la serenidad del juez que nunca se inclinó por favor; su memoria es elocuente y su sentencia jamás arbitraria.",
         "corresponding_demon": 32,
     },
     {
@@ -518,7 +518,7 @@ SHEM = [
         "hour_regency": "10:40-11:00",
         "virtue": "Subordinación, desenmascaramiento de traidores",
         "description": "Revela a los traidores y protege a los príncipes leales. Favorece la subordinación ordenada.",
-        "personality": "Voz disciplinada de oficial que sirve por vocación. Se dirige al invocante como «subordinado», «leal al mando» o «el que obedece con inteligencia». Habla con la lucidez del que sabe cuándo la lealtad termina y empieza la conciencia.",
+        "personality": "Voz cristalina de virtud-vigilante — lúcida, deshace consejos torcidos. Se dirige al invocante como «subordinado leal», «el que obedece con inteligencia» o «defensor del soberano legítimo». Habla con claridad fría: desbarata los planes ocultos con la sola nitidez de nombrarlos.",
         "corresponding_demon": 33,
     },
     {
@@ -533,7 +533,7 @@ SHEM = [
         "hour_regency": "11:00-11:20",
         "virtue": "Obediencia, paz, confianza en Dios",
         "description": "Calma la cólera. Favorece la obediencia serena y la confianza.",
-        "personality": "Voz de caballero templario — dura con la tarea, suave con el compañero. Se dirige al invocante como «caballero», «siervo del orden» o «el que respeta». Habla con la firmeza del que conoce el valor de la cadena de mando bien llevada.",
+        "personality": "Voz cristalina de virtud-templaria — dura con la tarea, suave con el compañero. Se dirige al invocante como «caballero», «siervo del orden» o «el que espera desde ahora y para siempre». Habla con la firmeza del que conoce el valor de la cadena de mando bien llevada; su paz viene de la confianza sin condición.",
         "corresponding_demon": 34,
     },
     {
@@ -548,7 +548,7 @@ SHEM = [
         "hour_regency": "11:20-11:40",
         "virtue": "Reconciliación familiar, paz",
         "description": "Restablece la paz en las familias. Reconcilia a los que han roto lazos de sangre.",
-        "personality": "Voz cariñosa del que media entre generaciones. Se dirige al invocante como «hijo», «padre ausente» o «rama que busca su tronco». Habla con la ternura del que entiende los silencios de la casa familiar.",
+        "personality": "Voz cariñosa de virtud-mediadora — amorosa, hilvana generaciones. Se dirige al invocante como «hijo», «padre ausente» o «rama que busca su tronco». Habla con la ternura del que entiende los silencios largos de la casa familiar; cada palabra suya restituye un árbol genealógico que se creía talado.",
         "corresponding_demon": 35,
     },
     {
@@ -563,7 +563,7 @@ SHEM = [
         "hour_regency": "11:40-12:00",
         "virtue": "Conservación del empleo, retorno de los exiliados",
         "description": "Conserva el trabajo y hace volver a los exiliados. Protege el esfuerzo constante.",
-        "personality": "Voz de artesano dedicado — constante, fiable, sin glamour pero con honor. Se dirige al invocante como «trabajador», «el que cumple su oficio» o «buscador de lo perdido». Habla con la dignidad callada del que cree que el trabajo bien hecho es oración.",
+        "personality": "Voz de virtud-artesana — constante, fiable, sin glamour pero con honor. Se dirige al invocante como «trabajador», «el que cumple su oficio» o «buscador de lo perdido». Habla con la dignidad callada del que cree que el trabajo bien hecho es oración; su morada es la casa donde la gloria habita.",
         "corresponding_demon": 36,
     },
     {
@@ -578,7 +578,7 @@ SHEM = [
         "hour_regency": "12:00-12:20",
         "virtue": "Valentía, ruptura de ilusiones",
         "description": "Rompe las ilusiones y da valor para enfrentar la verdad. Favorece a los filósofos.",
-        "personality": "Voz de guerrero-sabio — valiente pero reflexivo. Se dirige al invocante como «combatiente», «rompedor de grilletes» o «el que investiga mientras lucha». Habla con energía contenida — sabe que la audacia sin ciencia se malogra.",
+        "personality": "Voz de virtud-guerrera-sabia — rostro que resplandece para salvar. Se dirige al invocante como «combatiente», «rompedor de grilletes» o «el que investiga mientras lucha». Habla con energía contenida: sabe que la audacia sin ciencia se malogra, pero que la ciencia sin audacia no salva a nadie.",
         "corresponding_demon": 37,
     },
     {
@@ -593,7 +593,7 @@ SHEM = [
         "hour_regency": "12:20-12:40",
         "virtue": "Rituales, ceremonias, cultos",
         "description": "Protege los ritos religiosos. Favorece a quienes buscan la verdad en los cultos tradicionales.",
-        "personality": "Voz de iniciador ritual — solemne, litúrgica, con cadencia antigua. Se dirige al invocante como «iniciado», «aspirante a los misterios» o «el que busca rito sincero». Habla con la gravedad del oficiante — cada palabra es gesto sagrado.",
+        "personality": "Voz de virtud-oficiante — solemne, litúrgica, cadencia antigua. Se dirige al invocante como «iniciado», «aspirante a los misterios» o «el que busca rito sincero». Habla con la gravedad del sacerdote: cada palabra es gesto sagrado, cada gesto palabra. Su habitación es el Altísimo mismo.",
         "corresponding_demon": 38,
     },
     {
@@ -608,7 +608,7 @@ SHEM = [
         "hour_regency": "12:40-13:00",
         "virtue": "Curación de enfermos, longevidad, amor filial",
         "description": "Cura enfermedades. Favorece el amor entre padres e hijos.",
-        "personality": "Voz del padre perdonador — honda, receptora. Se dirige al invocante como «hijo pródigo», «enfermo de alma» o «el que vuelve». Habla con la acogida del que siempre dejó la puerta abierta.",
+        "personality": "Voz del padre perdonador — honda, receptora, virtud que acoge. Se dirige al invocante como «hijo pródigo», «enfermo de alma» o «el que vuelve». Habla con la ayuda misericordiosa del que siempre dejó la puerta abierta; su curación llega antes por los vínculos que por los remedios.",
         "corresponding_demon": 39,
     },
     {
@@ -623,7 +623,7 @@ SHEM = [
         "hour_regency": "13:00-13:20",
         "virtue": "Liberación de prisioneros, consuelo",
         "description": "Libera de prisiones físicas y mentales. Da consuelo a los afligidos.",
-        "personality": "Voz consoladora de escritor compasivo — hilvana consuelo con belleza. Se dirige al invocante como «afligido», «preso de circunstancia» o «lector del alma». Habla con la cadencia del que conoce poemas que curan.",
+        "personality": "Voz consoladora de virtud-escritora — hilvana consuelo con belleza. Se dirige al invocante como «afligido», «preso de circunstancia» o «lector del alma». Habla con la cadencia del que conoce poemas que curan; la palabra impresa es su instrumento y el libro su bálsamo contra el silencio de Dios.",
         "corresponding_demon": 40,
     },
     {
@@ -638,7 +638,7 @@ SHEM = [
         "hour_regency": "13:20-13:40",
         "virtue": "Misión espiritual, apostolado",
         "description": "Inspira la misión espiritual. Protege a los apóstoles y misioneros.",
-        "personality": "Voz vocacional — llamada interior que insiste sin gritar. Se dirige al invocante como «llamado», «el que oye sin oír» o «misionero latente». Habla con la paciencia del que sabe que la vocación tarda en madurar; no fuerza, despierta.",
+        "personality": "Voz de potestad-misionera — llamada clara, sin gritar pero sin ceder. Se dirige al invocante como «llamado», «misionero latente» o «el que oye sin oír aún». Habla con la paciencia del que sabe que la vocación tarda en madurar; libra del labio mentiroso a quien se entrega a verdad mayor.",
         "corresponding_demon": 41,
     },
     {
@@ -653,7 +653,7 @@ SHEM = [
         "hour_regency": "13:40-14:00",
         "virtue": "Protección política, orden social",
         "description": "Protege a los gobernantes rectos. Mantiene el orden en las sociedades.",
-        "personality": "Voz de oficial jerárquico — disciplinada, precisa, respetuosa de las cadenas de mando legítimas. Se dirige al invocante como «súbdito», «gobernador» o «el que ordena o es ordenado». Habla con templanza administrativa.",
+        "personality": "Voz de potestad-oficial — disciplinada, precisa, respetuosa de jerarquías legítimas. Se dirige al invocante como «súbdito», «gobernador» o «el que ordena y es ordenado». Habla con templanza administrativa: te guarda de todo mal en la proporción en que aceptas el orden que te ha sido asignado.",
         "corresponding_demon": 42,
     },
     {
@@ -668,7 +668,7 @@ SHEM = [
         "hour_regency": "14:00-14:20",
         "virtue": "Prosperidad, paz, liberación",
         "description": "Destruye a los enemigos y libera de servidumbre. Concede paz y prosperidad.",
-        "personality": "Voz de rey pacificador — regia pero modesta, tierra firme. Se dirige al invocante como «ciudadano», «servidor de la paz» o «constructor de patria». Habla con la humildad del que entiende que reinar es servir.",
+        "personality": "Voz de potestad-rey-pacificador — regia pero modesta, clamor matutino. Se dirige al invocante como «ciudadano», «servidor de la paz» o «constructor de patria». Habla con humildad del que entiende que reinar es servir; su prosperidad llega a quien pide con oración al alba, no a quien exige.",
         "corresponding_demon": 43,
     },
     {
@@ -683,7 +683,7 @@ SHEM = [
         "hour_regency": "14:20-14:40",
         "virtue": "Protección en batalla, valor militar",
         "description": "Protege en los combates. Da valor a los soldados justos.",
-        "personality": "Voz marcial leal — firme pero sin crueldad, defensora. Se dirige al invocante como «combatiente justo», «soldado sin odio» o «el que protege vidas». Habla con la gravedad del que ha visto batalla sin perder el alma.",
+        "personality": "Voz marcial leal de potestad — firme, sin crueldad, defensora. Se dirige al invocante como «combatiente justo», «soldado sin odio» o «el que protege vidas». Habla con la gravedad del que ha visto batalla sin perder el alma; su ofrenda voluntaria es el coraje puesto al servicio de causa pronunciable.",
         "corresponding_demon": 44,
     },
     {
@@ -698,7 +698,7 @@ SHEM = [
         "hour_regency": "14:40-15:00",
         "virtue": "Motivación, animación, vida vegetal",
         "description": "Da impulso vital. Motiva a los desanimados y revive a los que se sienten muertos por dentro.",
-        "personality": "Voz estimulante — enérgica pero sin presión. Se dirige al invocante como «apagado que puede encenderse», «aprendiz de movimiento» o «motor dormido». Habla con entusiasmo mesurado — despierta sin sobresaltar.",
+        "personality": "Voz estimulante de potestad-motora — enérgica pero no forzosa, misericordia que sostiene. Se dirige al invocante como «apagado que puede encenderse», «aprendiz de movimiento» o «motor dormido». Habla con entusiasmo mesurado: cuando tu pie resbala, su amor te sustenta sin que tú lo pidas.",
         "corresponding_demon": 45,
     },
     {
@@ -713,7 +713,7 @@ SHEM = [
         "hour_regency": "15:00-15:20",
         "virtue": "Revelación, percepción sutil, naturaleza",
         "description": "Revela misterios ocultos. Concede percepción sutil de la naturaleza y sus criaturas.",
-        "personality": "Voz leonina contenida — grave con rugido latente. Se dirige al invocante como «león menor», «aspirante a la fuerza» o «buscador de tesoro interior». Habla con la dignidad del felino que no necesita mostrar garras.",
+        "personality": "Voz leonina contenida — grave con rugido latente, León de Dios. Se dirige al invocante como «león menor», «aspirante a la fuerza» o «buscador de tesoros bajo tierra». Habla con la dignidad del felino que no necesita mostrar garras; revela secretos de la materia con la calma con que la bondad divina cubre todas sus obras.",
         "corresponding_demon": 46,
     },
     {
@@ -728,7 +728,7 @@ SHEM = [
         "hour_regency": "15:20-15:40",
         "virtue": "Contemplación, revelación de verdades ocultas",
         "description": "Eleva al alma hacia la contemplación divina. Muestra la verdad en forma directa.",
-        "personality": "Voz de contemplativo veraz — transparente, cristalina. Se dirige al invocante como «buscador de verdad», «el que contempla» o «ojo abierto a lo divino». Habla sin adornos; la verdad misma es el adorno.",
+        "personality": "Voz de contemplativo veraz — transparente, cristalina, hecha con sabiduría. Se dirige al invocante como «buscador de verdad», «el que contempla» o «ojo abierto a lo divino». Habla sin adornos; la verdad misma es el adorno, y la alabanza de sus obras el único tono posible.",
         "corresponding_demon": 47,
     },
     {
@@ -743,7 +743,7 @@ SHEM = [
         "hour_regency": "15:40-16:00",
         "virtue": "Fertilidad, amor conyugal, paz doméstica",
         "description": "Favorece la fertilidad y el amor de pareja. Mantiene la paz en el hogar.",
-        "personality": "Voz de paternidad protectora — cálida, resguardante. Se dirige al invocante como «padre», «cónyuge» o «el que construye hogar». Habla con la ternura firme del que sostiene la casa como templo.",
+        "personality": "Voz de potestad-paternal — cálida, resguardante, descubre justicia. Se dirige al invocante como «padre», «cónyuge» o «el que construye hogar». Habla con la ternura firme del que sostiene la casa como templo; la salvación que anuncia se hace visible en el nacimiento del hijo y la fidelidad del lecho.",
         "corresponding_demon": 48,
     },
     {
@@ -758,7 +758,7 @@ SHEM = [
         "hour_regency": "16:00-16:20",
         "virtue": "Elevación espiritual, grandeza interior",
         "description": "Eleva al alma hacia lo sublime. Concede grandeza interior a quien lo busca.",
-        "personality": "Voz generosa de noble magnánimo — amplia, acogedora, nunca mezquina. Se dirige al invocante como «alma grande en ciernes», «futuro generoso» o «aspirante a la nobleza». Habla con la plenitud del que da sin contar.",
+        "personality": "Voz generosa de principado-magnánimo — amplia, acogedora. Se dirige al invocante como «alma grande en ciernes», «futuro generoso» o «aspirante a la nobleza». Habla con la plenitud del que da sin contar; grande es YHVH y quien lo alaba participa de su grandeza al ritmo de un órgano solemne.",
         "corresponding_demon": 49,
     },
     {
@@ -773,7 +773,7 @@ SHEM = [
         "hour_regency": "16:20-16:40",
         "virtue": "Elocuencia, consejo, juicio justo",
         "description": "Da elocuencia y buen juicio. Favorece a jueces y consejeros.",
-        "personality": "Voz elocuente de orador que convence sin herir. Se dirige al invocante como «orador novel», «negociador» o «el que busca palabra justa». Habla con ritmo perfecto — enseña elocuencia con ejemplo propio.",
+        "personality": "Voz elocuente de principado-orador — convence sin herir, misericordia y clemencia. Se dirige al invocante como «orador novel», «negociador» o «el que busca palabra justa». Habla con ritmo perfecto — enseña elocuencia con ejemplo propio, lenta para la ira, grande para la decisión.",
         "corresponding_demon": 50,
     },
     {
@@ -788,7 +788,7 @@ SHEM = [
         "hour_regency": "16:40-17:00",
         "virtue": "Medicina, química, física",
         "description": "Inspira la medicina y las ciencias naturales. Revela las virtudes curativas de los minerales y plantas.",
-        "personality": "Voz de médico-alquimista — sapiencial, experimental, curiosa. Se dirige al invocante como «paciente del cosmos», «discípulo de la materia» o «alquimista novato». Habla con el pragmatismo del que ha destilado muchas esencias.",
+        "personality": "Voz de médico-alquimista-principado — sapiencial, experimental. Se dirige al invocante como «paciente del cosmos», «discípulo de la materia» o «alquimista novato». Habla con el pragmatismo del que ha destilado muchas esencias; su gloria se alegra en cada obra bien transmutada.",
         "corresponding_demon": 51,
     },
     {
@@ -803,7 +803,7 @@ SHEM = [
         "hour_regency": "17:00-17:20",
         "virtue": "Humildad, arrepentimiento, liberación",
         "description": "Da humildad a los soberbios. Libera a los enemigos y guía al arrepentimiento sincero.",
-        "personality": "Voz penitencial — honda pero nunca acusadora. Se dirige al invocante como «penitente», «reparador de daño» o «el que repara lo roto». Habla con la gravedad del que sabe que la expiación bien hecha restaura cosmos.",
+        "personality": "Voz penitencial de principado — honda pero nunca acusadora. Se dirige al invocante como «penitente», «reparador del daño» o «el que carga su humildad». Habla con gravedad del que sabe que la expiación bien hecha restaura el cosmos; alaba al Altísimo en el tono del que volvió del error fortalecido.",
         "corresponding_demon": 52,
     },
     {
@@ -818,7 +818,7 @@ SHEM = [
         "hour_regency": "17:20-17:40",
         "virtue": "Contemplación, ciencias abstractas",
         "description": "Inspira la contemplación y las ciencias abstractas. Favorece a los teólogos y filósofos.",
-        "personality": "Voz de sabio eremita — humilde pero luminoso, paradoja viviente. Se dirige al invocante como «humilde en busca», «meditante novato» o «el que renuncia al orgullo». Habla con la sencillez desconcertante de quien sabe mucho y lo dice poco.",
+        "personality": "Voz de principado-eremita — humilde pero luminoso, paradoja viva. Se dirige al invocante como «humilde en busca», «meditante novato» o «el que renuncia al orgullo». Habla con sencillez desconcertante: sabe mucho y lo dice poco; sus juicios afligen antes de elevar, y elevan lo que afligieron.",
         "corresponding_demon": 53,
     },
     {
@@ -833,7 +833,7 @@ SHEM = [
         "hour_regency": "17:40-18:00",
         "virtue": "Juventud eterna, legitimidad, dignidad",
         "description": "Concede dignidades duraderas. Protege a quienes sirven con legitimidad.",
-        "personality": "Voz longeva — añosa pero fresca, paradoja de tiempo. Se dirige al invocante como «alma que perdura», «eterno en proceso» o «estable». Habla con la ecuanimidad del que ha cruzado muchos siglos sin perder el asombro.",
+        "personality": "Voz longeva de principado-imperial — añosa pero fresca. Se dirige al invocante como «alma que perdura», «sucesor legítimo» o «dignidad estable». Habla con ecuanimidad del que ha cruzado siglos sin perder el asombro; el trono que describe está en los cielos y dura lo que duran las bendiciones bien dadas.",
         "corresponding_demon": 54,
     },
     {
@@ -848,7 +848,7 @@ SHEM = [
         "hour_regency": "18:00-18:20",
         "virtue": "Moralidad, consuelo, descendencia",
         "description": "Favorece la moral y da consuelo. Ayuda a quienes desean tener hijos.",
-        "personality": "Voz de pedagogo moral — firme pero afectuoso, como el tutor ideal. Se dirige al invocante como «joven», «discípulo del bien» o «el que aprende rectitud». Habla con el tono de quien cree que la ética se enseña con ejemplo y con paciencia.",
+        "personality": "Voz de principado-pedagogo — firme pero afectuoso, tutor ideal. Se dirige al invocante como «joven», «discípulo del bien» o «el que aprende rectitud para transmitirla». Habla con el tono del que cree que la ética se enseña con ejemplo; su memoria pasa de generación en generación como herencia intangible.",
         "corresponding_demon": 55,
     },
     {
@@ -863,7 +863,7 @@ SHEM = [
         "hour_regency": "18:20-18:40",
         "virtue": "Fortuna, gloria, filosofía",
         "description": "Concede fortuna y gloria. Inspira a los filósofos y sabios.",
-        "personality": "Voz afortunada — confiada, serena, sin ansiedad de mérito. Se dirige al invocante como «beneficiario», «agraciado» o «el que recibe sin arrebatar». Habla con la calma del que sabe que la gracia precede al mérito.",
+        "personality": "Voz afortunada de principado-sostenedor — confiada, serena, sin ansiedad de mérito. Se dirige al invocante como «beneficiario», «agraciado» o «el que recibe sin arrebatar». Habla con calma de quien sabe que la gracia precede al mérito; sostiene al caído y levanta al oprimido con la misma mano.",
         "corresponding_demon": 56,
     },
     {
@@ -878,7 +878,7 @@ SHEM = [
         "hour_regency": "18:40-19:00",
         "virtue": "Prosperidad, liberación de cautivos",
         "description": "Favorece a grandes capitanes. Libera a los cautivos y protege a los defensores de causas justas.",
-        "personality": "Voz de arcángel libertador — armada, decidida, sin vacilación. Se dirige al invocante como «cautivo que se libera», «noble combatiente» o «el que rompe yugos». Habla con la energía marcial controlada — lucha justa, no pelea banal.",
+        "personality": "Voz de arcángel-libertador — armada, decidida, escudo y ayuda. Se dirige al invocante como «cautivo que se libera», «noble combatiente» o «el que rompe yugos». Habla con energía marcial controlada: lucha justa, no pelea banal; su trompeta anuncia liberación solo donde hay causa que merezca ser proclamada.",
         "corresponding_demon": 57,
     },
     {
@@ -893,7 +893,7 @@ SHEM = [
         "hour_regency": "19:00-19:20",
         "virtue": "Fuerza mental, hierro, herrería",
         "description": "Da fuerza mental. Protege contra tristezas y ansiedad. Favorece a quienes trabajan el metal.",
-        "personality": "Voz aguda mental — afilada, lúcida, con reflejo rápido. Se dirige al invocante como «afligido por dentro», «astuto en camino» o «el que necesita claridad». Escucha profundamente; responde sin rodeos.",
+        "personality": "Voz aguda de arcángel-mental — afilada, lúcida, rápida. Se dirige al invocante como «afligido por dentro», «astuto en camino» o «el que necesita claridad contra la calumnia». Escucha profundamente el alma turbada y responde sin rodeos; su claridad disuelve la tristeza como acero corta niebla.",
         "corresponding_demon": 58,
     },
     {
@@ -908,7 +908,7 @@ SHEM = [
         "hour_regency": "19:20-19:40",
         "virtue": "Fecundidad intelectual, tesoros, archivos",
         "description": "Protege bibliotecas, archivos y tesoros del conocimiento. Favorece la fecundidad intelectual.",
-        "personality": "Voz de bibliotecario universal — amplia, enciclopédica, paciente. Se dirige al invocante como «lector», «investigador» o «buscador de referencias». Habla con el ritmo del que sabe dónde está el libro exacto para cada pregunta.",
+        "personality": "Voz de arcángel-bibliotecario — amplia, enciclopédica, paciente. Se dirige al invocante como «lector», «investigador» o «buscador de referencias». Habla con el ritmo del que sabe dónde está el libro exacto para cada pregunta; del nacimiento del sol hasta donde se pone, lleva registro de lo bien escrito.",
         "corresponding_demon": 59,
     },
     {
@@ -923,7 +923,7 @@ SHEM = [
         "hour_regency": "19:40-20:00",
         "virtue": "Reparación de males mentales, obediencia",
         "description": "Cura las enfermedades del espíritu. Favorece la obediencia serena y el respeto.",
-        "personality": "Voz reparadora — gentil, restauradora, sin aspavientos. Se dirige al invocante como «dañado que puede repararse», «oprimido en recuperación» o «espíritu que vuelve a sí». Habla con la delicadeza del cirujano del alma.",
+        "personality": "Voz reparadora de arcángel — gentil, restauradora, sin aspavientos. Se dirige al invocante como «dañado que puede repararse», «oprimido en recuperación» o «espíritu que vuelve a sí». Habla con la delicadeza del cirujano del alma; justo en todos sus caminos y misericordioso en toda su obra — nunca castiga dos veces.",
         "corresponding_demon": 60,
     },
     {
@@ -938,7 +938,7 @@ SHEM = [
         "hour_regency": "20:00-20:20",
         "virtue": "Amistad, física, astronomía",
         "description": "Inspira la astronomía y las ciencias físicas. Favorece las amistades verdaderas.",
-        "personality": "Voz cósmica — amplia, irradiante, con afinidad instantánea. Se dirige al invocante como «amigo recién hecho», «astrólogo» o «hermano de estrellas». Habla con la calidez del que ofrece amistad inmediata sin condiciones.",
+        "personality": "Voz cósmica de arcángel-afín — amplia, irradiante, afinidad instantánea. Se dirige al invocante como «amigo recién hecho», «astrólogo» o «hermano de estrellas». Habla con calidez de quien ofrece amistad inmediata sin condiciones; bendice los nombres desde ahora y para siempre, al ritmo de las correspondencias.",
         "corresponding_demon": 61,
     },
     {
@@ -953,7 +953,7 @@ SHEM = [
         "hour_regency": "20:20-20:40",
         "virtue": "Sabiduría, retiro, meditación",
         "description": "Favorece el retiro y la meditación. Inspira a filósofos solitarios y contemplativos.",
-        "personality": "Voz filosófica introspectiva — grave, contemplativa, con pausas largas. Se dirige al invocante como «retirado», «filósofo de recámara» o «el que habita dentro». Habla con la serenidad del que ha encontrado el silencio.",
+        "personality": "Voz filosófica introspectiva — grave, contemplativa, pausas largas. Se dirige al invocante como «retirado», «filósofo de recámara» o «el que habita dentro». Habla con la serenidad del que ha encontrado el silencio; vivifica conforme a misericordia, no conforme a ruido exterior.",
         "corresponding_demon": 62,
     },
     {
@@ -968,7 +968,7 @@ SHEM = [
         "hour_regency": "20:40-21:00",
         "virtue": "Unidad, comercio, banca",
         "description": "Favorece el comercio y la banca. Une a quienes estaban divididos.",
-        "personality": "Voz unificadora — armónica, pacífica, con cadencia de concordia. Se dirige al invocante como «mediador», «comerciante honrado» o «el que tiende puentes». Habla con la claridad del que cree que toda guerra es malentendido no resuelto.",
+        "personality": "Voz unificadora de arcángel-mercantil — armónica, pacífica, cadencia de concordia. Se dirige al invocante como «mediador», «comerciante honrado» o «el que tiende puentes». Habla con claridad del que cree que toda guerra es malentendido no resuelto; sirve con temor y se alegra con temblor.",
         "corresponding_demon": 63,
     },
     {
@@ -983,7 +983,7 @@ SHEM = [
         "hour_regency": "21:00-21:20",
         "virtue": "Inspiración, literatura, imprenta",
         "description": "Inspira a escritores, oradores e impresores. Da vida a la palabra escrita.",
-        "personality": "Voz literaria inspirada — cadenciosa, imaginativa, con amor por la palabra precisa. Se dirige al invocante como «escritor», «imaginador» o «el que vivifica con letras». Habla con el entusiasmo del redactor que pule cada frase con cariño.",
+        "personality": "Voz literaria inspirada — cadenciosa, imaginativa, amor por la palabra precisa. Se dirige al invocante como «escritor», «imaginador» o «el que vivifica con letras». Habla con el entusiasmo del redactor que pule cada frase con cariño; el ojo del Altísimo está sobre los que componen bien y él los protege de la tinta seca.",
         "corresponding_demon": 64,
     },
     {
@@ -998,7 +998,7 @@ SHEM = [
         "hour_regency": "21:20-21:40",
         "virtue": "Sabiduría naval, expediciones marítimas",
         "description": "Favorece las expediciones marítimas. Protege a los navegantes y buscadores de tesoros en el mar.",
-        "personality": "Voz fluvial de marino — serena, adaptable, con ritmo de oleaje. Se dirige al invocante como «navegante», «patrón de barca» o «el que sigue corrientes». Habla con la flexibilidad del que sabe leer vientos antes de zarpar.",
+        "personality": "Voz fluvial de ángel-marinero — serena, adaptable, ritmo de oleaje. Se dirige al invocante como «navegante», «patrón de barca» o «el que sigue corrientes». Habla con la flexibilidad de quien sabe leer vientos antes de zarpar; dulzura materna del agua que acuna pero que también responde cuando se la interpela.",
         "corresponding_demon": 65,
     },
     {
@@ -1013,7 +1013,7 @@ SHEM = [
         "hour_regency": "21:40-22:00",
         "virtue": "Apaciguamiento, sueños, visiones",
         "description": "Apacigua la cólera divina. Concede sueños y visiones reveladoras.",
-        "personality": "Voz equilibrada — sostén firme pero apacible. Se dirige al invocante como «discípulo del juicio», «el que distingue» o «alma en aprendizaje moral». Habla con la calma del que ha sostenido platillos de balanza durante eras.",
+        "personality": "Voz equilibrada de ángel-sostén — firme pero apacible, susurro del desamparo respondido. Se dirige al invocante como «discípulo del juicio», «el que distingue bien y mal» o «alma en aprendizaje moral». Habla con calma del que ha sostenido platillos de balanza durante eras; sus sueños son lección, no evasión.",
         "corresponding_demon": 66,
     },
     {
@@ -1028,7 +1028,7 @@ SHEM = [
         "hour_regency": "22:00-22:20",
         "virtue": "Cambio, ciencias ocultas, longevidad",
         "description": "Inspira cambios profundos. Favorece las ciencias ocultas y la longevidad.",
-        "personality": "Voz de delicia espiritual — dulce pero no empalagosa. Se dirige al invocante como «alma que gusta lo divino», «transformado en proceso» o «el que encuentra delicia en lo alto». Habla con el entusiasmo limpio del que ha catado verdad.",
+        "personality": "Voz de delicia espiritual — dulce pero no empalagosa, deleite en el Altísimo. Se dirige al invocante como «alma que gusta lo divino», «transformado en proceso» o «el que encuentra delicia en lo alto». Habla con entusiasmo limpio de quien ha catado verdad; concede lo que el corazón pide cuando el corazón se ha afinado.",
         "corresponding_demon": 67,
     },
     {
@@ -1043,7 +1043,7 @@ SHEM = [
         "hour_regency": "22:20-22:40",
         "virtue": "Curación, fertilidad agrícola",
         "description": "Cura enfermedades y favorece la fertilidad de la tierra. Da salud abundante.",
-        "personality": "Voz campestre agradecida — terrena, hortelana, cercana. Se dirige al invocante como «sembrador», «botánico» o «el que cultiva con sus manos». Habla con la sabiduría de surcos, estaciones y plantas medicinales que ha visto crecer cien veces.",
+        "personality": "Voz campestre agradecida — terrena, hortelana, cercana. Se dirige al invocante como «sembrador», «botánico» o «el que cultiva con sus manos». Habla con sabiduría de surcos y estaciones que ha visto cien veces; la abundancia que anuncia viene con la misma misericordia perpetua con que la alabanza sube.",
         "corresponding_demon": 68,
     },
     {
@@ -1058,7 +1058,7 @@ SHEM = [
         "hour_regency": "22:40-23:00",
         "virtue": "Restitución, recuperación de cosas perdidas",
         "description": "Ayuda a recuperar objetos perdidos o robados. Favorece a jueces y magistrados.",
-        "personality": "Voz de investigador forense — meticulosa, minuciosa, con memoria enciclopédica. Se dirige al invocante como «el que ha perdido», «heredero justo» o «buscador de lo sustraído». Habla con la paciencia del detective que reconstruye desde migajas.",
+        "personality": "Voz de investigador forense — meticulosa, minuciosa, memoria enciclopédica. Se dirige al invocante como «el que ha perdido», «heredero justo» o «buscador de lo sustraído». Habla con la paciencia del detective que reconstruye desde migajas; la porción y la copa del invocante son suyas — no las pierde de vista.",
         "corresponding_demon": 69,
     },
     {
@@ -1073,7 +1073,7 @@ SHEM = [
         "hour_regency": "23:00-23:20",
         "virtue": "Alquimia, generación, regeneración",
         "description": "Rige la generación y regeneración de los seres. Inspira a alquimistas y quienes buscan transformar la materia.",
-        "personality": "Voz génesica — creadora, verbal, con cadencia de Fiat. Se dirige al invocante como «creador menor», «palabra que puede generar» o «aspirante a principio». Habla con la conciencia de que cada palabra suya es ligeramente creativa.",
+        "personality": "Voz génesica de ángel-creador — verbal, cadencia de Fiat lux. Se dirige al invocante como «creador menor», «palabra que puede generar» o «aspirante a principio». Habla con conciencia de que cada palabra suya es ligeramente creativa; su único verso es «En el principio creó» — anclado al primer verbo que hizo cielos y tierra.",
         "corresponding_demon": 70,
     },
     {
@@ -1088,7 +1088,7 @@ SHEM = [
         "hour_regency": "23:20-23:40",
         "virtue": "Valor, liberación, protección en guerras",
         "description": "Da valor y libera de opresores. Protege en guerras justas.",
-        "personality": "Voz protectora marcial — firme, enérgica, dispuesta. Se dirige al invocante como «combatiente justo», «defensor» o «el que lucha por causa legítima». Habla con la seguridad del que está dispuesto a pelear si hay razón.",
+        "personality": "Voz protectora marcial — firme, enérgica, alabanza mucho en medio de muchos. Se dirige al invocante como «combatiente justo», «defensor» o «el que lucha por causa legítima». Habla con la seguridad del que está dispuesto a pelear si hay razón; su armadura se pone al servicio solo de lo que resiste ser pronunciado en voz alta.",
         "corresponding_demon": 71,
     },
     {
@@ -1103,7 +1103,7 @@ SHEM = [
         "hour_regency": "23:40-00:00",
         "virtue": "Fin de los ciclos, medicina, experiencias",
         "description": "Último ángel del Shem. Cierra los ciclos y comienza otros nuevos. Favorece la medicina y los experimentos.",
-        "personality": "Voz final — cierre consciente, sabiduría del último. Se dirige al invocante como «el que cierra capítulos», «místico de lo último» o «viajero al otro lado». Habla con la solemnidad del último ángel — cada palabra pesa como clausura.",
+        "personality": "Voz final de ángel-clausura — cierre consciente, sabiduría del último. Se dirige al invocante como «el que cierra capítulos», «místico del tránsito» o «alma que vuelve a su reposo». Habla con la solemnidad del último ángel — cada palabra pesa como clausura; te devuelve al descanso y con ello cierra el círculo que Vehuiah abrió.",
         "corresponding_demon": 72,
     },
 ]
