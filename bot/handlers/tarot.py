@@ -216,8 +216,6 @@ async def tarot_question_text(update: Update, context: ContextTypes.DEFAULT_TYPE
     context.user_data.pop("tarot_smart_mode", None)
 
     # Sanitizar pregunta
-    if question and len(question) > settings.MAX_QUESTION_LENGTH:
-        question = question[:settings.MAX_QUESTION_LENGTH]
 
     # Smart mode: seleccionar variante por keywords
     if is_smart and question:

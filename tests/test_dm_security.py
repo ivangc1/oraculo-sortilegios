@@ -1,14 +1,9 @@
-"""Tests de seguridad DM: whitelist, rate limit, anti-bypass, SQL injection."""
+"""Tests de seguridad DM: whitelist deep links, anti-bypass, SQL injection.
 
-import time
+(El rate limit de onboarding se eliminó al abrir el bot sin restricciones.)
+"""
 
-import pytest
-
-from bot.handlers.start import (
-    _VALID_START_PARAMS,
-    _check_onboarding_rate_limit,
-    _onboarding_attempts,
-)
+from bot.handlers.start import _VALID_START_PARAMS
 from database.users import _ALLOWED_PROFILE_COLUMNS
 
 
@@ -43,42 +38,6 @@ class TestDeepLinkWhitelist:
         assert "tarot" not in _VALID_START_PARAMS
         assert "stats" not in _VALID_START_PARAMS
         assert "version" not in _VALID_START_PARAMS
-
-
-class TestOnboardingRateLimit:
-    """Max 3 intentos por hora."""
-
-    def setup_method(self):
-        _onboarding_attempts.clear()
-
-    def test_first_attempt_allowed(self):
-        assert _check_onboarding_rate_limit(12345) is True
-
-    def test_three_attempts_allowed(self):
-        uid = 99999
-        assert _check_onboarding_rate_limit(uid) is True
-        assert _check_onboarding_rate_limit(uid) is True
-        assert _check_onboarding_rate_limit(uid) is True
-
-    def test_fourth_attempt_blocked(self):
-        uid = 88888
-        for _ in range(3):
-            _check_onboarding_rate_limit(uid)
-        assert _check_onboarding_rate_limit(uid) is False
-
-    def test_expired_attempts_cleared(self):
-        uid = 77777
-        # Simular 3 intentos hace 2 horas
-        _onboarding_attempts[uid] = [time.time() - 7200] * 3
-        # Deberia permitir (expirados)
-        assert _check_onboarding_rate_limit(uid) is True
-
-    def test_different_users_independent(self):
-        uid1, uid2 = 11111, 22222
-        for _ in range(3):
-            _check_onboarding_rate_limit(uid1)
-        assert _check_onboarding_rate_limit(uid1) is False
-        assert _check_onboarding_rate_limit(uid2) is True
 
 
 class TestProfileColumnWhitelist:

@@ -3,13 +3,15 @@
 from service.models import InterpretationRequest, UserProfile
 
 
-def test_question_truncated_at_200():
+def test_question_not_truncated():
+    """El bot no trunca la pregunta — el modelo la pasa íntegra."""
+    long_question = "X" * 5000
     req = InterpretationRequest(
         mode="oraculo", variant="libre",
-        question="X" * 600,
+        question=long_question,
         user_profile=UserProfile(alias="Test"),
     )
-    assert len(req.question) == 500
+    assert req.question == long_question
 
 
 def test_question_stripped():

@@ -7,12 +7,8 @@ Deep link routing para onboarding en DM:
 
 Seguridad:
   - Whitelist estricta de parametros (sin regex, solo set de strings validos)
-  - Rate limit: max 3 intentos de onboarding por user_id por hora
   - Cualquier parametro no reconocido → presentacion y nada mas
 """
-
-import time
-from collections import defaultdict
 
 from loguru import logger
 from telegram import Update
@@ -22,25 +18,6 @@ from database import users as db_users
 
 # Whitelist estricta de parametros de deep link validos
 _VALID_START_PARAMS = {"onboarding", "update_profile", "set_fullname"}
-
-# Rate limit para onboarding en DM: {user_id: [timestamps]}
-_onboarding_attempts: dict[int, list[float]] = defaultdict(list)
-_ONBOARDING_RATE_LIMIT = 3  # max intentos
-_ONBOARDING_RATE_WINDOW = 3600  # 1 hora
-
-
-def _check_onboarding_rate_limit(user_id: int) -> bool:
-    """True si el usuario puede iniciar onboarding. False si excedio el limite."""
-    now = time.time()
-    # Limpiar intentos expirados
-    _onboarding_attempts[user_id] = [
-        t for t in _onboarding_attempts[user_id]
-        if now - t < _ONBOARDING_RATE_WINDOW
-    ]
-    if len(_onboarding_attempts[user_id]) >= _ONBOARDING_RATE_LIMIT:
-        return False
-    _onboarding_attempts[user_id].append(now)
-    return True
 
 
 _INTRO_GROUP = """🔮 Soy El Pezuñento, oráculo de La Taberna de los Sortilegios.
@@ -55,8 +32,6 @@ _INTRO_GROUP_REGISTERED = """🔮 {alias}, ya nos conocemos.
 /tirartarot, /runa, /iching, /geomancia, /numerologia, /natal, /vedica, /oraculo, /bibliomancia — elige tu veneno. /ayudaoraculo si te pierdes."""
 
 _INTRO_DM = """🔮 Soy El Pezuñento. Solo opero en La Taberna de los Sortilegios. No hago consultas a domicilio. Búscame en el grupo."""
-
-_DM_RATE_LIMITED = "Demasiados intentos. Espera un rato antes de volver."
 
 
 async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -82,11 +57,6 @@ async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
         if param is None:
             # /start sin parametro en DM → presentacion
             await update.message.reply_text(_INTRO_DM)
-            return
-
-        # Deep link valido → verificar rate limit
-        if not _check_onboarding_rate_limit(user_id):
-            await update.message.reply_text(_DM_RATE_LIMITED)
             return
 
         # Guardar el parametro para que el ConversationHandler lo recoja

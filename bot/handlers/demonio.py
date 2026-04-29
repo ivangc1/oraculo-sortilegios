@@ -327,8 +327,6 @@ async def demonio_command(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
         return
 
     # Sanitizar pregunta
-    if len(question) > settings.MAX_QUESTION_LENGTH:
-        question = question[:settings.MAX_QUESTION_LENGTH]
 
     mark_user_busy(user_id)
     try:

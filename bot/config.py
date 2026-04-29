@@ -23,7 +23,6 @@ class Settings(BaseSettings):
     # Reportes — IDs de admins que reciben notificaciones de /reportar
     # Formato en .env: REPORT_ADMIN_IDS_RAW=123456,789012
     REPORT_ADMIN_IDS_RAW: str = ""
-    REPORT_COOLDOWN_SECONDS: int = 300  # 5 minutos entre reportes
 
     @property
     def report_admin_ids(self) -> list[int]:
@@ -37,19 +36,9 @@ class Settings(BaseSettings):
     ANTHROPIC_API_VERSION: str = "2023-06-01"
     ANTHROPIC_MODEL: str = "claude-sonnet-4-6"
 
-    # Límites
-    MONTHLY_SPENDING_LIMIT: float = 25.0
-    DAILY_ALERT_THRESHOLD: float = 5.0
+    # Timeouts y persistencia (no son límites de usuario, son protecciones técnicas)
     QUEUE_TIMEOUT: float = 45.0
     FEEDBACK_EXPIRY_DAYS: int = 7
-
-    # Límites de uso diario
-    DAILY_DIVINATION_POOL: int = 5
-    DAILY_NUMEROLOGIA_LIMIT: int = 2
-    DAILY_NATAL_LIMIT: int = 1
-    DAILY_ORACULO_LIMIT: int = 3
-    COOLDOWN_SECONDS: int = 60
-    MAX_QUESTION_LENGTH: int = 500
 
     # UX
     USE_BLOCKQUOTE: bool = True  # Blockquote expandible en lecturas largas (por variante)

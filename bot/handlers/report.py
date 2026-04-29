@@ -8,7 +8,6 @@ Notificación por DM a todos los admins. Confirmación breve en grupo.
 Intenta borrar el /reportar para proteger anonimato del reportante.
 """
 
-import time
 from datetime import datetime, timezone
 
 from loguru import logger
@@ -19,21 +18,6 @@ from telegram.ext import ContextTypes
 from bot.config import Settings
 from bot.messages import LIMIT_MESSAGES
 from bot.middleware import middleware_check
-from bot.typing import get_thread_id
-
-# Cooldown in-memory: user_id → timestamp último reporte
-_report_cooldown: dict[int, float] = {}
-
-
-def _check_cooldown(user_id: int, cooldown_seconds: int) -> bool:
-    """True si el usuario puede reportar, False si en cooldown."""
-    now = time.time()
-    last = _report_cooldown.get(user_id, 0)
-    return (now - last) >= cooldown_seconds
-
-
-def _record_cooldown(user_id: int) -> None:
-    _report_cooldown[user_id] = time.time()
 
 
 def _user_display(user) -> str:
@@ -53,17 +37,7 @@ async def reportar_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -
 
     user = update.effective_user
     user_id = user.id
-    chat_id = update.effective_chat.id
-    thread_id = get_thread_id(update)
     msg = update.message
-
-    # Cooldown
-    if not _check_cooldown(user_id, settings.REPORT_COOLDOWN_SECONDS):
-        await msg.reply_text(
-            LIMIT_MESSAGES["report_cooldown"],
-            reply_to_message_id=msg.message_id,
-        )
-        return
 
     # Determinar target: reply o @username en args
     reported_user = None
@@ -77,9 +51,7 @@ async def reportar_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -
         reason = " ".join(reason_parts) if reason_parts else "(sin motivo)"
     elif reason_parts and reason_parts[0].startswith("@"):
         # Modo @username: /reportar @usuario motivo
-        target_username = reason_parts[0].lstrip("@")
         reason = " ".join(reason_parts[1:]) if len(reason_parts) > 1 else "(sin motivo)"
-        # No podemos resolver @username a user object sin reply, solo guardar el username
         reported_user = None  # Sin objeto user, solo tenemos el username
     else:
         await msg.reply_text(
@@ -120,20 +92,17 @@ async def reportar_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -
     lines.append(f"Fecha: {now}")
 
     if reported_message:
-        # Texto del mensaje reportado
         msg_text = reported_message.text or reported_message.caption or "(multimedia sin texto)"
         if len(msg_text) > 200:
             msg_text = msg_text[:200] + "..."
         lines.append(f"Mensaje: {msg_text}")
 
-        # Link al mensaje si es posible
         if reported_message.link:
             lines.append(f"Link: {reported_message.link}")
 
     report_text = "\n".join(lines)
 
     # Enviar DM a cada admin
-    _record_cooldown(user_id)
     sent_count = 0
     for admin_id in settings.report_admin_ids:
         try:
@@ -164,7 +133,7 @@ async def reportar_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -
     try:
         await msg.delete()
     except (Forbidden, BadRequest):
-        pass  # Sin permiso de borrar, no pasa nada
+        pass
 
     logger.info(
         f"Reporte: {user.id} → {reported_user.id if reported_user else 'username'} "

@@ -55,7 +55,7 @@ def test_help_has_bibliomancia_books():
 def test_limit_messages_all_keys():
     """Todos los mensajes esperados existen."""
     expected_keys = [
-        "daily_limit", "cooldown", "empty_response", "queue_timeout",
+        "empty_response", "queue_timeout",
         "request_in_progress", "truncated", "not_registered", "off_topic",
         "admin_only", "nominatim_down", "dm_only_group", "api_error",
         "rate_limit", "already_registered", "onboarding_timeout",

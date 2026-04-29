@@ -92,8 +92,6 @@ async def _execute_oraculo(
         return
 
     # Sanitizar pregunta
-    if len(question) > settings.MAX_QUESTION_LENGTH:
-        question = question[:settings.MAX_QUESTION_LENGTH]
 
     mark_user_busy(user_id)
     try:

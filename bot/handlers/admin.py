@@ -50,7 +50,6 @@ async def stats_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
         f"Coste total: ${stats['total_cost']:.4f}",
         f"Coste hoy: ${daily_cost:.4f}",
         f"Coste mes: ${monthly_cost:.4f}",
-        f"Límite mes: ${settings.MONTHLY_SPENDING_LIMIT:.2f}",
         f"Cache hit rate: {stats['cache_rate']:.1f}%",
         f"Truncadas: {stats['truncated_count']}",
         f"",

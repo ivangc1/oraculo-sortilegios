@@ -1,8 +1,6 @@
 """Mensajes in-character del bot (tono Baphomet/Marte/Aries). Nunca tecnicos."""
 
 LIMIT_MESSAGES = {
-    "daily_limit": "Ya has quemado tus tiradas de hoy. Las cartas necesitan descansar, y tú también. Vuelve mañana.",
-    "cooldown": "Calma, impaciente. Las runas no se van a ir. Dame un minuto.",
     "empty_response": "El oráculo calla. A veces el silencio dice más que las cartas. Inténtalo después.",
     "queue_timeout": "Hay cola en el oráculo. No empujes. Vuelve en un momento.",
     "request_in_progress": "Aún estoy con tu consulta. No me metas prisa.",
@@ -21,12 +19,10 @@ LIMIT_MESSAGES = {
     "invalid_time": "Esa hora no cuadra. Formato: HH:MM (24 horas).",
     "unknown_guardian": "No conozco a ningún guardián con ese nombre.",
     "dm_onboarding_redirect": "Vamos al privado. Tus datos no tienen que andar por aquí a la vista de todos.",
-    "dm_rate_limited": "Demasiados intentos. Espera un rato antes de volver.",
     "dm_mid_flow": "Estamos a mitad de algo. Termina primero o usa /cancelaroraculo.",
     "awaiting_expired": "Se te ha pasado el arroz. Si quieres consultar, vuelve a empezar.",
     "report_sent": "Anotado. Los guardianes lo verán.",
     "report_no_target": "Responde a un mensaje para reportarlo, o usa /reportar @usuario motivo.",
-    "report_cooldown": "Ya has reportado hace poco. Espera un rato.",
     "report_self": "¿Te reportas a ti mismo? Interesante, pero no.",
     "report_admin": "Los guardianes no se reportan entre ellos.",
     "report_error": "No he podido enviar el reporte. Inténtalo después.",

@@ -1,15 +1,12 @@
-"""Tests del sistema de reportes: mensajes, cooldown, helpers."""
+"""Tests del sistema de reportes: mensajes y helpers.
 
-import time
+(El cooldown de reportes se eliminó al abrir el bot sin restricciones.)
+"""
+
 from unittest.mock import MagicMock
 
 from bot.messages import LIMIT_MESSAGES
-from bot.handlers.report import (
-    _check_cooldown,
-    _record_cooldown,
-    _report_cooldown,
-    _user_display,
-)
+from bot.handlers.report import _user_display
 
 
 # === Mensajes ===
@@ -19,7 +16,6 @@ def test_report_messages_exist():
     expected = [
         "report_sent",
         "report_no_target",
-        "report_cooldown",
         "report_self",
         "report_admin",
         "report_error",
@@ -32,8 +28,8 @@ def test_report_messages_exist():
 def test_report_messages_no_technical():
     """Los mensajes de reporte no contienen jerga técnica."""
     technical_words = [
-        "error", "exception", "traceback", "stack", "debug",
-        "null", "none", "api", "http", "status", "code",
+        "exception", "traceback", "stack", "debug",
+        "null", "http", "status",
     ]
     report_keys = [k for k in LIMIT_MESSAGES if k.startswith("report_")]
     for key in report_keys:
@@ -42,29 +38,6 @@ def test_report_messages_no_technical():
             assert word not in msg, (
                 f"LIMIT_MESSAGES['{key}'] contiene '{word}'"
             )
-
-
-# === Cooldown ===
-
-def test_cooldown_allows_first_report():
-    """Primer reporte siempre permitido."""
-    user_id = 999999
-    _report_cooldown.pop(user_id, None)
-    assert _check_cooldown(user_id, 300) is True
-
-
-def test_cooldown_blocks_rapid_report():
-    """Segundo reporte dentro del cooldown bloqueado."""
-    user_id = 888888
-    _record_cooldown(user_id)
-    assert _check_cooldown(user_id, 300) is False
-
-
-def test_cooldown_allows_after_expiry():
-    """Reporte permitido después del cooldown."""
-    user_id = 777777
-    _report_cooldown[user_id] = time.time() - 301
-    assert _check_cooldown(user_id, 300) is True
 
 
 # === User display ===

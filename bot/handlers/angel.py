@@ -226,9 +226,6 @@ async def angel_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
         )
         return
 
-    if len(question) > settings.MAX_QUESTION_LENGTH:
-        question = question[:settings.MAX_QUESTION_LENGTH]
-
     mark_user_busy(user_id)
     try:
         user = await db_users.get_user(user_id)

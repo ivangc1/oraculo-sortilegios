@@ -77,13 +77,11 @@ class InterpretationRequest(BaseModel):
 
     @field_validator("question")
     @classmethod
-    def sanitize_question(cls, v: str | None) -> str | None:
+    def strip_question(cls, v: str | None) -> str | None:
+        """Strip simple — sin cap de longitud (el bot no limita pregunta)."""
         if v is None:
             return None
-        v = v.strip()
-        if len(v) > 500:
-            v = v[:500]
-        return v
+        return v.strip()
 
     @classmethod
     def build(cls, **data) -> "InterpretationRequest":

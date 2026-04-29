@@ -39,14 +39,16 @@ def test_interpretation_request_build():
     assert req.drawn_items[0].inverted is True
 
 
-def test_interpretation_request_sanitize_question():
+def test_interpretation_request_question_not_truncated():
+    """El bot ya no trunca preguntas; pasan íntegras al modelo."""
+    long_question = "A" * 600
     req = InterpretationRequest(
         mode="tarot",
         variant="1_carta",
-        question="A" * 600,
+        question=long_question,
         user_profile=UserProfile(alias="Test"),
     )
-    assert len(req.question) == 500
+    assert req.question == long_question
 
 
 def test_interpretation_request_question_strip():
