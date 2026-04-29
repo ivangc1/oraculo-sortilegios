@@ -83,8 +83,17 @@ def get_nakshatra(moon_sidereal_pos: float) -> dict:
     return nakshatras[-1]  # Revati (ultimo)
 
 
-def calculate_mahadasha(moon_sidereal_pos: float, birth_year: int) -> dict:
-    """Calcula Mahadasha y Antardasha actuales (Vimshottari)."""
+def calculate_mahadasha(
+    moon_sidereal_pos: float,
+    birth_year: int,
+    birth_month: int = 1,
+    birth_day: int = 1,
+) -> dict:
+    """Calcula Mahadasha y Antardasha actuales (Vimshottari).
+
+    `elapsed` se calcula con días exactos (no años enteros) para evitar
+    desfases de hasta 1 año cerca de transiciones de dasha.
+    """
     from datetime import datetime, timezone
 
     nakshatra = get_nakshatra(moon_sidereal_pos)
@@ -103,9 +112,12 @@ def calculate_mahadasha(moon_sidereal_pos: float, birth_year: int) -> dict:
     first_dasha_name, first_dasha_years = _DASHA_SEQUENCE[ruler_idx]
     balance_years = first_dasha_years * (1 - pos_in_nak)
 
-    # Calcular qué dasha está activa ahora
-    current_year = datetime.now(timezone.utc).year
-    elapsed = current_year - birth_year
+    # Tiempo transcurrido en años exactos.
+    try:
+        birth_dt = datetime(birth_year, birth_month, birth_day, tzinfo=timezone.utc)
+    except ValueError:
+        birth_dt = datetime(birth_year, 1, 1, tzinfo=timezone.utc)
+    elapsed = (datetime.now(timezone.utc) - birth_dt).days / 365.25
 
     # Avanzar por dashas
     remaining = elapsed - balance_years
@@ -187,7 +199,7 @@ def calculate_natal_vedica(
     nakshatra = get_nakshatra(moon_abs_pos)
 
     # Dashas
-    dasha_info = calculate_mahadasha(moon_abs_pos, year)
+    dasha_info = calculate_mahadasha(moon_abs_pos, year, month, day)
 
     # Planetas
     planet_names = [

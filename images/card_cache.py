@@ -8,6 +8,7 @@ Soporte multi-mazo: assets/tarot_rws/ (Rider-Waite-Smith), assets/tarot_marsella
 """
 
 from functools import lru_cache
+from io import BytesIO
 from pathlib import Path
 
 from PIL import Image, ImageOps
@@ -22,15 +23,29 @@ _DECK_DIRS = {
 
 
 @lru_cache(maxsize=160)  # 78 * 2 mazos = 156
-def load_card_image(card_id: str, deck: str = "rws") -> Image.Image:
-    """Carga y cachea una imagen de carta. EXIF normalizado."""
+def _load_card_bytes(card_id: str, deck: str = "rws") -> bytes | None:
+    """Cachea los bytes PNG de cada carta, ya con EXIF normalizado.
+
+    Cachear bytes (inmutables) en vez de Image.Image evita que un caller que
+    mute la imagen (rotate/paste/etc.) corrompa la cache para todos los demás.
+    """
     assets_dir = _DECK_DIRS.get(deck, _DECK_DIRS["rws"])
     filepath = assets_dir / f"{card_id}.png"
     if not filepath.exists():
-        return _create_placeholder(card_id, deck)
+        return None
     with Image.open(filepath) as img:
         img = ImageOps.exif_transpose(img)
-        return img.copy()
+        buf = BytesIO()
+        img.save(buf, format="PNG")
+        return buf.getvalue()
+
+
+def load_card_image(card_id: str, deck: str = "rws") -> Image.Image:
+    """Carga la imagen de una carta. Devuelve siempre una instancia fresca."""
+    data = _load_card_bytes(card_id, deck)
+    if data is None:
+        return _create_placeholder(card_id, deck)
+    return Image.open(BytesIO(data))
 
 
 def _create_placeholder(card_id: str, deck: str = "rws") -> Image.Image:
@@ -78,4 +93,4 @@ def invert_card_image(img: Image.Image) -> Image.Image:
 
 def clear_cache() -> None:
     """Limpia el cache (para tests)."""
-    load_card_image.cache_clear()
+    _load_card_bytes.cache_clear()

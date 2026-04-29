@@ -12,33 +12,49 @@ from PIL import Image, ImageDraw, ImageFont
 
 from images.card_cache import load_card_image, invert_card_image
 
-# Fuente para etiquetas
+# Fuente para etiquetas: cache por tamaño para que distintas composiciones
+# (single 22pt, three 18pt, celtic 16pt) no se invaliden mutuamente.
 _FONT_PATH = Path(__file__).parent.parent / "assets" / "fonts" / "NotoSans-Regular.ttf"
-_LABEL_FONT: ImageFont.FreeTypeFont | None = None
+_LABEL_FONTS: dict[int, ImageFont.FreeTypeFont | ImageFont.ImageFont] = {}
 
 
 def _get_label_font(size: int = 22) -> ImageFont.FreeTypeFont | ImageFont.ImageFont:
     """Carga fuente para etiquetas. Fallback a default si no existe."""
-    global _LABEL_FONT
-    if _LABEL_FONT is not None and _LABEL_FONT.size == size:
-        return _LABEL_FONT
+    cached = _LABEL_FONTS.get(size)
+    if cached is not None:
+        return cached
     try:
-        _LABEL_FONT = ImageFont.truetype(str(_FONT_PATH), size=size)
+        font = ImageFont.truetype(str(_FONT_PATH), size=size)
     except (OSError, IOError):
-        _LABEL_FONT = ImageFont.load_default()
-    return _LABEL_FONT
+        font = ImageFont.load_default()
+    _LABEL_FONTS[size] = font
+    return font
 
 
 def compose_to_jpeg(composition: Image.Image, quality: int = 85) -> BytesIO:
-    """Convierte composición a JPEG en BytesIO. Verifica <10MB (límite Telegram)."""
-    buf = BytesIO()
-    composition.convert("RGB").save(buf, format="JPEG", quality=quality)
+    """Convierte composición a JPEG en BytesIO. Verifica <10MB (límite Telegram).
 
+    Si la primera codificación supera el límite, baja la calidad iterativamente.
+    Si aún a quality=30 no cabe, reduce el lienzo a la mitad.
+    """
+    rgb = composition.convert("RGB")
+    buf = BytesIO()
+    rgb.save(buf, format="JPEG", quality=quality)
     size_mb = buf.getbuffer().nbytes / (1024 * 1024)
-    if size_mb > 9.5:
-        logger.warning(f"Image too large: {size_mb:.1f}MB, reducing quality")
+
+    while size_mb > 9.5 and quality > 30:
+        quality = max(30, quality - 15)
+        logger.warning(f"Image too large ({size_mb:.1f}MB), retrying at quality={quality}")
         buf = BytesIO()
-        composition.convert("RGB").save(buf, format="JPEG", quality=70)
+        rgb.save(buf, format="JPEG", quality=quality)
+        size_mb = buf.getbuffer().nbytes / (1024 * 1024)
+
+    if size_mb > 9.5:
+        logger.warning(f"Still too large ({size_mb:.1f}MB), shrinking canvas")
+        w, h = rgb.size
+        rgb = rgb.resize((w // 2, h // 2), Image.LANCZOS)
+        buf = BytesIO()
+        rgb.save(buf, format="JPEG", quality=70)
 
     buf.seek(0)
     return buf

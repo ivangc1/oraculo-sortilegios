@@ -62,6 +62,11 @@ CREATE TABLE IF NOT EXISTS geocache (
     timezone    TEXT NOT NULL,
     cached_at   TEXT NOT NULL
 );
+
+CREATE INDEX IF NOT EXISTS idx_usage_user_ts ON usage_log(user_id, timestamp);
+CREATE INDEX IF NOT EXISTS idx_usage_ts ON usage_log(timestamp);
+CREATE INDEX IF NOT EXISTS idx_usage_mode_ts ON usage_log(mode, timestamp);
+CREATE INDEX IF NOT EXISTS idx_feedback_user ON feedback(user_id);
 """
 
 

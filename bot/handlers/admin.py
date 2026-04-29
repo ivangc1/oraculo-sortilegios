@@ -53,10 +53,10 @@ async def stats_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
         f"Cache hit rate: {stats['cache_rate']:.1f}%",
         f"Truncadas: {stats['truncated_count']}",
         f"",
-        f"Top 5 usuarios:",
+        f"Top 5 por coste API (histórico):",
     ]
     for u in stats["top_users"]:
-        lines.append(f"  {u['alias']}: {u['uses']} usos (${u['cost']:.4f})")
+        lines.append(f"  {u['alias']}: {u['uses']} consultas LLM (${u['cost']:.4f})")
 
     if not stats["top_users"]:
         lines.append("  (ningún uso registrado)")
