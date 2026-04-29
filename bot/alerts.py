@@ -39,9 +39,10 @@ async def send_alert(
     if throttle_seconds > 0 and (now - last) < throttle_seconds:
         return
 
-    _alert_timestamps[alert_type] = now
+    delivered = False
     try:
         await bot.send_message(_admin_user_id, message)
+        delivered = True
     except Exception:
         # DM falló (el admin no ha iniciado /start con el bot).
         # Intentar enviar al grupo si hay chat_id configurado.
@@ -49,5 +50,12 @@ async def send_alert(
             if _fallback_chat_id:
                 await bot.send_message(_fallback_chat_id, message,
                                        message_thread_id=_fallback_thread_id)
+                delivered = True
         except Exception:
             logger.error(f"Failed to send alert: {alert_type}")
+
+    # Solo aplicar throttle si la alerta llegó. Si todo el envío falló,
+    # la siguiente debe poder reintentar inmediatamente (no silenciar errores
+    # graves por una caída del primer canal).
+    if delivered:
+        _alert_timestamps[alert_type] = now

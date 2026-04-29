@@ -1,6 +1,7 @@
 """Bloqueo de peticiones concurrentes por usuario + cola API."""
 
 import asyncio
+from contextlib import asynccontextmanager
 
 # Usuarios con petición en curso
 _active_requests: set[int] = set()
@@ -30,3 +31,19 @@ def mark_user_busy(user_id: int) -> None:
 
 def release_user(user_id: int) -> None:
     _active_requests.discard(user_id)
+
+
+@asynccontextmanager
+async def user_busy(user_id: int):
+    """Contextmanager async que marca al usuario ocupado y libera al salir.
+
+    Garantiza el release incluso ante excepciones, sin necesidad de try/finally
+    repetido en cada handler. El caller debe verificar antes con is_user_busy()
+    si quiere mostrar un mensaje específico al usuario; este contextmanager no
+    hace esa verificación.
+    """
+    mark_user_busy(user_id)
+    try:
+        yield
+    finally:
+        release_user(user_id)

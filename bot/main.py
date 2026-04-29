@@ -264,16 +264,23 @@ def main() -> None:
 
         data = query.data
 
-        # Anti-ajeno: solo el usuario que inició el comando puede pulsar los botones
-        # Excepto feedback (tiene su propia verificación) y admins anónimos (comparten ID)
+        # Anti-ajeno: solo el usuario que inició el comando puede pulsar los botones.
+        # Excepto feedback (tiene su propia verificación) y admins anónimos (1087968824).
+        # Si el mensaje no tiene reply_to_message no podemos verificar al iniciador,
+        # así que solo aceptamos al admin para evitar fail-open silencioso.
+        ANON_ADMIN_ID = 1087968824
         if not data.startswith("fb:"):
             reply_msg = getattr(query.message, "reply_to_message", None)
+            clicker_id = query.from_user.id
             if reply_msg and reply_msg.from_user:
                 initiator_id = reply_msg.from_user.id
-                clicker_id = query.from_user.id
-                # Permitir si ambos son admin anónimo (mismo ID)
-                if clicker_id != initiator_id and clicker_id != 1087968824:
+                if clicker_id != initiator_id and clicker_id not in (ANON_ADMIN_ID, settings.ADMIN_USER_ID):
                     await query.answer("Esa consulta no es tuya. Usa tu propio comando.", show_alert=False)
+                    return
+            else:
+                if clicker_id not in (ANON_ADMIN_ID, settings.ADMIN_USER_ID):
+                    logger.warning(f"Callback sin reply_to_message: data={data} clicker={clicker_id}")
+                    await query.answer("No puedo verificar de quién es esta consulta.", show_alert=False)
                     return
 
         # Feedback

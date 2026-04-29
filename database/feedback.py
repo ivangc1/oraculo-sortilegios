@@ -5,14 +5,20 @@ from datetime import datetime, timezone
 from database.connection import Database
 
 
-async def save_feedback(usage_id: int, user_id: int, positive: bool) -> None:
+async def save_feedback(usage_id: int, user_id: int, positive: bool) -> bool:
+    """Guarda feedback de forma idempotente.
+
+    INSERT OR IGNORE para evitar IntegrityError ante doble-tap rápido del
+    botón. Devuelve True si se insertó, False si ya existía registro.
+    """
     db = await Database.get()
     now = datetime.now(timezone.utc).isoformat()
-    await db.execute(
-        "INSERT INTO feedback (user_id, usage_id, positive, timestamp) VALUES (?, ?, ?, ?)",
+    cursor = await db.execute(
+        "INSERT OR IGNORE INTO feedback (user_id, usage_id, positive, timestamp) VALUES (?, ?, ?, ?)",
         (user_id, usage_id, positive, now),
     )
     await db.commit()
+    return cursor.rowcount > 0
 
 
 async def get_feedback(usage_id: int) -> dict | None:

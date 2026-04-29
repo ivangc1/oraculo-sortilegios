@@ -61,16 +61,15 @@ async def handle_feedback(
         await query.answer("Ya pasó el tiempo para opinar.", show_alert=False)
         return
 
-    # No doble
-    existing = await db_feedback.get_feedback(usage_id)
-    if existing:
-        await query.answer("Ya opinaste una vez.", show_alert=False)
-        return
-
-    # Guardar y limpiar botones
-    await db_feedback.save_feedback(usage_id, query.from_user.id, positive=(sentiment == "p"))
+    # Guardar (atómico vs doble-tap: si ya existía, inserted=False).
+    inserted = await db_feedback.save_feedback(
+        usage_id, query.from_user.id, positive=(sentiment == "p"),
+    )
     try:
         await query.edit_message_reply_markup(reply_markup=None)
     except BadRequest:
         pass  # Tolerante a mensaje borrado
-    await query.answer("Tomado en cuenta.")
+    if inserted:
+        await query.answer("Tomado en cuenta.")
+    else:
+        await query.answer("Ya opinaste una vez.", show_alert=False)
