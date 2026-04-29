@@ -1,6 +1,6 @@
 # El Oraculo de los Sortilegios
 
-Bot de Telegram para el grupo **La Taberna de los Sortilegios** (~2,600 miembros). Ofrece lecturas de tarot (Rider-Waite y Marsella), runas, I Ching, geomancia, numerologia y cartas natales, impulsado por Claude Sonnet 4.6 de Anthropic.
+Bot de Telegram para el grupo **La Taberna de los Sortilegios** (~2,600 miembros). Ofrece lecturas de tarot (Rider-Waite y Marsella), runas, I Ching, geomancia, numerologia, cartas natales, demonologia y angelologia, impulsado por Claude Sonnet 4.6 de Anthropic con extended thinking.
 
 **@oraculo_sortilegios_bot** | Licencia: AGPL-3.0
 
@@ -37,17 +37,18 @@ Bot de Telegram para el grupo **La Taberna de los Sortilegios** (~2,600 miembros
 |---|---|
 | Lenguaje | Python 3.12+ |
 | Framework Telegram | python-telegram-bot 22.7 |
-| IA | Anthropic API (Claude Sonnet 4.6) via AsyncAnthropic |
-| Modelo | `claude-sonnet-4-6` (adaptive thinking desactivado, pendiente estabilidad API) |
-| Validacion | pydantic 2.12 + pydantic-settings 2.13 |
-| Base de datos | SQLite3 + aiosqlite 0.22 (WAL mode) |
-| Astrologia | kerykeion 5.12.7 (tropical + sidereal Lahiri nativo) |
+| IA | Anthropic API (Claude Sonnet 4.6) via AsyncAnthropic 0.97 |
+| Modelo | `claude-sonnet-4-6` (configurable via `ANTHROPIC_MODEL`) |
+| Extended thinking | Activo (low/medium/high por modo, mapea a `budget_tokens`) |
+| Validacion | pydantic 2.13 + pydantic-settings 2.14 |
+| Base de datos | SQLite3 + aiosqlite 0.22 (WAL, FK off para guests, índices en usage_log) |
+| Astrologia | kerykeion 5.12.8 (tropical + sidereal Lahiri nativo) |
 | Geocoding | geopy 2.4 (Nominatim) |
-| Timezone | timezonefinder 8.2.2 + zoneinfo |
+| Timezone | timezonefinder 8.2 + zoneinfo |
 | Imagenes | Pillow 12.2 |
 | Aleatoriedad | random.SystemRandom |
 | Logging | loguru 0.7 |
-| Testing | pytest 9.0 + pytest-asyncio 1.3 |
+| Testing | pytest 9.0 + pytest-asyncio 1.3 (en `requirements-dev.txt`) |
 
 ## Arquitectura
 
@@ -72,7 +73,8 @@ git clone https://github.com/tu-usuario/oraculo-sortilegios.git
 cd oraculo-sortilegios
 python -m venv .venv
 source .venv/bin/activate
-pip install -r requirements.txt
+pip install -r requirements.txt        # produccion
+pip install -r requirements-dev.txt    # incluye pytest para desarrollo
 ```
 
 ### Configuracion
@@ -149,59 +151,72 @@ Cada demonio tiene una carta 1024x1536 con retrato + sigilo. El flujo:
 
 Verificacion empirica contra el PDF de Gallica BNF: Le Breton ilustro 35 de los 72 Goetia en el DI 1863. Se usan 32 auténticos + 40 IA regeneradas por fidelidad a Mathers (algunos Le Breton son bustos minimalistas o interpretan iconografia que Goetia describe distinto).
 
-## Limites de uso
+## Politica de uso
 
-- Tiradas diarias, numerologia, natal, oraculo: sin limite practico (configurables via .env, por defecto desactivados en produccion)
-- 60s cooldown entre consultas
-- 5min timeout en preguntas pendientes (expiran automaticamente)
-- 500 chars max por pregunta
-- Spending limit $25/mes
-- 3 semaforo concurrente API (configurable)
+El bot **NO impone limites de uso**: ni cooldown, ni cuota diaria, ni tope mensual de gasto, ni rate limit de onboarding, ni cap en longitud de pregunta. Decision consciente — cualquier proteccion contra abuso se hace via Telegram (admins del grupo) o reintroduciendo limites en `bot/limits.py` (es un stub no-op preparado para ello).
+
+Lo que SI sigue activo (no son limites de usuario, son protecciones tecnicas):
+
+- `QUEUE_TIMEOUT` (45 s) para no bloquear el chat indefinidamente si la API no responde.
+- `MAX_CONCURRENT_API` (3) — semaforo asyncio para no saturar la API ni Telegram.
+- `request_in_progress` por usuario — un usuario no puede lanzar dos lecturas en paralelo.
+- `FEEDBACK_EXPIRY_DAYS` (7) — los botones 👍/👎 expiran.
 
 ## Privacidad y seguridad
 
 - **Onboarding en DM**: `/consulta` en grupo redirige a DM via deep link (`t.me/bot?start=onboarding`). Datos personales (fecha, hora, ciudad, nombre) se recogen en privado.
 - **Deep link whitelist**: solo 3 parametros validos (`onboarding`, `update_profile`, `set_fullname`). Set estricto, no regex. Cualquier otro parametro se ignora.
-- **Rate limit DM**: max 3 intentos de onboarding por user_id por hora.
 - **Middleware DM**: solo `/start`, `/startoraculo`, `/cancelaroraculo` permitidos en DM. Tiradas bloqueadas en privado.
-- **Anti-command injection**: comandos de tirada durante flujo DM se ignoran con mensaje "termina primero".
+- **Sanitizacion XML**: cualquier campo de usuario inyectado en el prompt LLM (alias, full_birth_name, birth_city, pregunta) se neutraliza para que no pueda forzar el cierre/apertura de tags estructurales del prompt. Ver `service/sanitization.py`.
+- **HTML escaping**: el output del LLM pasa por `html.escape` antes de aplicar marcadores `[[T]]` `[[C]]`. Imposible inyectar HTML al chat.
 - **SQL column whitelist**: `update_profile()` solo acepta 11 columnas predefinidas (`frozenset`). Rechaza cualquier otra con `ValueError`.
+- **Cascade manual en `/borrarme`**: como `PRAGMA foreign_keys=OFF` (necesario para guests), `delete_user` borra explicitamente de `users`, `usage_log` y `feedback` para no dejar huerfanos (RGPD).
 - **User ID real**: toda operacion de identidad usa `update.effective_user.id` o `query.from_user.id`, nunca `user_data`.
 - **SQL parameterizado**: todas las queries usan `?` placeholders. Zero concatenacion de strings.
+- **Anti-ajeno reforzado**: callbacks sin `reply_to_message` solo los acepta el admin (no fail-open silencioso).
 - **Sin secrets en logs**: errores de API solo loguean `status_code`, nunca API keys ni excepciones completas.
 
-## Adaptive thinking (Sonnet 4.6)
+## Extended thinking
 
-Actualmente **desactivado** — pendiente de estabilizacion de la API (empty responses y errores 400 con `output_config`). El codigo tiene la infraestructura completa (`EFFORT_*` por modo en `config.py`) lista para reactivar.
+Activado en cada llamada via `thinking={"type": "enabled", "budget_tokens": N}`. Effort por modo (configurable en `config.py` o `.env`):
 
-Cuando se reactive, el effort sera configurable por modo:
+| Effort | budget_tokens | Modos |
+|---|---|---|
+| `low` | 2000 | tarot 1 carta, tirada del dia, runas Odin, geomancia 1 figura |
+| `medium` | 5000 | tarot 3 cartas, si/no, cruz simple, runas Nornas, numerologia, oraculo |
+| `high` | 10000 | Cruz Celta, herradura, relacion, estrella, runas Cruz/Cinco/Siete, I Ching, escudo, natales, demonio, angel |
 
-| Effort | Modos |
-|---|---|
-| `low` | tarot 1 carta, tirada dia, runas Odin, geomancia 1 figura |
-| `medium` | tarot 3 cartas, si/no, cruz simple, runas Nornas, numerologia, oraculo |
-| `high` | Cruz Celta, herradura, relacion, estrella, runas Cruz/Cinco/Siete, I Ching, escudo, natales |
+`max_tokens` enviado a la API es `MAX_TOKENS_<MODO> + budget_tokens` para que el output visible no se vea recortado por el thinking. `temperature=1` (requisito de la API con thinking activo). El parseo de respuesta filtra `ThinkingBlock` y solo concatena bloques `type=="text"`.
 
-Configurables via `EFFORT_*` en `config.py` (o `.env` para override sin redeploy).
+## Prompt caching
+
+Aprovecha hasta 2 cache breakpoints simultaneos del SDK Anthropic 0.97:
+
+1. `MASTER_SYSTEM_PROMPT` (~5k tokens, comun a todos los modos) — siempre cacheado.
+2. Sub-prompt del modo (tarot/runas/iching/etc.) — cacheado por modo. Demonio/angel quedan inline porque su sub-prompt depende de la entidad consultada.
+
+Anthropic cachea por prefijo, asi que el cache de MASTER se reutiliza al cambiar de modo. Llamadas consecutivas del mismo modo entran como `cache_read` (0.30 $/Mtoken) en vez de `fresh_input` (3.00 $/Mtoken). TTL 5 min (`ephemeral`).
 
 ## Decisiones de implementacion
 
 - **kerykeion v5 cubre tropical Y vedica**: sidereal/Lahiri es nativo, no se necesita pyswisseph como dependencia separada.
-- **Nakshatras y dashas (Vimshottari)**: calculo propio a partir de posicion lunar sidereal.
+- **Nakshatras y dashas (Vimshottari)**: calculo propio a partir de posicion lunar sidereal. Mahadasha calculada con dias exactos (no anos enteros) para evitar errores cerca de transiciones.
 - **Runas vectoriales**: trazos Pillow sobre textura piedra procedural. Zero assets de fuentes.
 - **Marcadores custom `[[T]]` `[[C]]`**: en vez de `##` y `**` (que Sonnet usa inconsistentemente).
-- **NO retry manual**: el SDK de Anthropic ya reintenta 2x automaticamente.
-- **System prompt estatico**: constante literal (no f-strings) para que el prompt caching funcione. Perfil del usuario se inyecta en el user message.
+- **NO retry manual** salvo `empty_response`: el SDK de Anthropic ya reintenta 2x en 429/500. Reintenta UNA vez si la respuesta llega vacia (problema conocido en lecturas densas con thinking).
+- **System prompt estatico**: constante literal (no f-strings) para que el prompt caching funcione. Perfil del usuario se inyecta en el user message saneado contra inyeccion XML.
 - **Guardrails minimos**: solo anti-jailbreak y proteccion de identidad (nunca revela que es IA). El oraculo responde a cualquier tema — amor, fertilidad, dinero, muerte, enemigos — sin restricciones ni disclaimers.
 - **Personalidad Baphomet**: El Pezuñento es omnisciente — NUNCA dice "no se". Tono modulado segun contexto (humor acido para preguntas casuales, gravedad para dolor, autoridad para decisiones vitales). Todos los mensajes mantienen caracter, sin servilismo.
 - **Deteccion dinamica de forum/topics**: el bot se adapta automaticamente a grupos con o sin hilos. Usa `chat.is_forum` para decidir si enviar `message_thread_id`. `ALLOWED_THREAD_ID` solo se comprueba en grupos forum.
-- **Anti-ajeno en callbacks**: solo el usuario que inicio una tirada puede pulsar sus botones inline. Otros usuarios reciben "Esas no son tus cartas".
+- **Anti-ajeno en callbacks**: solo el usuario que inicio una tirada puede pulsar sus botones inline. Otros usuarios reciben "Esa consulta no es tuya". Cuando el callback no tiene `reply_to_message` para verificar, solo el admin pasa.
 - **Geocoding multiples resultados**: ciudades homonimas (Valencia, Santiago...) muestran botones inline con hasta 5 opciones de Nominatim para que el usuario seleccione la correcta.
 - **Smart selector**: `/tirartarot <pregunta>` analiza keywords (coste cero, sin API) y elige la tirada mas apropiada. Tambien disponible como boton en el menu.
 - **Blockquote expandible**: todas las respuestas (tarot, runas, I Ching, geomancia, numerologia, natales, oraculo, bibliomancia, /ayudaoraculo) se muestran colapsadas con "Mostrar mas". Controlado por `frozenset` en config, desactivable globalmente con `USE_BLOCKQUOTE=false`.
 - **Menu tarot con sub-categorias**: Rapidas / Completas / Especiales. Edita el mismo mensaje, sin spam en el chat.
 - **Multi-mazo tarot**: Rider-Waite-Smith (PCS 1909, CC0, 300px) y Tarot de Marsella (Lequart ~1890, dominio publico, 800px). Selector de mazo → selector de variante → tirada. Prompts deck-aware con nomenclatura Marsella (La Papisa, El Papa, El Arcano sin Nombre, La Casa de Dios). Imagenes: 76 de TarotCaster (Wikimedia) + 2 Papisa/Papa de Wikimedia directas.
 - **Timeout en preguntas pendientes**: flags `awaiting_*` guardan `time.time()` y expiran a los 5 minutos. Si el usuario no responde, el oraculo cierra la mesa y avisa in-character. Evita captura indefinida de texto.
+- **`async with user_busy(user_id):`** en `bot/concurrency.py` libera al usuario incluso ante excepciones, sin try/finally repetido en handlers.
+- **Split tag-aware**: cuando una respuesta excede 4096 chars, se corta sin romper tags HTML (`<b>`, `<i>`) entre chunks.
 
 ## Licencia
 

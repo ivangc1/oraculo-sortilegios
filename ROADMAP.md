@@ -1090,14 +1090,15 @@ class Settings(BaseSettings):
     ALLOWED_CHAT_ID: int
     ALLOWED_THREAD_ID: int | None = None
     ADMIN_USER_ID: int
-    BOT_VERSION: str = "1.198"
-    MONTHLY_SPENDING_LIMIT: float = 25.0
-    DAILY_ALERT_THRESHOLD: float = 5.0
+    BOT_VERSION: str = "1.199"
     QUEUE_TIMEOUT: float = 45.0
     FEEDBACK_EXPIRY_DAYS: int = 7
-    # max_tokens (todos configurables)
+    ANTHROPIC_MODEL: str = "claude-sonnet-4-6"
+    # MAX_TOKENS_* y EFFORT_* por modo (todos configurables)
     # ...
 ```
+
+> **Nota:** el bot ya no impone límites de uso (cooldown, daily, monthly, max_question, rate limit DM). `bot/limits.py` queda como stub no-op preparado para reintroducir límites si hiciera falta. Las únicas protecciones activas son `QUEUE_TIMEOUT`, `MAX_CONCURRENT_API` (semáforo) y el flag de `request_in_progress` por usuario.
 
 ### 12.2 SQLite: lifecycle + WAL + transacciones
 
@@ -1925,9 +1926,7 @@ ANTHROPIC_API_VERSION=2023-06-01
 ALLOWED_CHAT_ID=-1001234567890
 ALLOWED_THREAD_ID=
 ADMIN_USER_ID=123456789
-BOT_VERSION=1.198
-MONTHLY_SPENDING_LIMIT=25.0
-DAILY_ALERT_THRESHOLD=5.0
+BOT_VERSION=1.199
 QUEUE_TIMEOUT=45.0
 FEEDBACK_EXPIRY_DAYS=7
 MAX_TOKENS_TAROT_1=400
