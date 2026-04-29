@@ -2,6 +2,8 @@
 
 from pydantic import BaseModel, field_validator
 
+from service.sanitization import sanitize_user_text
+
 
 class UserProfile(BaseModel):
     """Perfil del usuario inyectado en cada interpretación (~15-40 tokens)."""
@@ -13,16 +15,21 @@ class UserProfile(BaseModel):
     life_path: int | None = None
 
     def to_prompt_fragment(self) -> str:
-        """Genera fragmento de perfil para inyectar en user message."""
-        parts = [f"Alias: {self.alias}"]
+        """Genera fragmento de perfil para inyectar en user message.
+
+        El alias viene del usuario (potencialmente malicioso) y los signos
+        astrológicos vienen de cálculos internos. Saneamos todo por defecto
+        para que ningún campo pueda forzar el cierre de tags estructurales.
+        """
+        parts = [f"Alias: {sanitize_user_text(self.alias)}"]
         if self.sun_sign:
-            parts.append(f"Sol: {self.sun_sign}")
+            parts.append(f"Sol: {sanitize_user_text(self.sun_sign)}")
         if self.moon_sign:
-            parts.append(f"Luna: {self.moon_sign}")
+            parts.append(f"Luna: {sanitize_user_text(self.moon_sign)}")
         if self.ascendant:
-            parts.append(f"Ascendente: {self.ascendant}")
+            parts.append(f"Ascendente: {sanitize_user_text(self.ascendant)}")
         if self.lunar_nakshatra:
-            parts.append(f"Nakshatra lunar: {self.lunar_nakshatra}")
+            parts.append(f"Nakshatra lunar: {sanitize_user_text(self.lunar_nakshatra)}")
         if self.life_path is not None:
             parts.append(f"Camino de vida: {self.life_path}")
         return " | ".join(parts)

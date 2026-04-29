@@ -2,6 +2,12 @@
 
 from service.anthropic_client import AnthropicService
 from service.models import InterpretationRequest, InterpretationResponse
+from service.sanitization import sanitize_user_text
+
+# Modos cuyo sub-prompt depende de la entidad consultada y por tanto NO conviene
+# cachear (el contenido cambia en cada llamada). Se inyectan inline en el user
+# message en vez de en `system`.
+_INLINE_SUB_PROMPT_MODES = {"demonio", "angel"}
 
 
 class InterpreterService:
@@ -11,22 +17,35 @@ class InterpreterService:
         self._anthropic = anthropic_service
 
     async def interpret(self, request: InterpretationRequest) -> InterpretationResponse:
-        """Genera interpretación completa."""
-        user_message = self._build_user_message(request)
-        return await self._anthropic.interpret(request, user_message)
+        """Genera interpretación completa.
 
-    def _build_user_message(self, request: InterpretationRequest) -> str:
-        """Construye el user message con sub-prompt + datos + perfil + pregunta."""
-        parts = []
-
-        # Sub-prompt del modo (puede usar extra_data para modos contextuales)
+        El sub-prompt común (tarot/runas/iching/etc.) viaja en `system` para
+        aprovechar prompt caching multi-bloque. Demonio/ángel se inyectan
+        inline porque su contenido cambia con la entidad y cachearlo no aporta.
+        """
         sub_prompt = self._get_sub_prompt(
             request.mode, request.variant, request.deck, request.extra_data,
         )
-        if sub_prompt:
-            parts.append(f"<instrucciones_modo>\n{sub_prompt}\n</instrucciones_modo>")
+        if request.mode in _INLINE_SUB_PROMPT_MODES:
+            inline_sub_prompt, cacheable_sub_prompt = sub_prompt, None
+        else:
+            inline_sub_prompt, cacheable_sub_prompt = None, sub_prompt
 
-        # Perfil del usuario
+        user_message = self._build_user_message(request, inline_sub_prompt)
+        return await self._anthropic.interpret(request, user_message, cacheable_sub_prompt)
+
+    def _build_user_message(
+        self,
+        request: InterpretationRequest,
+        inline_sub_prompt: str | None,
+    ) -> str:
+        """Construye el user message con datos + perfil + pregunta."""
+        parts = []
+
+        if inline_sub_prompt:
+            parts.append(f"<instrucciones_modo>\n{inline_sub_prompt}\n</instrucciones_modo>")
+
+        # Perfil del usuario (alias y campos derivados pasan por sanitize en el modelo)
         profile_fragment = request.user_profile.to_prompt_fragment()
         parts.append(f"<perfil_consultante>\n{profile_fragment}\n</perfil_consultante>")
 
@@ -40,9 +59,9 @@ class InterpreterService:
             extra_text = self._format_extra_data(request.extra_data)
             parts.append(f"<datos_extra>\n{extra_text}\n</datos_extra>")
 
-        # Pregunta
+        # Pregunta (campo más expuesto a inyección de tags)
         if request.question:
-            parts.append(f"<pregunta>\n{request.question}\n</pregunta>")
+            parts.append(f"<pregunta>\n{sanitize_user_text(request.question)}\n</pregunta>")
         else:
             parts.append("<sin_pregunta>Lectura general, sin pregunta específica.</sin_pregunta>")
 
@@ -99,16 +118,16 @@ class InterpreterService:
     def _format_drawn_items(self, request: InterpretationRequest) -> str:
         lines = []
         for item in request.drawn_items:
-            parts = [f"{item.name}"]
+            parts = [sanitize_user_text(item.name)]
             if item.inverted:
                 parts.append("(invertida)")
             if item.position:
-                parts.append(f"— posición: {item.position}")
+                parts.append(f"— posición: {sanitize_user_text(item.position)}")
             lines.append(" ".join(parts))
         return "\n".join(lines)
 
     def _format_extra_data(self, extra: dict) -> str:
         lines = []
         for key, value in extra.items():
-            lines.append(f"{key}: {value}")
+            lines.append(f"{sanitize_user_text(key)}: {sanitize_user_text(value)}")
         return "\n".join(lines)
