@@ -369,12 +369,8 @@ async def _complete_onboarding(
     except Exception:
         pass
 
-    # Borrar parcial si existe y crear completo
-    existing = await db_users.get_user(user_id)
-    if existing:
-        await db_users.delete_user(user_id)
-
-    await db_users.create_user(
+    # Crear o reemplazar perfil de forma atómica.
+    await db_users.upsert_user(
         user_id=user_id,
         username=username,
         alias=alias,

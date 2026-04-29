@@ -64,20 +64,22 @@ def create_persistence() -> PicklePersistence:
     pickle_path = "bot_persistence.pickle"
     store = PersistenceInput(bot_data=False)
     try:
-        persistence = PicklePersistence(
+        return PicklePersistence(
             filepath=pickle_path,
             update_interval=60,
             store_data=store,
         )
-    except (pickle.UnpicklingError, EOFError, FileNotFoundError, Exception):
-        logger.warning("Persistence corrupted or missing, starting fresh")
+    except (pickle.UnpicklingError, EOFError) as e:
+        # Solo borrar el archivo si está realmente corrupto. PermissionError,
+        # OSError por disco lleno y demás deben propagar para no destruir
+        # user_data silenciosamente al arrancar.
+        logger.warning(f"Persistence corrupted ({type(e).__name__}), starting fresh")
         Path(pickle_path).unlink(missing_ok=True)
-        persistence = PicklePersistence(
+        return PicklePersistence(
             filepath=pickle_path,
             update_interval=60,
             store_data=store,
         )
-    return persistence
 
 
 async def post_init(application: Application) -> None:

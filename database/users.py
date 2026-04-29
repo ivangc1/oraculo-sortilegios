@@ -51,6 +51,63 @@ async def create_user(
     await db.commit()
 
 
+async def upsert_user(
+    user_id: int,
+    username: str | None,
+    alias: str,
+    birth_date: str,
+    birth_time: str | None = None,
+    birth_city: str | None = None,
+    birth_lat: float | None = None,
+    birth_lon: float | None = None,
+    birth_timezone: str | None = None,
+    sun_sign: str | None = None,
+    moon_sign: str | None = None,
+    ascendant: str | None = None,
+    lunar_nakshatra: str | None = None,
+    life_path: int | None = None,
+) -> None:
+    """Crea o reemplaza el perfil completo en una sola sentencia atómica.
+
+    Usado en re-onboarding: evita el patrón delete+create no atómico que perdía
+    el perfil completo si create_user fallaba a mitad (network, IntegrityError,
+    excepciones del cálculo astrológico, etc.).
+    """
+    db = await Database.get()
+    now = datetime.now(timezone.utc).isoformat()
+    await db.execute(
+        """INSERT INTO users (
+            telegram_user_id, telegram_username, alias, birth_date,
+            birth_time, birth_city, birth_lat, birth_lon, birth_timezone,
+            sun_sign, moon_sign, ascendant, lunar_nakshatra, life_path,
+            registered_at, last_activity, onboarding_complete
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, TRUE)
+        ON CONFLICT(telegram_user_id) DO UPDATE SET
+            telegram_username = excluded.telegram_username,
+            alias = excluded.alias,
+            birth_date = excluded.birth_date,
+            birth_time = excluded.birth_time,
+            birth_city = excluded.birth_city,
+            birth_lat = excluded.birth_lat,
+            birth_lon = excluded.birth_lon,
+            birth_timezone = excluded.birth_timezone,
+            sun_sign = excluded.sun_sign,
+            moon_sign = excluded.moon_sign,
+            ascendant = excluded.ascendant,
+            lunar_nakshatra = excluded.lunar_nakshatra,
+            life_path = excluded.life_path,
+            last_activity = excluded.last_activity,
+            onboarding_complete = TRUE""",
+        (
+            user_id, username, alias, birth_date,
+            birth_time, birth_city, birth_lat, birth_lon, birth_timezone,
+            sun_sign, moon_sign, ascendant, lunar_nakshatra, life_path,
+            now, now,
+        ),
+    )
+    await db.commit()
+
+
 async def update_username(user_id: int, username: str | None) -> None:
     db = await Database.get()
     await db.execute(
@@ -105,22 +162,37 @@ async def update_profile(user_id: int, **fields) -> None:
 
 
 async def delete_user(user_id: int) -> None:
+    """Borra usuario y todo su historial. FK OFF global → cascade manual.
+
+    RGPD: el usuario pidió ser eliminado; se borra también de usage_log y
+    feedback para no dejar huérfanos apuntando a un user_id inexistente.
+    """
     db = await Database.get()
-    await db.execute(
-        "DELETE FROM users WHERE telegram_user_id = ?", (user_id,)
-    )
+    await db.execute("DELETE FROM feedback WHERE user_id = ?", (user_id,))
+    await db.execute("DELETE FROM usage_log WHERE user_id = ?", (user_id,))
+    await db.execute("DELETE FROM users WHERE telegram_user_id = ?", (user_id,))
     await db.commit()
 
 
 async def save_partial_onboarding(user_id: int, username: str | None, alias: str, birth_date: str) -> None:
-    """Guarda perfil parcial (sin onboarding_complete) para retomar tras restart."""
+    """Guarda perfil parcial (sin onboarding_complete) para retomar tras restart.
+
+    Si el usuario ya existía completo (onboarding_complete=TRUE), NO se sobrescribe
+    para no destruir birth_time/lat/lon/sun_sign/etc. Los re-onboarding completos
+    pasan por upsert_user.
+    """
     db = await Database.get()
     now = datetime.now(timezone.utc).isoformat()
     await db.execute(
-        """INSERT OR REPLACE INTO users (
+        """INSERT INTO users (
             telegram_user_id, telegram_username, alias, birth_date,
             registered_at, onboarding_complete
-        ) VALUES (?, ?, ?, ?, ?, FALSE)""",
+        ) VALUES (?, ?, ?, ?, ?, FALSE)
+        ON CONFLICT(telegram_user_id) DO UPDATE SET
+            telegram_username = excluded.telegram_username,
+            alias = excluded.alias,
+            birth_date = excluded.birth_date
+        WHERE users.onboarding_complete = FALSE""",
         (user_id, username, alias, birth_date, now),
     )
     await db.commit()
