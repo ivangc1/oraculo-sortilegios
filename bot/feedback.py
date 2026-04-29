@@ -2,7 +2,6 @@
 
 from datetime import datetime, timezone
 
-from loguru import logger
 from telegram import Update
 from telegram.error import BadRequest
 from telegram.ext import ContextTypes

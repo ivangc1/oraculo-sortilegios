@@ -10,7 +10,6 @@ from telegram.ext import ContextTypes
 
 from bot.concurrency import is_user_busy, mark_user_busy, release_user, get_semaphore
 from bot.config import Settings
-from bot.feedback import handle_feedback
 from bot.formatting import format_and_split
 from bot.keyboards import (
     feedback_keyboard,

@@ -4,7 +4,6 @@ Usa kerykeion si disponible, fallback a tabla aproximada.
 Para fecha sin hora, usa mediodía como aproximación.
 """
 
-from datetime import datetime
 from loguru import logger
 
 # Signos del zodíaco en orden (0-11)

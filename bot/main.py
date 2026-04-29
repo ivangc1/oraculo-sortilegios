@@ -1,11 +1,10 @@
 """Entry point del bot. Signals, PicklePersistence, JobQueue, startup/shutdown."""
 
-import asyncio
 import pickle
-import signal
 import sys
 import time
 from datetime import time as dt_time
+from zoneinfo import ZoneInfo
 from pathlib import Path
 
 from loguru import logger
@@ -455,8 +454,13 @@ def main() -> None:
     app.job_queue.run_repeating(
         cleanup_membership_cache_job, interval=3600, first=60
     )
+    # Domingos 9:00 hora de Madrid. En PTB 22 los días siguen convención
+    # datetime.weekday() (0=lunes ... 6=domingo). Sin tzinfo el job se ejecuta
+    # en UTC (~11:00 Madrid en verano), por eso pasamos ZoneInfo explícitamente.
     app.job_queue.run_daily(
-        send_weekly_summary, time=dt_time(hour=9, minute=0), days=(0,)
+        send_weekly_summary,
+        time=dt_time(hour=9, minute=0, tzinfo=ZoneInfo("Europe/Madrid")),
+        days=(6,),
     )
 
     # Crear directorio de logs si no existe

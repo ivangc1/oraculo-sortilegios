@@ -16,7 +16,6 @@ assets/goetia_sigils/NN.png (72 PNG de Wikimedia, dominio público).
 
 from __future__ import annotations
 
-from pathlib import Path
 
 from loguru import logger
 from telegram import Update

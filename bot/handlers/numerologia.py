@@ -6,8 +6,8 @@ Compatibilidad solo pide segunda fecha (camino de vida), no nombre.
 
 import asyncio
 import time
+from datetime import datetime, timezone
 
-from loguru import logger
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.error import BadRequest, Forbidden
 from telegram.ext import ContextTypes
@@ -249,8 +249,10 @@ async def numerologia_compat_date_text(update: Update, context: ContextTypes.DEF
         if len(parts) != 3:
             raise ValueError("Formato inválido")
         day, month, year = int(parts[0]), int(parts[1]), int(parts[2])
-        if not (1 <= day <= 31 and 1 <= month <= 12 and 1900 <= year <= 2025):
+        current_year = datetime.now(timezone.utc).year
+        if not (1 <= day <= 31 and 1 <= month <= 12 and 1900 <= year <= current_year):
             raise ValueError("Fecha fuera de rango")
+        datetime(year, month, day)  # valida 29-feb, 31-abril, etc.
     except (ValueError, IndexError):
         await context.bot.send_message(
             chat_id=update.effective_chat.id,

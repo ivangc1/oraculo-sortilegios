@@ -13,14 +13,13 @@ from telegram.ext import ContextTypes
 from bot.concurrency import is_user_busy, mark_user_busy, release_user, get_semaphore
 from bot.config import Settings
 from bot.formatting import format_and_split
-from bot.keyboards import feedback_keyboard, natal_keyboard
+from bot.keyboards import feedback_keyboard
 from bot.limits import check_limits, record_cooldown
 from bot.messages import LIMIT_MESSAGES
 from bot.middleware import middleware_check
 from bot.typing import get_thread_id, with_typing
 from database import usage as db_usage
 from database import users as db_users
-from service.calculators.timezone import get_utc_datetime
 from service.interpreter import InterpreterService
 from service.models import InterpretationRequest, UserProfile
 

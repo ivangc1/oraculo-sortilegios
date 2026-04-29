@@ -2,7 +2,6 @@
 
 import asyncio
 
-from loguru import logger
 from telegram import Update
 from telegram.error import BadRequest, Forbidden
 from telegram.ext import ContextTypes

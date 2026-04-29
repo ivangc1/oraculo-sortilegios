@@ -5,7 +5,6 @@ Solo usa patrones de texto en castellano.
 """
 
 import re
-import unicodedata
 
 # Patrones si/no (pregunta directa con verbo interrogativo)
 _YES_NO_VERBS = (

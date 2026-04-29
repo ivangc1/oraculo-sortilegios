@@ -51,7 +51,6 @@ def _load_texts() -> None:
     if _TEXTS is not None:
         return
 
-    import importlib.util
     from pathlib import Path
 
     data_path = Path(__file__).parent.parent.parent / "data" / "bibliomancia_datos.py"

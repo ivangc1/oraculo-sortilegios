@@ -2,7 +2,6 @@
 
 import asyncio
 
-from loguru import logger
 from telegram import Update
 from telegram.error import BadRequest, Forbidden
 from telegram.ext import ContextTypes
@@ -85,7 +84,6 @@ async def runas_execute(
             img = render_rune_with_label(rune["id"], label)
             if rune["inverted"]:
                 # Invertir la parte de la runa (no la etiqueta)
-                from PIL import Image as PILImage
                 rune_part = img.crop((0, 0, img.width, img.height - 40))
                 rune_part = rune_part.rotate(180, expand=False)
                 img.paste(rune_part, (0, 0))

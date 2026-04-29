@@ -6,7 +6,6 @@ Cierra tags abiertos antes de wrapping para evitar HTML malformado.
 
 import html
 import re
-import textwrap
 
 
 def format_response(raw_text: str) -> str:
@@ -88,6 +87,38 @@ def format_and_split(raw_text: str, use_blockquote: bool = False) -> list[str]:
     return balanced
 
 
+def _split_long_paragraph(para: str, max_length: int) -> list[str]:
+    """Corta un párrafo largo sin romper tags HTML.
+
+    textwrap.wrap puede partir entre `<` y `b>`, dejando tags malformados que
+    Telegram rechaza con `Bad Request: can't parse entities`. Esta función
+    busca un punto de corte seguro hacia atrás antes de cualquier `<` sin
+    cerrar.
+    """
+    out: list[str] = []
+    remaining = para
+    while len(remaining) > max_length:
+        cut = max_length
+        # Si dentro de [0:cut] hay un '<' sin '>', retroceder hasta él.
+        last_open = remaining.rfind("<", 0, cut)
+        last_close = remaining.rfind(">", 0, cut)
+        if last_open > last_close:
+            cut = last_open
+        # Buscar separador (espacio o newline) hacia atrás para no cortar palabras.
+        for sep in ("\n", " "):
+            sep_idx = remaining.rfind(sep, 0, cut)
+            if sep_idx > max_length // 2:
+                cut = sep_idx
+                break
+        if cut <= 0:
+            cut = max_length  # No hay buen sitio: corte duro.
+        out.append(remaining[:cut].rstrip())
+        remaining = remaining[cut:].lstrip()
+    if remaining:
+        out.append(remaining)
+    return out
+
+
 def split_message(text: str, max_length: int = 4096) -> list[str]:
     """Divide mensaje largo en fragmentos <= max_length respetando parrafos."""
     if len(text) <= max_length:
@@ -103,10 +134,8 @@ def split_message(text: str, max_length: int = 4096) -> list[str]:
         else:
             if current:
                 chunks.append(current)
-            # Si un parrafo solo excede max_length, cortar con textwrap
             if len(para) > max_length:
-                wrapped = textwrap.wrap(para, width=max_length, break_long_words=True, break_on_hyphens=False)
-                chunks.extend(wrapped)
+                chunks.extend(_split_long_paragraph(para, max_length))
                 current = ""
             else:
                 current = para

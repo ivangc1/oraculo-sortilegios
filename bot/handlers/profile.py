@@ -6,7 +6,6 @@ ForceReply en cada paso. Geocoding con Nominatim caido -> salida limpia.
 
 import re
 
-from loguru import logger
 from telegram import ForceReply, InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.ext import (
     CallbackQueryHandler,
