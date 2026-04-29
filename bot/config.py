@@ -35,6 +35,7 @@ class Settings(BaseSettings):
     # Anthropic
     ANTHROPIC_API_KEY: str
     ANTHROPIC_API_VERSION: str = "2023-06-01"
+    ANTHROPIC_MODEL: str = "claude-sonnet-4-6"
 
     # Límites
     MONTHLY_SPENDING_LIMIT: float = 25.0

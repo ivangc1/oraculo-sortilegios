@@ -1,7 +1,8 @@
 """AsyncAnthropic singleton. Cache system fijo, version pinned, parseo seguro.
 
-Sonnet 4.6: adaptive thinking con effort configurable por modo.
-CRITICO: NO anadir retries manuales. El SDK ya reintenta 2x (429, 500).
+Sonnet 4.x: extended thinking con budget configurable por modo.
+CRÍTICO: NO añadir retries manuales fuera del retry de empty_response. El SDK
+ya reintenta 2x (429, 500).
 """
 
 import anthropic
@@ -11,10 +12,24 @@ from bot.config import Settings
 from service.models import InterpretationRequest, InterpretationResponse
 from service.prompts.master import MASTER_SYSTEM_PROMPT
 
+# Mapping effort → budget_tokens del extended thinking. El total que el modelo
+# puede gastar en pensar antes de responder. El output visible se suma encima
+# de este presupuesto en `total_max`.
+_EFFORT_BUDGETS = {
+    "low": 2000,
+    "medium": 5000,
+    "high": 10000,
+}
+
 
 def calculate_real_cost(usage) -> float:
-    """Coste real basado en desglose de tokens cache hit/miss/write."""
-    fresh_input = usage.input_tokens - (getattr(usage, "cache_read_input_tokens", 0) or 0)
+    """Coste real basado en desglose de tokens cache hit/miss/write.
+
+    La API reporta `input_tokens`, `cache_read_input_tokens` y
+    `cache_creation_input_tokens` como contadores INDEPENDIENTES:
+    `input_tokens` ya excluye cache reads/writes — no hay que restarlos.
+    """
+    fresh_input = usage.input_tokens
     cached_input = getattr(usage, "cache_read_input_tokens", 0) or 0
     cache_write = getattr(usage, "cache_creation_input_tokens", 0) or 0
 
@@ -37,64 +52,99 @@ class AnthropicService:
             max_retries=2,
             timeout=120.0,
         )
-        self._model = "claude-sonnet-4-6"
+        self._model = settings.ANTHROPIC_MODEL
+
+    async def _create_message(
+        self,
+        request: InterpretationRequest,
+        user_message: str,
+        sub_prompt: str | None = None,
+    ):
+        budget = _EFFORT_BUDGETS.get(request.effort, _EFFORT_BUDGETS["medium"])
+        # max_tokens debe contener tanto thinking como output visible.
+        total_max = request.max_tokens + budget
+        # Cache multi-bloque (anthropic SDK ≥0.97 soporta hasta 4 breakpoints):
+        # 1. MASTER (común a todos los modos, máxima reusabilidad por prefijo).
+        # 2. Sub-prompt del modo (común a todas las llamadas del mismo modo).
+        # Demonio/ángel quedan inline porque su contenido depende de la entidad.
+        system_blocks = [
+            {
+                "type": "text",
+                "text": MASTER_SYSTEM_PROMPT,
+                "cache_control": {"type": "ephemeral"},
+            }
+        ]
+        if sub_prompt:
+            system_blocks.append({
+                "type": "text",
+                "text": sub_prompt,
+                "cache_control": {"type": "ephemeral"},
+            })
+        # Con thinking activo, temperature debe ser 1 (requisito de la API).
+        return await self._client.messages.create(
+            model=self._model,
+            max_tokens=total_max,
+            temperature=1,
+            thinking={"type": "enabled", "budget_tokens": budget},
+            system=system_blocks,
+            messages=[{"role": "user", "content": user_message}],
+        )
 
     async def interpret(
         self,
         request: InterpretationRequest,
         user_message: str,
+        sub_prompt: str | None = None,
     ) -> InterpretationResponse:
-        """Envia peticion a la API. System prompt cacheado.
+        """Envía petición a la API. System prompt cacheado.
 
-        TODO: reactivar adaptive thinking cuando la API sea estable.
-        Por ahora, llamada directa sin thinking para evitar empty responses
-        y errores 400 con effort/output_config.
+        Si la respuesta llega vacía (problema conocido de Sonnet en lecturas
+        densas con thinking), reintenta UNA vez antes de devolver error.
         """
-        try:
-            response = await self._client.messages.create(
-                model=self._model,
-                max_tokens=request.max_tokens,
-                system=[
-                    {
-                        "type": "text",
-                        "text": MASTER_SYSTEM_PROMPT,
-                        "cache_control": {"type": "ephemeral"},
-                    }
-                ],
-                messages=[{"role": "user", "content": user_message}],
+        for attempt in range(2):
+            try:
+                response = await self._create_message(request, user_message, sub_prompt)
+            except anthropic.APITimeoutError:
+                logger.warning("Anthropic API timeout")
+                return InterpretationResponse(error="timeout")
+            except anthropic.RateLimitError:
+                logger.warning("Anthropic rate limit")
+                return InterpretationResponse(error="rate_limit")
+            except anthropic.APIError as e:
+                logger.error(f"Anthropic API error: {e.status_code}")
+                return InterpretationResponse(error="api_error")
+
+            try:
+                # Con extended thinking, content puede contener ThinkingBlock
+                # antes del TextBlock visible. Concatenamos solo los textos.
+                text = "".join(
+                    block.text for block in response.content
+                    if getattr(block, "type", None) == "text"
+                )
+                stop = response.stop_reason
+                tokens_in = response.usage.input_tokens
+                tokens_out = response.usage.output_tokens
+            except (IndexError, AttributeError) as e:
+                logger.error(f"Unexpected response format: {e}")
+                return InterpretationResponse(error="api_format_error")
+
+            if text and text.strip():
+                return InterpretationResponse(
+                    text=text,
+                    tokens_input=tokens_in,
+                    tokens_output=tokens_out,
+                    cost_usd=calculate_real_cost(response.usage),
+                    cached=(getattr(response.usage, "cache_read_input_tokens", 0) or 0) > 0,
+                    truncated=(stop == "max_tokens"),
+                    error=None,
+                )
+
+            logger.warning(
+                f"Empty response (attempt {attempt + 1}/2): {request.mode}/{request.variant}"
             )
-        except anthropic.APITimeoutError:
-            logger.warning("Anthropic API timeout")
-            return InterpretationResponse(error="timeout")
-        except anthropic.RateLimitError:
-            logger.warning("Anthropic rate limit")
-            return InterpretationResponse(error="rate_limit")
-        except anthropic.APIError as e:
-            logger.error(f"Anthropic API error: {e.status_code}")
-            return InterpretationResponse(error="api_error")
 
-        try:
-            text = response.content[0].text
-            stop = response.stop_reason
-            tokens_in = response.usage.input_tokens
-            tokens_out = response.usage.output_tokens
-        except (IndexError, AttributeError) as e:
-            logger.error(f"Unexpected response format: {e}")
-            return InterpretationResponse(error="api_format_error")
-
-        if not text or text.strip() == "":
-            logger.error(f"Empty response: {request.mode}/{request.variant}")
-            return InterpretationResponse(error="empty_response")
-
-        return InterpretationResponse(
-            text=text,
-            tokens_input=tokens_in,
-            tokens_output=tokens_out,
-            cost_usd=calculate_real_cost(response.usage),
-            cached=(getattr(response.usage, "cache_read_input_tokens", 0) or 0) > 0,
-            truncated=(stop == "max_tokens"),
-            error=None,
-        )
+        logger.error(f"Empty response after retry: {request.mode}/{request.variant}")
+        return InterpretationResponse(error="empty_response")
 
     async def count_tokens(self, text: str) -> int:
         """Cuenta tokens exactos via API (gratis). Para verificar system prompt."""
