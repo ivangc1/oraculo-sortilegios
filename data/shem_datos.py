@@ -21,7 +21,7 @@ Cada entrada tiene:
 - virtue: virtud que encarna
 - description: contexto general
 - personality: voz, tono, registro y trato al invocante — usado por
-  /invocar para que Claude encarne al ángel con fidelidad canónica
+  /angel + pregunta para que el oráculo interprete con la voz canónica del ángel
 - corresponding_demon: número del demonio que contrarresta (1-72)
 """
 

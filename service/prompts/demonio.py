@@ -17,6 +17,14 @@ def get_sub_prompt(demon: dict | None = None) -> str:
     if not demon:
         return base
 
+    personality = (demon.get("personality") or "").strip()
+    personality_block = (
+        f"\nVOZ CANÓNICA DE {demon['name']} (de fuentes primarias): {personality}\n"
+        "Cuando hables de cómo se manifiesta o qué dice, usa este registro y "
+        "tono específicos. Otro demonio sonaría distinto.\n"
+        if personality else ""
+    )
+
     entity_context = f"""
 
 DEMONIO CONSULTADO: {demon['name']} (Nº {demon['number']})
@@ -25,7 +33,7 @@ Regencia: {demon.get('day_night', '')} · {demon.get('planet', '')} · {demon.ge
 Apariencia: {demon['appearance']}
 Poderes: {demon['powers']}
 Descripción: {demon['description']}
-
+{personality_block}
 Usa ESTOS atributos específicos de {demon['name']} como lente interpretativa. No hables en abstracto de la Goetia — habla desde la naturaleza concreta de este demonio."""
 
     return base + entity_context

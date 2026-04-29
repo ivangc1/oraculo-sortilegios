@@ -22,7 +22,7 @@ Cada entrada tiene:
   cuando el demonio está ilustrado por Le Breton (se cita el leaf)
 - powers: dones, oficios y dominios específicos
 - description: contexto histórico, rango, legiones, fuentes primarias citadas
-- personality: voz, tono, registro y trato al invocante — usado por /invocar
+- personality: voz, tono, registro y trato al invocante — usado por /demonio para dar profundidad canónica
   para que Claude encarne al demonio con fidelidad canónica, no como un
   estereotipo genérico
 - corresponding_angel: número del ángel del Shem que lo contrarresta (1-72)

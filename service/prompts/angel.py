@@ -16,6 +16,14 @@ def get_sub_prompt(angel: dict | None = None) -> str:
     if not angel:
         return base
 
+    personality = (angel.get("personality") or "").strip()
+    personality_block = (
+        f"\nVOZ CANÓNICA DE {angel['name']} (de fuentes primarias): {personality}\n"
+        "Cuando hables de cómo se manifiesta o qué enseña, usa este registro y "
+        "tono específicos. Otro ángel sonaría distinto.\n"
+        if personality else ""
+    )
+
     entity_context = f"""
 
 ÁNGEL CONSULTADO: {angel['name']} (Nº {angel['number']})
@@ -25,7 +33,7 @@ Salmo correspondiente: {angel['psalm']}
 Regencia: {angel['day_regency']} · {angel['hour_regency']}
 Virtud: {angel['virtue']}
 Descripción: {angel['description']}
-
+{personality_block}
 Usa ESTOS atributos específicos de {angel['name']} como lente interpretativa. No hables en abstracto del Shem — habla desde la naturaleza concreta de este ángel, su coro, su virtud y su atributo divino."""
 
     return base + entity_context

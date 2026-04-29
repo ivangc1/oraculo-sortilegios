@@ -217,7 +217,6 @@ def main() -> None:
     from bot.handlers.angel import angel_command
     from bot.handlers.sello import sello_command
     from bot.handlers.firma import firma_command
-    from bot.handlers.invocar import invocar_command
 
     app.add_handler(CommandHandler("start", start_command))  # Deep links + DM
     app.add_handler(CommandHandler("startoraculo", start_command))
@@ -240,7 +239,6 @@ def main() -> None:
     app.add_handler(CommandHandler("angel", angel_command))
     app.add_handler(CommandHandler("sello", sello_command))
     app.add_handler(CommandHandler("firma", firma_command))
-    app.add_handler(CommandHandler("invocar", invocar_command))
 
 
     # 4. Callback handlers para modos con menú inline
@@ -254,7 +252,6 @@ def main() -> None:
     )
     from bot.handlers.natal import natal_callback
     from bot.handlers.oraculo import oraculo_question_text
-    from bot.handlers.invocar import invocar_question_text
     from bot.handlers.bibliomancia import bibliomancia_callback
 
     # Dispatcher de callbacks por prefijo
@@ -420,7 +417,6 @@ def main() -> None:
         for key, handler in [
             ("tarot_awaiting_question", tarot_question_text),
             ("oraculo_awaiting_question", oraculo_question_text),
-            ("invocar_awaiting_question", invocar_question_text),
             ("numerologia_awaiting_name", numerologia_name_text),
             ("numerologia_awaiting_compat_date", numerologia_compat_date_text),
         ]:

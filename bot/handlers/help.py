@@ -53,9 +53,6 @@ _HELP_TEXT = """🔮 Modos disponibles:
 🕊 /firma — Firma hebrea del ángel sobre pergamino
    /firma <nombre|número> · /firma aleatorio
 
-🜲 /invocar — La entidad habla EN PRIMERA PERSONA (siempre)
-   /invocar <nombre> [pregunta]          · auto-detecta demonio o ángel
-   /invocar demonio|angel <id> [pregunta] · fuerza tipo (útil con números)
    Sin pregunta: el ente se presenta ante ti. Con pregunta: te responde.
 
 🆕 /consulta — Registrarte para empezar
