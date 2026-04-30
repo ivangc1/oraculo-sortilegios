@@ -7,7 +7,6 @@ from generators.runas import (
     draw_runes,
     get_all_runes,
     get_non_invertible,
-    get_positions,
 )
 from images.rune_renderer import RUNE_PATHS, render_rune, render_rune_with_label, compose_runes
 

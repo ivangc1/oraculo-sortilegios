@@ -1,7 +1,12 @@
 """Tests para los handlers /sello y /firma (assets puros, sin LLM)."""
 
 from bot.handlers.firma import _firma_path
-from bot.handlers.sello import sello_command  # noqa: F401 — smoke import
+
+
+def test_sello_module_imports():
+    """Smoke: el módulo /sello carga sin errores (importa demonio + assets)."""
+    from bot.handlers.sello import sello_command
+    assert sello_command is not None
 
 
 def test_firma_path_function():

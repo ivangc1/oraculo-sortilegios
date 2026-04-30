@@ -1,10 +1,6 @@
 """Tests de modelos Pydantic."""
 
-import pytest
-from pydantic import ValidationError
-
 from service.models import (
-    DrawnItem,
     InterpretationRequest,
     InterpretationResponse,
     UserProfile,

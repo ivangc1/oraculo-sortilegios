@@ -1,6 +1,5 @@
 """Tests de timezone: verano/invierno, zonas históricas, conversión UTC."""
 
-from datetime import datetime
 from zoneinfo import ZoneInfo
 
 from service.calculators.timezone import (

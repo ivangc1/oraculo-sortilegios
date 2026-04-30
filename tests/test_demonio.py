@@ -1,9 +1,5 @@
 """Tests del módulo demonio: integridad de datos y búsqueda."""
 
-from pathlib import Path
-
-import pytest
-
 from bot.handlers import demonio as demonio_mod
 from bot.handlers.demonio import (
     _find_demon,
