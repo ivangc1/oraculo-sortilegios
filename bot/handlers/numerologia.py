@@ -10,6 +10,7 @@ from datetime import datetime, timezone
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.ext import ContextTypes
 
+from bot.awaiting import clear_other_awaiting
 from bot.concurrency import is_user_busy, mark_user_busy, release_user
 from bot.config import Settings
 from bot.handlers._pipeline import run_interpretation
@@ -151,7 +152,6 @@ async def numerologia_compat_callback(
     query = update.callback_query
     await query.answer()
 
-    settings: Settings = context.bot_data["settings"]
     user_id = query.from_user.id
     user = await db_users.get_user(user_id)
     if not user or not user["onboarding_complete"]:
@@ -162,7 +162,6 @@ async def numerologia_compat_callback(
         "Para la compatibilidad necesito la fecha de nacimiento de la otra persona.\n\n"
         "Escribe la fecha (DD/MM/AAAA):\n\n(Tienes 5 minutos antes de que el oráculo se aburra y cierre la mesa.)"
     )
-    from bot.awaiting import clear_other_awaiting
     clear_other_awaiting(context.user_data, except_key="numerologia_awaiting_compat_date")
     context.user_data["numerologia_awaiting_compat_date"] = time.time()
 

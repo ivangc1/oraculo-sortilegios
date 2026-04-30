@@ -24,10 +24,6 @@ async def iching_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     if not await middleware_check(update, context, settings):
         return
 
-    user_id = update.effective_user.id
-    user = await db_users.get_user(user_id)
-    # Registro opcional — guests permitidos
-
     await iching_execute(update, context, question=None)
 
 

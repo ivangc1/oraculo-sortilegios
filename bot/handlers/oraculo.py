@@ -5,6 +5,7 @@ import time
 from telegram import Update
 from telegram.ext import ContextTypes
 
+from bot.awaiting import clear_other_awaiting
 from bot.concurrency import is_user_busy, mark_user_busy, release_user
 from bot.config import Settings
 from bot.handlers._pipeline import run_interpretation
@@ -41,7 +42,6 @@ async def oraculo_command(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
     )
     # Solo guardamos el flag de awaiting; releemos el user al usar para evitar
     # serializar el dict completo de DB en el pickle (frágil ante schema changes).
-    from bot.awaiting import clear_other_awaiting
     clear_other_awaiting(context.user_data, except_key="oraculo_awaiting_question")
     context.user_data["oraculo_awaiting_question"] = time.time()
 

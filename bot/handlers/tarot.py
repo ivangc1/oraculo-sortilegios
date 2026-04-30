@@ -7,6 +7,7 @@ from telegram import Update
 from telegram.error import BadRequest, Forbidden
 from telegram.ext import ContextTypes
 
+from bot.awaiting import clear_other_awaiting
 from bot.concurrency import is_user_busy, mark_user_busy, release_user
 from bot.config import Settings
 from bot.handlers._pipeline import run_interpretation
@@ -152,7 +153,6 @@ async def _process_tarot(
 ) -> None:
     """Flujo completo: pregunta → tirada → imagen → interpretación → feedback."""
     query = update.callback_query
-    chat_id = query.message.chat_id
 
     # Preguntar si tiene pregunta (q:y / q:n → tarot_question_callback)
     await query.edit_message_text(
@@ -187,7 +187,6 @@ async def tarot_question_callback(
             "(Tienes 5 minutos antes de que el oráculo se aburra y cierre la mesa.)",
             reply_markup=None,
         )
-        from bot.awaiting import clear_other_awaiting
         clear_other_awaiting(context.user_data, except_key="tarot_awaiting_question")
         context.user_data["tarot_awaiting_question"] = time.time()
         return
@@ -346,9 +345,6 @@ async def tarot_smart_callback(
     settings: Settings = context.bot_data["settings"]
     user_id = query.from_user.id
 
-    user = await db_users.get_user(user_id)
-    # Registro opcional — guests permitidos
-
     if is_user_busy(user_id):
         await query.edit_message_text(LIMIT_MESSAGES["request_in_progress"])
         return
@@ -361,7 +357,6 @@ async def tarot_smart_callback(
     await query.edit_message_text(
         "Escribe tu pregunta y yo decido qué tirada te conviene:\n\n(Tienes 5 minutos antes de que el oráculo se aburra y cierre la mesa.)"
     )
-    from bot.awaiting import clear_other_awaiting
     clear_other_awaiting(context.user_data, except_key="tarot_awaiting_question")
     context.user_data["tarot_awaiting_question"] = time.time()
     context.user_data["tarot_smart_mode"] = True

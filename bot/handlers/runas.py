@@ -25,10 +25,6 @@ async def runas_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
     if not await middleware_check(update, context, settings):
         return
 
-    user_id = update.effective_user.id
-    user = await db_users.get_user(user_id)
-    # Registro opcional — guests permitidos
-
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
         text="¿Qué tipo de tirada rúnica quieres?",
