@@ -90,7 +90,6 @@ Kerykeion depende de pyswisseph internamente — al instalar kerykeion, pyswisse
 - **Bloqueo de peticiones concurrentes por usuario:** si tiene una petición en curso, rechaza nuevos comandos
 - Gestiona onboarding y perfiles (SQLite)
 - Verifica membresía (caché 1h, limpieza periódica JobQueue)
-- Aplica límites y cooldowns
 - Genera cartas/runas/hexagramas con `SystemRandom` (sin repetición)
 - Compone imágenes (Pillow → JPEG, LRU cache, file handles cerrados, fuente para etiquetas, **BytesIO cerrado tras envío**)
 - **Envío ordenado:** await send_photo → texto como reply a la foto → feedback
@@ -215,7 +214,11 @@ Sin este handler, el bot muere silenciosamente y nadie sabe por qué. La alerta 
 
 ### 4.4 Sanitización
 
-200 chars, strip control, XML delimiters, pydantic validation con **try/except que traduce errores técnicos a mensajes amigables:**
+Pregunta sin cap de longitud (ya no se trunca a 200 chars). Sanitización
+XML de tags estructurales en `service/sanitization.py:sanitize_user_text`
+(neutraliza `<pregunta>`, `<perfil_consultante>`, etc., con o sin
+atributos). Pydantic validation con **try/except que traduce errores
+técnicos a mensajes amigables:**
 
 ```python
 try:
@@ -231,9 +234,19 @@ Nunca mostrar al usuario: `ValueError: day is out of range for month`.
 
 ### 4.5 Anti-abuse
 
-Límites, cooldown, flood. **Filtro antigüedad cuenta eliminado** (Telegram no expone fecha creación).
+Limitaciones de uso (cooldown, daily, monthly, max_question, rate limit)
+**eliminadas** — `bot/limits.py` es ahora un stub no-op. La protección
+contra abuso se delega a Telegram (admins del grupo) + el flag
+`request_in_progress` por usuario evita que un mismo user lance dos
+peticiones en paralelo. **Filtro antigüedad cuenta eliminado** (Telegram
+no expone fecha de creación).
 
-### 4.6 Spending limit Anthropic: $25/mes
+### 4.6 Spending limit Anthropic — ELIMINADO
+
+El tope mensual de gasto (`MONTHLY_SPENDING_LIMIT`) se eliminó junto con
+el resto de limitaciones de uso. Ver nota más abajo («el bot ya no impone
+límites de uso»). El coste se monitoriza solo (no se atrinchera) vía
+`/stats` y el resumen semanal por DM al admin.
 
 ### 4.7 Permisos del bot en el grupo
 
@@ -281,7 +294,7 @@ class AnthropicService:
             api_key=settings.ANTHROPIC_API_KEY,
             default_headers={"anthropic-version": settings.ANTHROPIC_API_VERSION},
             max_retries=2,   # SDK maneja retries (429, 500). NO añadir retries manuales.
-            timeout=30.0,
+            timeout=120.0,
         )
 ```
 
@@ -737,22 +750,35 @@ Limitación documentada: para nacimientos pre-1900 (fecha mínima), zonas horari
 
 ## 10. Límites y Control de Uso
 
-### 10.1 Límites (5 tiradas pool, 2 numerología, 1 natal, 3 oráculo, 60s cooldown, 200 chars)
+### 10.1 Límites — DESACTIVADOS desde v1.197
+
+El bot tuvo en su día 5 tiradas/día pool, 2 numerología, 1 natal, 3 oráculo,
+60s cooldown y 200 chars máximo. Todas estas limitaciones se eliminaron
+para abrir el bot sin restricciones. `bot/limits.py` queda como stub no-op
+(`check_limits` siempre devuelve `None`, `record_cooldown` es no-op) para
+que los handlers puedan reintroducir límites en un solo sitio si hiciera
+falta. Las únicas protecciones técnicas activas son `QUEUE_TIMEOUT`,
+`MAX_CONCURRENT_API` (semáforo asyncio) y el flag `request_in_progress`
+por usuario en `bot/concurrency.py`.
 
 ### 10.2 Mensajes in-character (tono Baphomet)
 
+Mensajes activos en `bot/messages.py:LIMIT_MESSAGES` (extracto). Los
+mensajes de `daily_limit` y `cooldown` se eliminaron junto con sus
+límites; las claves restantes cubren timeouts técnicos, errores de API
+y mensajes de flujo que sí siguen activos.
+
 ```python
 LIMIT_MESSAGES = {
-    "daily_limit": "Ya has quemado tus tiradas de hoy. Vuelve mañana, que las cartas también descansan.",
-    "cooldown": "Tranquilo, que las runas no se van a ir a ningún sitio. Espera un poco.",
-    "empty_response": "Las cartas no tienen nada que decirte ahora. Será que no es el momento.",
-    "queue_timeout": "Hay cola en el oráculo. Inténtalo en un momento.",
-    "request_in_progress": "Aún estoy con tu consulta anterior. Paciencia.",
+    "empty_response": "El oráculo calla. A veces el silencio dice más que las cartas. Inténtalo después.",
+    "queue_timeout": "Hay cola en el oráculo. No empujes. Vuelve en un momento.",
+    "request_in_progress": "Aún estoy con tu consulta. No me metas prisa.",
     "truncated": "\n\n...El oráculo ha dicho lo que tenía que decir.",
-    "not_registered": "No te conozco. Usa /consulta para presentarte primero.",
+    "not_registered": "Para esto necesito tus datos de nacimiento. Usa /consulta para registrarte.",
     "off_topic": "Eso pregúntaselo a Google. Yo leo las cartas, no hago recados.",
-    "admin_only": "Este comando es solo para el guardián de la taberna.",
-    "nominatim_down": "No puedo verificar esa ciudad ahora. Inténtalo en un rato o usa /cancelaroraculo.",
+    "admin_only": "Ese comando es solo para el guardián de la taberna. Tú no lo eres.",
+    "nominatim_down": "No consigo ubicar esa ciudad ahora mismo. Vuelve a intentarlo en un rato o escribe /cancelaroraculo.",
+    # ... ver bot/messages.py para la lista completa
 }
 ```
 
@@ -1604,7 +1630,7 @@ Antes de lanzar, ejecutar manualmente y evaluar calidad narrativa:
 > Items marcados [x] = implementado en código y/o verificado con tests automatizados.
 > Items marcados [ ] = requiere verificación manual en grupo real (post-despliegue).
 
-- [x] Límites + cooldown (test_queue_timeout.py, bot/limits.py)
+- [~] Límites + cooldown — DESACTIVADOS desde v1.197. `bot/limits.py` queda como stub no-op preparado para reintroducirlos. test_queue_timeout.py cubre solo el timeout y semáforo, que sí están activos.
 - [x] /borrarme cascade (ON DELETE CASCADE en schema SQL)
 - [x] Onboarding: completo / sin hora / incompleto / timeout / post-restart (ConversationHandler + SQLite partial)
 - [x] Petición en curso + nuevo comando → "aún en proceso" (bot/concurrency.py)
@@ -1686,7 +1712,7 @@ Antes de lanzar, ejecutar manualmente y evaluar calidad narrativa:
 - [x] SQLite: WAL + FK + auto-init + migraciones + singleton + close()
 - [x] Middleware completo (edits, DM, /start, chat_id, topics, membresía caché, username, Forbidden, BadRequest, **ChatMigration handler**)
 - [x] Bloqueo peticiones concurrentes por usuario
-- [x] Límites + cooldown
+- [~] Límites + cooldown — DESACTIVADOS (`bot/limits.py` stub no-op)
 - [x] PicklePersistence (update_interval=60, corruption handling en startup)
 - [x] Pydantic models (model_validate, truncated, error types)
 - [x] AsyncAnthropic singleton: cache system fijo ≥1024, version pinned, SDK retries (NO manuales), cola, max_tokens, coste real, stop_reason, vacío, parseo seguro
@@ -1952,7 +1978,7 @@ ephe/
 
 | Riesgo | Prob. | Mitigación |
 |---|---|---|
-| Pico presupuesto | Baja | Límites + alertas + spending limit |
+| Pico presupuesto | Baja | Monitorización (`/stats` + resumen semanal); límites desactivados pero `bot/limits.py` listo para reintroducirlos |
 | Kerykeion mal | Media | Verificar Astro.com |
 | Timezone incorrecto | Media | timezonefinder + tests + limitaciones documentadas |
 | Signo solar fecha límite | Media | Efemérides, no tabla fija |
