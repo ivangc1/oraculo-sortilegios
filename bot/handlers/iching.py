@@ -1,20 +1,16 @@
 """Handler de I Ching: tirada → hexagrama (con/sin derivado) → interpretación."""
 
-import asyncio
-
 from telegram import Update
 from telegram.error import BadRequest, Forbidden
 from telegram.ext import ContextTypes
 
-from bot.concurrency import is_user_busy, mark_user_busy, release_user, get_semaphore
+from bot.concurrency import is_user_busy, mark_user_busy, release_user
 from bot.config import Settings
-from bot.formatting import format_and_split
-from bot.keyboards import feedback_keyboard
-from bot.limits import check_limits, record_cooldown
+from bot.handlers._pipeline import run_interpretation
+from bot.limits import check_limits
 from bot.messages import LIMIT_MESSAGES
 from bot.middleware import middleware_check
-from bot.typing import get_thread_id, with_typing
-from database import usage as db_usage
+from bot.typing import get_thread_id
 from database import users as db_users
 from generators.iching import generate_hexagram, build_drawn_data
 from images.hexagram_renderer import render_hexagram, build_caption, build_text_fallback
@@ -123,61 +119,19 @@ async def iching_execute(
         )
 
         interpreter: InterpreterService = context.bot_data["interpreter_service"]
-        semaphore = get_semaphore()
-
-        async def _interpret():
-            async with semaphore:
-                return await interpreter.interpret(request)
-
-        try:
-            response = await asyncio.wait_for(
-                with_typing(chat_id, context.bot, _interpret()),
-                timeout=settings.QUEUE_TIMEOUT,
-            )
-        except asyncio.TimeoutError:
-            await context.bot.send_message(chat_id, text=LIMIT_MESSAGES["queue_timeout"],
-                                           reply_to_message_id=photo_msg.message_id,
-                                           message_thread_id=thread_id)
-            return
-
-        if response.error:
-            error_key = {"timeout": "queue_timeout", "rate_limit": "rate_limit",
-                         "empty_response": "empty_response"}.get(response.error, "api_error")
-            await context.bot.send_message(chat_id, text=LIMIT_MESSAGES.get(error_key, LIMIT_MESSAGES["api_error"]),
-                                           reply_to_message_id=photo_msg.message_id,
-                                           message_thread_id=thread_id)
-            return
-
-        text = response.text
-        if response.truncated:
-            text += LIMIT_MESSAGES["truncated"]
-
-        chunks = format_and_split(text, use_blockquote=settings.use_blockquote_for("iching", "hexagrama"))
-        text_msg = None
-        for i, chunk in enumerate(chunks):
-            reply_to = photo_msg.message_id if i == 0 else (text_msg.message_id if text_msg else None)
-            text_msg = await context.bot.send_message(chat_id, text=chunk, parse_mode="HTML",
-                                                      reply_to_message_id=reply_to,
-                                                      message_thread_id=thread_id)
-
-        drawn_data = build_drawn_data(hexagram)
-        usage_id = await db_usage.record_usage(
-            user_id=user_id, mode="iching", variant="hexagrama",
-            tokens_input=response.tokens_input, tokens_output=response.tokens_output,
-            cost_usd=response.cost_usd, cached=response.cached, truncated=response.truncated,
-            drawn_data=drawn_data,
+        await run_interpretation(
+            bot=context.bot,
+            chat_id=chat_id,
+            thread_id=thread_id,
+            user_id=user_id,
+            settings=settings,
+            interpreter=interpreter,
+            request=request,
+            mode="iching",
+            variant="hexagrama",
+            drawn_data=build_drawn_data(hexagram),
+            anchor_msg=photo_msg,
         )
-
-        if text_msg:
-            try:
-                await context.bot.send_message(chat_id, text="¿Qué te ha parecido la lectura?",
-                                               reply_markup=feedback_keyboard(usage_id),
-                                               reply_to_message_id=text_msg.message_id,
-                                               message_thread_id=thread_id)
-            except (BadRequest, Forbidden):
-                pass
-
-        record_cooldown(user_id)
 
     finally:
         release_user(user_id)
