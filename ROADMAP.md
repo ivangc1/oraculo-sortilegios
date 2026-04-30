@@ -526,22 +526,6 @@ Las 72 firmas se pre-generan con `scripts/generate_shem_firmas.py` usando Times 
 
 Sin LLM. Respuesta inmediata.
 
-### 7.17 /invocar — La entidad habla en primera persona
-
-A diferencia de `/demonio` y `/angel` (que interpretan *con* la entidad como lente), `/invocar` hace que Claude **encarne** al ser invocado y responda en primera persona con su personalidad, rango y dominios canónicos.
-
-**Modos:**
-- `/invocar <nombre>` — auto-detecta (demonio si matchea Goetia, ángel si matchea Shem).
-- `/invocar demonio|angel <nombre|número>` — fuerza tipo (útil con números, que existen en ambos sets).
-- `/invocar <entidad> <pregunta>` — encarnación con pregunta, Claude responde en 1ª persona.
-
-**Sub-prompt dedicado** en `service/prompts/invocar.py`:
-- Contextos específicos para demonio (rango/legiones/apariencia/poderes) vs ángel (coro/atributo/virtud/salmo).
-- Instrucciones: "Eres [Nombre], no Claude. Habla en primera persona. Mantén registro decimonónico. No rompas personaje. No hagas disclaimers legales/médicos."
-- Ejemplo: `/invocar Bael dime cómo ganar` → *"Soy Bael, primer Rey del Este, que comando sesenta y seis legiones…"*
-
-Token budget: 1800 (más holgado que `/demonio` porque la encarnación tiende a ser más extensa).
-
 ---
 
 ## 8. Assets de Imágenes

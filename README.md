@@ -21,7 +21,6 @@ Bot de Telegram para el grupo **La Taberna de los Sortilegios** (~2,600 miembros
 | `/angel` | Angelologia | 72 angeles Shem, ficha o interpretacion LLM si hay pregunta |
 | `/sello` | Demonologia | Solo el sigilo canonico Goetia 1904, sin retrato ni ficha (€0 API) |
 | `/firma` | Angelologia | Firma hebrea del angel Shem sobre pergamino (€0 API) |
-| `/invocar` | Roleplay | La entidad (demonio o angel) habla en primera persona como ese ser |
 | `/consulta` | Registro | Redirige a DM para onboarding privado |
 | `/startoraculo` | Presentacion | Intro del oraculo en grupo |
 | `/ayudaoraculo` | Ayuda | Lista de todos los comandos |
