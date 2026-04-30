@@ -1,10 +1,14 @@
 """Calculadora de numerología pitagórica con normalización Unicode.
 
-Camino de vida: suma dígitos fecha nacimiento, reducir a 1 dígito (excepto 11, 22, 33).
-Número de expresión: suma valores letras nombre completo.
-Número del alma: suma vocales nombre completo.
-Año personal: suma día + mes nacimiento + año actual.
-Mes personal: año personal + mes actual.
+Método Decoz consistente en todos los cálculos basados en fecha:
+reducir cada componente (día/mes/año) preservando maestros (11, 22, 33),
+sumar los componentes reducidos y reducir el total preservando maestros.
+
+- Camino de vida: día + mes + año de nacimiento.
+- Año personal: día + mes de nacimiento + año actual.
+- Mes personal: año personal + mes actual.
+- Número de expresión: suma valores letras nombre completo.
+- Número del alma: suma vocales nombre completo.
 """
 
 import unicodedata
@@ -47,20 +51,8 @@ def _reduce_to_single(n: int) -> int:
     return n
 
 
-def _sum_digits(number_str: str) -> int:
-    """Suma dígitos de una cadena numérica."""
-    return sum(int(d) for d in number_str if d.isdigit())
-
-
-def life_path(birth_date: str) -> int:
-    """Calcula camino de vida desde fecha DD/MM/AAAA o AAAA-MM-DD.
-
-    Método Decoz: reducir día, mes y año por separado preservando maestros
-    (11/22/33), sumar los tres, reducir el total preservando maestros.
-
-    Pasar el componente entero a `_reduce_to_single` (no `_sum_digits` primero):
-    `_sum_digits("11") == 2` colapsa el maestro antes de poder protegerlo.
-    """
+def _parse_date(birth_date: str) -> tuple[int, int, int]:
+    """Parsea DD/MM/AAAA o AAAA-MM-DD a (day, month, year) enteros."""
     if "/" in birth_date:
         parts = birth_date.split("/")
         day, month, year = parts[0], parts[1], parts[2]
@@ -69,12 +61,18 @@ def life_path(birth_date: str) -> int:
         year, month, day = parts[0], parts[1], parts[2]
     else:
         raise ValueError(f"Formato de fecha no reconocido: {birth_date}")
+    return int(day), int(month), int(year)
 
-    day_reduced = _reduce_to_single(int(day))
-    month_reduced = _reduce_to_single(int(month))
-    year_reduced = _reduce_to_single(int(year))
 
-    total = day_reduced + month_reduced + year_reduced
+def life_path(birth_date: str) -> int:
+    """Camino de vida (Decoz): reducir día/mes/año por separado preservando
+    maestros (11/22/33), sumar y reducir el total preservando maestros."""
+    day, month, year = _parse_date(birth_date)
+    total = (
+        _reduce_to_single(day)
+        + _reduce_to_single(month)
+        + _reduce_to_single(year)
+    )
     return _reduce_to_single(total)
 
 
@@ -100,36 +98,31 @@ def personality_number(full_name: str) -> int:
 
 
 def personal_year(birth_date: str, current_year: int | None = None) -> int:
-    """Año personal: día nacimiento + mes nacimiento + año actual."""
+    """Año personal (Decoz): día nacimiento + mes nacimiento + año actual,
+    cada componente reducido preservando maestros antes de sumar."""
     if current_year is None:
         current_year = datetime.now(timezone.utc).year
 
-    if "/" in birth_date:
-        parts = birth_date.split("/")
-        day, month = parts[0], parts[1]
-    elif "-" in birth_date:
-        parts = birth_date.split("-")
-        day, month = parts[2], parts[1]
-    else:
-        raise ValueError(f"Formato de fecha no reconocido: {birth_date}")
-
-    day_val = _sum_digits(day)
-    month_val = _sum_digits(month)
-    year_val = _sum_digits(str(current_year))
-
-    return _reduce_to_single(day_val + month_val + year_val)
+    day, month, _ = _parse_date(birth_date)
+    total = (
+        _reduce_to_single(day)
+        + _reduce_to_single(month)
+        + _reduce_to_single(current_year)
+    )
+    return _reduce_to_single(total)
 
 
 def personal_month(birth_date: str, current_year: int | None = None,
                    current_month: int | None = None) -> int:
-    """Mes personal: año personal + mes actual."""
+    """Mes personal (Decoz): año personal + mes actual reducido, total
+    reducido preservando maestros."""
     if current_year is None:
         current_year = datetime.now(timezone.utc).year
     if current_month is None:
         current_month = datetime.now(timezone.utc).month
 
     py = personal_year(birth_date, current_year)
-    return _reduce_to_single(py + current_month)
+    return _reduce_to_single(py + _reduce_to_single(current_month))
 
 
 def full_report(birth_date: str, full_name: str | None = None,

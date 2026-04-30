@@ -137,14 +137,26 @@ def test_soul_with_ene():
 
 
 # === Año y mes personal ===
+# Método Decoz consistente con life_path: reducir cada componente
+# preservando maestros antes de sumar.
 
 def test_personal_year():
-    """15/06 + 2026 → día(1+5)=6, mes(0+6)=6, año(2+0+2+6)=10 → 6+6+10=22 (maestro)."""
-    assert personal_year("15/06/1993", current_year=2026) == 22
+    """15/06 + 2026 → día(15→6), mes(06→6), año(2026→1) → 6+6+1=13→4."""
+    assert personal_year("15/06/1993", current_year=2026) == 4
+
+
+def test_personal_year_master_day():
+    """Día 11 (maestro) se preserva: 11/03/1985 + 2026 → 11+3+1=15→6."""
+    assert personal_year("11/03/1985", current_year=2026) == 6
+
+
+def test_personal_year_master_month():
+    """Mes 11 (maestro) se preserva: 05/11/1990 + 2026 → 5+11+1=17→8."""
+    assert personal_year("05/11/1990", current_year=2026) == 8
 
 
 def test_personal_month():
-    """Año personal 22 + mes 3 = 25 → 7."""
+    """Año personal 4 + mes 3 (reducido) = 7."""
     assert personal_month("15/06/1993", current_year=2026, current_month=3) == 7
 
 
