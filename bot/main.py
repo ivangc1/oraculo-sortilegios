@@ -247,7 +247,7 @@ def main() -> None:
     from bot.handlers.geomancia import geomancia_execute
     from bot.handlers.numerologia import (
         numerologia_informe_callback, numerologia_compat_callback,
-        numerologia_name_text, numerologia_compat_date_text,
+        numerologia_compat_date_text,
     )
     from bot.handlers.natal import natal_callback
     from bot.handlers.oraculo import oraculo_question_text
@@ -427,7 +427,6 @@ def main() -> None:
         for key, handler in [
             ("tarot_awaiting_question", tarot_question_text),
             ("oraculo_awaiting_question", oraculo_question_text),
-            ("numerologia_awaiting_name", numerologia_name_text),
             ("numerologia_awaiting_compat_date", numerologia_compat_date_text),
         ]:
             status = _check_awaiting(context.user_data, key)

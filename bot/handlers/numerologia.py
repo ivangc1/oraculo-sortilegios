@@ -80,32 +80,6 @@ async def numerologia_informe_callback(
     await _execute_informe(update, context, user, settings)
 
 
-async def numerologia_name_text(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Recibe nombre completo vía ForceReply."""
-    if not context.user_data.get("numerologia_awaiting_name"):
-        return
-
-    settings: Settings = context.bot_data["settings"]
-    user_id = update.effective_user.id
-    name = update.message.text.strip()
-
-    if len(name) < 2:
-        await context.bot.send_message(
-            chat_id=update.effective_chat.id,
-            text="Ese nombre es muy corto. Escribe tu nombre completo.",
-            message_thread_id=get_thread_id(update),
-        )
-        return
-
-    context.user_data["numerologia_awaiting_name"] = False
-
-    # Guardar en DB
-    await db_users.update_profile(user_id, full_birth_name=name)
-    user = await db_users.get_user(user_id)
-
-    await _execute_informe(update, context, user, settings)
-
-
 async def _execute_informe(
     update: Update, context: ContextTypes.DEFAULT_TYPE,
     user: dict, settings: Settings,

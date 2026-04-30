@@ -14,7 +14,6 @@ from typing import MutableMapping
 AWAITING_FLAGS = (
     "tarot_awaiting_question",
     "oraculo_awaiting_question",
-    "numerologia_awaiting_name",
     "numerologia_awaiting_compat_date",
 )
 
