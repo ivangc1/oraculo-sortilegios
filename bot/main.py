@@ -263,7 +263,13 @@ def main() -> None:
     # fuente única (mode, variant). Añadir entrada en CALLBACKS sin actualizar
     # el match de aquí no rompe nada: `mode` desconocido cae al `return`
     # silencioso al final.
-    from bot.keyboards import parse_callback
+    from bot.keyboards import (
+        parse_callback,
+        tarot_completas_keyboard,
+        tarot_especiales_keyboard,
+        tarot_keyboard,
+        tarot_rapidas_keyboard,
+    )
 
     async def dispatch_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
         query = update.callback_query
@@ -310,10 +316,6 @@ def main() -> None:
             return
 
         if mode == "tarot_menu":
-            from bot.keyboards import (
-                tarot_keyboard, tarot_rapidas_keyboard,
-                tarot_completas_keyboard, tarot_especiales_keyboard,
-            )
             menu = {
                 "rapidas": ("⚡ Tiradas rápidas:", tarot_rapidas_keyboard),
                 "completas": ("🔮 Tiradas completas:", tarot_completas_keyboard),
