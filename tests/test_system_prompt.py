@@ -1,12 +1,4 @@
-"""Tests del system prompt: estatico, sin f-strings, >=1024 tokens.
-
-Token count: usa client.messages.count_tokens() si hay API key,
-sino fallback a estimacion len()/4.
-"""
-
-import os
-
-import pytest
+"""Tests del system prompt: estatico, sin f-strings, >=1024 tokens."""
 
 from service.prompts.master import get_master_prompt
 
@@ -29,37 +21,18 @@ def test_system_prompt_no_fstrings():
 
 
 def test_system_prompt_min_tokens_estimated():
-    """Estimacion conservadora: ~4 chars = 1 token. Debe ser >=1024."""
+    """Estimacion conservadora: ~4 chars = 1 token. Debe ser >=1024.
+
+    El conteo exacto requiere la API de Anthropic (count_tokens) y por tanto
+    una API key + red — no aporta sobre la estimación local que tiene margen
+    holgado (el prompt actual ronda los 3600 tokens estimados, ~3.5x el mínimo).
+    """
     prompt = get_master_prompt()
     estimated_tokens = len(prompt) / 4
     assert estimated_tokens >= 1024, (
         f"System prompt demasiado corto: ~{estimated_tokens:.0f} tokens estimados "
         f"(necesita >=1024). Longitud: {len(prompt)} chars"
     )
-
-
-@pytest.mark.skipif(
-    not os.environ.get("ANTHROPIC_API_KEY"),
-    reason="ANTHROPIC_API_KEY not set (token count API requires real key)",
-)
-@pytest.mark.asyncio
-async def test_system_prompt_min_tokens_exact():
-    """Conteo exacto via API count_tokens() (gratis). Debe ser >=1024."""
-    import anthropic
-
-    client = anthropic.AsyncAnthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
-    try:
-        result = await client.messages.count_tokens(
-            model="claude-sonnet-4-6",
-            system=[{"type": "text", "text": get_master_prompt()}],
-            messages=[{"role": "user", "content": "test"}],
-        )
-        system_tokens = result.input_tokens
-        assert system_tokens >= 1024, (
-            f"System prompt tiene {system_tokens} tokens (necesita >=1024)"
-        )
-    finally:
-        await client.close()
 
 
 def test_system_prompt_contains_key_instructions():
