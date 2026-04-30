@@ -391,7 +391,13 @@ def main() -> None:
 
         user = update.effective_user
         flags = {k: v for k, v in context.user_data.items() if "awaiting" in k}
-        logger.debug(f"dispatch_text_reply: user={user.id if user else None} flags={flags} text={update.message.text[:50] if update.message.text else None}")
+        # No loggear el contenido del mensaje — puede tener PII sensible.
+        # text_len basta para depurar por qué un texto no se dispatcha.
+        text_len = len(update.message.text) if update.message.text else 0
+        logger.debug(
+            f"dispatch_text_reply: user={user.id if user else None} "
+            f"flags={flags} text_len={text_len}"
+        )
 
         # Comprobar cada flag con expiración
         for key, handler in [

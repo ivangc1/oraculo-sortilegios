@@ -262,9 +262,11 @@ async def angel_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
             },
         )
         if delivered:
+            # No loggear el texto de la pregunta — puede contener PII sensible
+            # y los logs persisten 30 días en disco.
             logger.info(
                 f"Ángel con pregunta: user={user_id} → {angel['number']} "
-                f"({angel['name']}) | pregunta='{question[:50]}'"
+                f"({angel['name']}) | pregunta_len={len(question)}"
             )
     finally:
         release_user(user_id)

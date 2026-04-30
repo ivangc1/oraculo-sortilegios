@@ -367,9 +367,12 @@ async def demonio_command(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
             },
         )
         if delivered:
+            # No loggear el texto de la pregunta — puede contener PII sensible
+            # (nombres, salud, infidelidades, etc.) y los logs persisten 30
+            # días en disco. La longitud sirve para analítica sin exposición.
             logger.info(
                 f"Demonio con pregunta: user={user_id} → {demon['number']} "
-                f"({demon['name']}) | pregunta='{question[:50]}'"
+                f"({demon['name']}) | pregunta_len={len(question)}"
             )
     finally:
         release_user(user_id)
