@@ -1,4 +1,10 @@
-"""Teclados inline y mapeo de callback data (<=64 bytes cada uno)."""
+"""Teclados inline y mapeo de callback data (<=64 bytes cada uno).
+
+`CALLBACKS` es la fuente única para traducir callback_data → (mode, variant).
+`bot/main.py:dispatch_callback` la consume vía `parse_callback`. Si añades una
+entrada nueva aquí, asegúrate de que el dispatcher tenga la rama del `mode`
+correspondiente.
+"""
 
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
@@ -29,7 +35,7 @@ CALLBACKS = {
     "r:cr": ("runas", "cruz"),
     "r:5": ("runas", "cinco"),
     "r:7": ("runas", "siete"),
-    # Otros
+    # Iching, geomancia, numerologia, natal
     "ic": ("iching", "hexagrama"),
     "g:1": ("geomancia", "1_figura"),
     "g:e": ("geomancia", "escudo"),
@@ -37,7 +43,7 @@ CALLBACKS = {
     "n:c": ("numerologia", "compatibilidad"),
     "nt": ("natal", "tropical"),
     "nv": ("natal", "vedica"),
-    "or": ("oraculo", "libre"),
+    # Pregunta sí/no (compartida tarot/runas)
     "q:y": ("question", "yes"),
     "q:n": ("question", "no"),
     # Bibliomancia
@@ -46,17 +52,28 @@ CALLBACKS = {
     "bl:gi": ("bibliomancia", "gita"),
     "bl:ev": ("bibliomancia", "evangelio"),
     "bl:la": ("bibliomancia", "liber"),
-    # Admins (back)
-    "a:bk": ("admins", "back"),
 }
 
-# Callbacks de admins se generan dinamicamente: "a:0" a "a:19"
-for i in range(20):
-    CALLBACKS[f"a:{i}"] = ("admins", str(i))
+# Modos válidos que el dispatcher (`bot/main.py:dispatch_callback`) maneja.
+# Este conjunto se valida contra los `mode` de CALLBACKS en
+# `tests/test_callback_data.py:test_callbacks_modes_match_dispatcher` para
+# detectar drift si se añade un mode aquí sin actualizar el dispatcher.
+DISPATCHED_MODES = frozenset({
+    "tarot", "tarot_menu", "tarot_deck",
+    "runas", "iching", "geomancia",
+    "numerologia", "natal",
+    "question",
+    "bibliomancia",
+    "feedback",  # parseado especial en parse_callback (prefijo fb:)
+})
 
 
 def parse_callback(data: str) -> tuple[str, str] | None:
-    """Parsea callback_data -> (mode, variant) o None si no reconocido."""
+    """Parsea callback_data → (mode, variant) o None si no reconocido.
+
+    Para callbacks de feedback (`fb:p:123` / `fb:n:456`), el variant es la
+    cadena completa porque el handler la re-parsea.
+    """
     if data.startswith("fb:"):
         return ("feedback", data)
     return CALLBACKS.get(data)

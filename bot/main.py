@@ -259,7 +259,12 @@ def main() -> None:
     from bot.handlers.oraculo import oraculo_question_text
     from bot.handlers.bibliomancia import bibliomancia_callback
 
-    # Dispatcher de callbacks por prefijo
+    # Dispatcher de callbacks: usa `parse_callback` (bot.keyboards) como
+    # fuente única (mode, variant). Añadir entrada en CALLBACKS sin actualizar
+    # el match de aquí no rompe nada: `mode` desconocido cae al `return`
+    # silencioso al final.
+    from bot.keyboards import parse_callback
+
     async def dispatch_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
         query = update.callback_query
         if not query or not query.data:
@@ -267,10 +272,11 @@ def main() -> None:
 
         data = query.data
 
-        # Anti-ajeno: solo el usuario que inició el comando puede pulsar los botones.
-        # Excepto feedback (tiene su propia verificación) y admins anónimos.
-        # Si el mensaje no tiene reply_to_message no podemos verificar al iniciador,
-        # así que solo aceptamos al admin para evitar fail-open silencioso.
+        # Anti-ajeno: solo el usuario que inició el comando puede pulsar los
+        # botones. Excepto feedback (tiene su propia verificación) y admins
+        # anónimos. Si el mensaje no tiene reply_to_message no podemos
+        # verificar al iniciador, así que solo aceptamos al admin para evitar
+        # fail-open silencioso.
         if not data.startswith("fb:"):
             reply_msg = getattr(query.message, "reply_to_message", None)
             clicker_id = query.from_user.id
@@ -285,32 +291,36 @@ def main() -> None:
                     await query.answer("No puedo verificar de quién es esta consulta.", show_alert=False)
                     return
 
-        # Feedback
-        if data.startswith("fb:"):
+        parsed = parse_callback(data)
+        if parsed is None:
+            return  # Callback desconocido, ignorar
+        mode, variant = parsed
+
+        if mode == "feedback":
             await handle_feedback(update, context, settings)
             return
 
-        # Tarot deck selection (must be before tm: and t: prefix checks)
-        if data.startswith("td:"):
-            deck_map = {"td:rws": "rws", "td:mar": "marsella"}
-            deck = deck_map.get(data)
-            if deck:
-                await tarot_deck_callback(update, context, deck)
+        if mode == "tarot":
+            if variant == "smart":
+                await tarot_smart_callback(update, context)
+            elif variant == "tirada_dia":
+                await tarot_callback(update, context, variant, skip_question=True)
+            else:
+                await tarot_callback(update, context, variant)
             return
 
-        # Tarot sub-menus (must be before t: prefix check)
-        if data.startswith("tm:"):
+        if mode == "tarot_menu":
             from bot.keyboards import (
                 tarot_keyboard, tarot_rapidas_keyboard,
                 tarot_completas_keyboard, tarot_especiales_keyboard,
             )
-            sub_map = {
-                "tm:r": ("⚡ Tiradas rápidas:", tarot_rapidas_keyboard),
-                "tm:c": ("🔮 Tiradas completas:", tarot_completas_keyboard),
-                "tm:e": ("✨ Tiradas especiales:", tarot_especiales_keyboard),
-                "tm:bk": ("Elige tu tirada:", tarot_keyboard),
+            menu = {
+                "rapidas": ("⚡ Tiradas rápidas:", tarot_rapidas_keyboard),
+                "completas": ("🔮 Tiradas completas:", tarot_completas_keyboard),
+                "especiales": ("✨ Tiradas especiales:", tarot_especiales_keyboard),
+                "back": ("Elige tu tirada:", tarot_keyboard),
             }
-            entry = sub_map.get(data)
+            entry = menu.get(variant)
             if entry:
                 text, kb_fn = entry
                 try:
@@ -319,84 +329,39 @@ def main() -> None:
                     pass
             return
 
-        # Tarot
-        if data.startswith("t:"):
-            variant_map = {
-                "t:1": "1_carta", "t:3": "3_cartas", "t:cc": "cruz_celta",
-                "t:hr": "herradura", "t:rl": "relacion", "t:es": "estrella",
-                "t:cs": "cruz_simple", "t:sn": "si_no",
-            }
-            variant = variant_map.get(data)
-            if variant:
-                await tarot_callback(update, context, variant)
-                return
-            # Tirada del dia (sin pregunta)
-            if data == "t:dd":
-                await tarot_callback(update, context, "tirada_dia", skip_question=True)
-                return
-            # Smart selector
-            if data == "t:sm":
-                await tarot_smart_callback(update, context)
-                return
+        if mode == "tarot_deck":
+            await tarot_deck_callback(update, context, variant)
             return
 
-        # Pregunta si/no (para tarot y otros modos)
-        if data == "q:y":
-            await tarot_question_callback(update, context, "yes")
-            return
-        if data == "q:n":
-            await tarot_question_callback(update, context, "no")
+        if mode == "question":
+            await tarot_question_callback(update, context, variant)
             return
 
-        # Runas
-        if data.startswith("r:"):
-            variant_map = {"r:1": "odin", "r:3": "nornas", "r:cr": "cruz", "r:5": "cinco", "r:7": "siete"}
-            variant = variant_map.get(data)
-            if variant:
-                await runas_execute(update, context, variant)
+        if mode == "runas":
+            await runas_execute(update, context, variant)
             return
 
-        # I Ching
-        if data == "ic":
+        if mode == "iching":
             await iching_execute(update, context)
             return
 
-        # Geomancia
-        if data.startswith("g:"):
-            variant_map = {"g:1": "1_figura", "g:e": "escudo"}
-            variant = variant_map.get(data)
-            if variant:
-                await geomancia_execute(update, context, variant)
+        if mode == "geomancia":
+            await geomancia_execute(update, context, variant)
             return
 
-        # Numerologia
-        if data == "n:i":
-            await numerologia_informe_callback(update, context)
-            return
-        if data == "n:c":
-            await numerologia_compat_callback(update, context)
-            return
-
-        # Natal
-        if data == "nt":
-            await natal_callback(update, context, "tropical")
-            return
-        if data == "nv":
-            await natal_callback(update, context, "vedica")
+        if mode == "numerologia":
+            if variant == "informe":
+                await numerologia_informe_callback(update, context)
+            elif variant == "compatibilidad":
+                await numerologia_compat_callback(update, context)
             return
 
-        # Oraculo
-        if data == "or":
-            # Oraculo via callback
-            await query.answer()
+        if mode == "natal":
+            await natal_callback(update, context, variant)
             return
 
-        # Bibliomancia
-        if data.startswith("bl:"):
-            key_map = {"bl:bi": "biblia", "bl:co": "coran", "bl:gi": "gita", "bl:ev": "evangelio", "bl:la": "liber"}
-            text_key = key_map.get(data)
-            if text_key:
-                await bibliomancia_callback(update, context, text_key)
+        if mode == "bibliomancia":
+            await bibliomancia_callback(update, context, variant)
             return
 
     app.add_handler(CallbackQueryHandler(dispatch_callback))

@@ -1,8 +1,9 @@
-"""Tests de callback data: todos ≤64 bytes, cada callback verificado."""
+"""Tests de callback data: todos ≤64 bytes, parser correcto, lockstep
+con el dispatcher."""
 
 import pytest
 
-from bot.keyboards import CALLBACKS, parse_callback
+from bot.keyboards import CALLBACKS, DISPATCHED_MODES, parse_callback
 
 
 def test_all_callbacks_under_64_bytes():
@@ -26,6 +27,11 @@ def test_feedback_callback_under_64_bytes():
     ("t:1", ("tarot", "1_carta")),
     ("t:3", ("tarot", "3_cartas")),
     ("t:cc", ("tarot", "cruz_celta")),
+    ("t:dd", ("tarot", "tirada_dia")),
+    ("t:sm", ("tarot", "smart")),
+    ("tm:r", ("tarot_menu", "rapidas")),
+    ("tm:bk", ("tarot_menu", "back")),
+    ("td:rws", ("tarot_deck", "rws")),
     ("r:1", ("runas", "odin")),
     ("r:3", ("runas", "nornas")),
     ("r:cr", ("runas", "cruz")),
@@ -36,29 +42,17 @@ def test_feedback_callback_under_64_bytes():
     ("n:c", ("numerologia", "compatibilidad")),
     ("nt", ("natal", "tropical")),
     ("nv", ("natal", "vedica")),
-    ("or", ("oraculo", "libre")),
     ("q:y", ("question", "yes")),
     ("q:n", ("question", "no")),
     ("bl:bi", ("bibliomancia", "biblia")),
     ("bl:co", ("bibliomancia", "coran")),
     ("bl:gi", ("bibliomancia", "gita")),
     ("bl:ev", ("bibliomancia", "evangelio")),
-    ("a:bk", ("admins", "back")),
+    ("bl:la", ("bibliomancia", "liber")),
 ])
 def test_parse_each_callback(code, expected):
     """Cada callback se parsea al (mode, variant) correcto."""
     assert parse_callback(code) == expected
-
-
-@pytest.mark.parametrize("idx", range(20))
-def test_admin_callbacks(idx):
-    """Los 20 callbacks de admin (a:0 a a:19) existen y son ≤64 bytes."""
-    key = f"a:{idx}"
-    assert key in CALLBACKS
-    assert len(key.encode("utf-8")) <= 64
-    mode, variant = CALLBACKS[key]
-    assert mode == "admins"
-    assert variant == str(idx)
 
 
 def test_parse_feedback_callback():
@@ -75,21 +69,27 @@ def test_parse_unknown_callback():
     assert parse_callback("unknown:data") is None
 
 
-def test_total_callback_count():
-    """Verifica que tenemos el número esperado de callbacks.
-    21 base + 20 admins = 41 + los que se generan dinámicamente.
-    """
-    # Al menos los 21 hardcoded + 20 admin slots
-    assert len(CALLBACKS) >= 41
-
-
 def test_no_duplicate_callback_values():
-    """Dos callbacks diferentes no mapean al mismo (mode, variant),
-    excepto admin callbacks que son genéricos."""
+    """Dos callbacks diferentes no mapean al mismo (mode, variant)."""
     seen = {}
     for key, val in CALLBACKS.items():
-        if val[0] == "admins" and val[1].isdigit():
-            continue  # Admin indices are expected to be unique but generic
         if val in seen:
             assert False, f"Duplicado: {key} y {seen[val]} mapean a {val}"
         seen[val] = key
+
+
+def test_callbacks_modes_match_dispatcher():
+    """Lockstep contra el dispatcher: cada `mode` declarado en CALLBACKS
+    debe tener una rama en `DISPATCHED_MODES` (mantenido a mano en
+    `bot/keyboards.py` siguiendo `bot/main.py:dispatch_callback`).
+
+    Si añades una entrada en CALLBACKS con un mode nuevo, este test falla
+    hasta que añadas la rama en dispatch_callback Y registres el mode en
+    DISPATCHED_MODES — sin drift silencioso entre fuente y consumidor.
+    """
+    callback_modes = {mode for mode, _ in CALLBACKS.values()}
+    missing = callback_modes - DISPATCHED_MODES
+    assert not missing, (
+        f"Modes en CALLBACKS sin rama en dispatch_callback: {missing}. "
+        "Añade la rama en bot/main.py y declara el mode en DISPATCHED_MODES."
+    )
