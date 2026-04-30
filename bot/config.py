@@ -12,7 +12,7 @@ class Settings(BaseSettings):
 
     # Entorno
     ENV: str = "dev"
-    BOT_VERSION: str = "1.199"
+    BOT_VERSION: str = "1.251"
 
     # Telegram
     BOT_TOKEN: str
