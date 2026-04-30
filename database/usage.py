@@ -17,12 +17,18 @@ async def record_usage(
     truncated: bool = False,
     drawn_data: dict | None = None,
 ) -> int:
-    """Registra uso + actualiza last_activity. FK OFF global — guests permitidos."""
+    """Registra uso + actualiza last_activity. FK OFF global — guests permitidos.
+
+    INSERT y UPDATE en la misma transacción para que ambos persistan o
+    ninguno (atomicidad). Rollback explícito si falla algún paso — sin él
+    la conexión queda con una transacción abierta y la siguiente llamada
+    fallaría con `cannot start a transaction within a transaction`.
+    """
     db = await Database.get()
     now = datetime.now(timezone.utc).isoformat()
     drawn_json = json.dumps(drawn_data, ensure_ascii=False) if drawn_data else None
 
-    async with db.execute("BEGIN"):
+    try:
         cursor = await db.execute(
             """INSERT INTO usage_log (
                 user_id, mode, variant, tokens_input, tokens_output,
@@ -39,6 +45,9 @@ async def record_usage(
             (now, user_id),
         )
         await db.commit()
+    except Exception:
+        await db.rollback()
+        raise
 
     return usage_id
 
@@ -110,11 +119,12 @@ async def get_stats_summary() -> dict:
     row = await cursor.fetchone()
     total_uses, total_cost, total_input, total_output = row
 
-    # Top 5 usuarios
+    # Top 5 usuarios por coste API (la cabecera en /stats dice "por coste");
+    # incluye `uses` solo como info adicional.
     cursor = await db.execute(
         """SELECT u.alias, COUNT(*) as uses, SUM(ul.cost_usd) as cost
            FROM usage_log ul JOIN users u ON ul.user_id = u.telegram_user_id
-           GROUP BY ul.user_id ORDER BY uses DESC LIMIT 5"""
+           GROUP BY ul.user_id ORDER BY cost DESC LIMIT 5"""
     )
     top_users = [dict(r) for r in await cursor.fetchall()]
 

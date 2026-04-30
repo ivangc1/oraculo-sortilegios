@@ -19,8 +19,9 @@ def format_response(raw_text: str) -> str:
 def _close_open_tags(text: str) -> str:
     """Cierra tags HTML abiertos al final del texto y reabre al inicio si es necesario.
 
-    Solo maneja <b>, <i>, <tg-spoiler> — los unicos que usamos.
-    Devuelve el texto con tags balanceados.
+    Solo maneja <b> y <i> — los únicos que `format_response` introduce a
+    partir de los marcadores [[T]]/[[C]] del LLM. Devuelve el texto con
+    tags balanceados.
     """
     tags = ["b", "i"]
     open_tags = []
