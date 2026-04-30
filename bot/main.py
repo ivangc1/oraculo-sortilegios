@@ -20,6 +20,7 @@ from telegram.ext import (
     filters,
 )
 
+from bot.awaiting import AWAITING_FLAGS
 from bot.config import load_settings
 from bot.alerts import set_admin_user_id, set_fallback_chat_id, send_alert
 from bot.concurrency import init_semaphore
@@ -91,15 +92,13 @@ async def post_init(application: Application) -> None:
         application.bot_data[key] = value
     settings = application.bot_data["settings"]
 
-    # Limpiar flags awaiting huérfanos de sesiones anteriores
-    _AWAITING_KEYS = [
-        "tarot_awaiting_question", "oraculo_awaiting_question",
-        "numerologia_awaiting_name", "numerologia_awaiting_compat_date",
-        "tarot_variant", "tarot_smart_mode", "tarot_deck",
-    ]
+    # Limpiar flags awaiting + estado tarot huérfanos de sesiones anteriores.
+    # AWAITING_FLAGS es la fuente única; añadimos los flags de modo tarot que
+    # también deben resetearse al arrancar (no son awaiting de texto).
+    _STALE_KEYS_AT_STARTUP = (*AWAITING_FLAGS, "tarot_variant", "tarot_smart_mode", "tarot_deck")
     cleaned = 0
-    for user_id, user_data in application.user_data.items():
-        for key in _AWAITING_KEYS:
+    for user_data in list(application.user_data.values()):
+        for key in _STALE_KEYS_AT_STARTUP:
             if user_data.pop(key, None) is not None:
                 cleaned += 1
     if cleaned:
