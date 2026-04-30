@@ -1,6 +1,5 @@
 """Handler completo de tarot: menú → tirada → imagen → interpretación → feedback."""
 
-import asyncio
 import time
 
 from loguru import logger
@@ -8,20 +7,18 @@ from telegram import Update
 from telegram.error import BadRequest, Forbidden
 from telegram.ext import ContextTypes
 
-from bot.concurrency import is_user_busy, mark_user_busy, release_user, get_semaphore
+from bot.concurrency import is_user_busy, mark_user_busy, release_user
 from bot.config import Settings
-from bot.formatting import format_and_split
+from bot.handlers._pipeline import run_interpretation
 from bot.keyboards import (
-    feedback_keyboard,
     question_keyboard,
     tarot_deck_keyboard,
     tarot_keyboard,
 )
-from bot.limits import check_limits, record_cooldown
+from bot.limits import check_limits
 from bot.messages import LIMIT_MESSAGES
 from bot.middleware import middleware_check
-from bot.typing import get_thread_id, with_typing
-from database import usage as db_usage
+from bot.typing import get_thread_id
 from database import users as db_users
 from generators.tarot import build_drawn_data, draw_tarot, get_deck_label
 from images.tarot_composer import build_caption, build_text_fallback, compose_tarot
@@ -312,91 +309,21 @@ async def _execute_tarot_reading(
             effort=settings.get_effort("tarot", variant),
         )
 
-        # 5. Interpretar con typing + timeout global
+        # 5-10. Pipeline LLM común (interpret + chunks + record + feedback + cooldown)
         interpreter: InterpreterService = context.bot_data["interpreter_service"]
-        semaphore = get_semaphore()
-
-        async def _interpret():
-            async with semaphore:
-                return await interpreter.interpret(request)
-
-        try:
-            response = await asyncio.wait_for(
-                with_typing(chat_id, context.bot, _interpret()),
-                timeout=settings.QUEUE_TIMEOUT,
-            )
-        except asyncio.TimeoutError:
-            await context.bot.send_message(
-                chat_id,
-                text=LIMIT_MESSAGES["queue_timeout"],
-                reply_to_message_id=photo_msg.message_id,
-                message_thread_id=thread_id,
-            )
-            return
-
-        # 6. Manejar errores
-        if response.error:
-            error_key = {
-                "timeout": "queue_timeout",
-                "rate_limit": "rate_limit",
-                "empty_response": "empty_response",
-            }.get(response.error, "api_error")
-            from bot.messages import LIMIT_MESSAGES as msgs
-            await context.bot.send_message(
-                chat_id,
-                text=msgs.get(error_key, msgs["api_error"]),
-                reply_to_message_id=photo_msg.message_id,
-                message_thread_id=thread_id,
-            )
-            return
-
-        # 7. Formatear y enviar texto como reply a la foto
-        text = response.text
-        if response.truncated:
-            text += LIMIT_MESSAGES["truncated"]
-
-        chunks = format_and_split(text, use_blockquote=settings.use_blockquote_for("tarot", variant))
-
-        text_msg = None
-        for i, chunk in enumerate(chunks):
-            reply_to = photo_msg.message_id if i == 0 else (text_msg.message_id if text_msg else None)
-            text_msg = await context.bot.send_message(
-                chat_id,
-                text=chunk,
-                parse_mode="HTML",
-                reply_to_message_id=reply_to,
-                message_thread_id=thread_id,
-            )
-
-        # 8. Registrar uso y enviar feedback
-        drawn_data = build_drawn_data(cards)
-        usage_id = await db_usage.record_usage(
+        await run_interpretation(
+            bot=context.bot,
+            chat_id=chat_id,
+            thread_id=thread_id,
             user_id=user_id,
+            settings=settings,
+            interpreter=interpreter,
+            request=request,
             mode="tarot",
             variant=variant,
-            tokens_input=response.tokens_input,
-            tokens_output=response.tokens_output,
-            cost_usd=response.cost_usd,
-            cached=response.cached,
-            truncated=response.truncated,
-            drawn_data=drawn_data,
+            drawn_data=build_drawn_data(cards),
+            anchor_msg=photo_msg,
         )
-
-        # 9. Feedback inline keyboard
-        if text_msg:
-            try:
-                await context.bot.send_message(
-                    chat_id,
-                    text="¿Qué te ha parecido la lectura?",
-                    reply_markup=feedback_keyboard(usage_id),
-                    reply_to_message_id=text_msg.message_id,
-                    message_thread_id=thread_id,
-                )
-            except (BadRequest, Forbidden):
-                pass
-
-        # 10. Registrar cooldown
-        record_cooldown(user_id)
 
     finally:
         if not was_busy:
