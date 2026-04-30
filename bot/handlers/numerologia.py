@@ -229,6 +229,8 @@ async def numerologia_compat_callback(
         "Para la compatibilidad necesito la fecha de nacimiento de la otra persona.\n\n"
         "Escribe la fecha (DD/MM/AAAA):\n\n(Tienes 5 minutos antes de que el oráculo se aburra y cierre la mesa.)"
     )
+    from bot.awaiting import clear_other_awaiting
+    clear_other_awaiting(context.user_data, except_key="numerologia_awaiting_compat_date")
     context.user_data["numerologia_awaiting_compat_date"] = time.time()
 
 

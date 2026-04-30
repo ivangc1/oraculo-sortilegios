@@ -163,9 +163,9 @@ async def _process_tarot(
         reply_markup=question_keyboard(),
     )
 
-    # Guardar datos para el flujo de pregunta
+    # Solo guardamos el variant; el user lo releemos en cada uso para no
+    # serializar el dict completo de DB en pickle (frágil ante schema changes).
     context.user_data["tarot_variant"] = variant
-    context.user_data["tarot_user"] = user
 
 
 async def tarot_question_callback(
@@ -176,7 +176,6 @@ async def tarot_question_callback(
     await query.answer()
 
     variant = context.user_data.get("tarot_variant")
-    user = context.user_data.get("tarot_user")
     settings: Settings = context.bot_data["settings"]
 
     if not variant:
@@ -191,10 +190,13 @@ async def tarot_question_callback(
             "(Tienes 5 minutos antes de que el oráculo se aburra y cierre la mesa.)",
             reply_markup=None,
         )
+        from bot.awaiting import clear_other_awaiting
+        clear_other_awaiting(context.user_data, except_key="tarot_awaiting_question")
         context.user_data["tarot_awaiting_question"] = time.time()
         return
 
     # Sin pregunta → ejecutar tirada directamente
+    user = await db_users.get_user(query.from_user.id)
     await query.edit_message_text("Tirando las cartas...", reply_markup=None)
     await _execute_tarot_reading(update, context, user, variant, None, settings)
 
@@ -206,7 +208,7 @@ async def tarot_question_text(update: Update, context: ContextTypes.DEFAULT_TYPE
 
     settings: Settings = context.bot_data["settings"]
     variant = context.user_data.get("tarot_variant")
-    user = context.user_data.get("tarot_user")
+    user = await db_users.get_user(update.effective_user.id)  # release de pickle
     question = update.message.text
     is_smart = context.user_data.get("tarot_smart_mode", False)
 
@@ -402,7 +404,6 @@ async def _execute_tarot_reading(
 
     # Limpiar user_data
     context.user_data.pop("tarot_variant", None)
-    context.user_data.pop("tarot_user", None)
     context.user_data.pop("tarot_awaiting_question", None)
     context.user_data.pop("tarot_smart_mode", None)
     context.user_data.pop("tarot_deck", None)
@@ -433,6 +434,7 @@ async def tarot_smart_callback(
     await query.edit_message_text(
         "Escribe tu pregunta y yo decido qué tirada te conviene:\n\n(Tienes 5 minutos antes de que el oráculo se aburra y cierre la mesa.)"
     )
+    from bot.awaiting import clear_other_awaiting
+    clear_other_awaiting(context.user_data, except_key="tarot_awaiting_question")
     context.user_data["tarot_awaiting_question"] = time.time()
     context.user_data["tarot_smart_mode"] = True
-    context.user_data["tarot_user"] = user

@@ -35,8 +35,6 @@ async def oraculo_command(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
     text = update.message.text or ""
     parts = text.split(maxsplit=1)
     if len(parts) > 1 and len(parts[1].strip()) > 1:
-        context.user_data["oraculo_user"] = user
-        context.user_data["oraculo_question"] = parts[1].strip()
         await _execute_oraculo(update, context, user, parts[1].strip(), settings)
         return
 
@@ -46,8 +44,11 @@ async def oraculo_command(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
         text="¿Qué quieres preguntarle al oráculo?\n\n(Tienes 5 minutos antes de que el oráculo se aburra y cierre la mesa.)",
         message_thread_id=thread_id,
     )
+    # Solo guardamos el flag de awaiting; releemos el user al usar para evitar
+    # serializar el dict completo de DB en el pickle (frágil ante schema changes).
+    from bot.awaiting import clear_other_awaiting
+    clear_other_awaiting(context.user_data, except_key="oraculo_awaiting_question")
     context.user_data["oraculo_awaiting_question"] = time.time()
-    context.user_data["oraculo_user"] = user
 
 
 async def oraculo_question_text(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -56,17 +57,13 @@ async def oraculo_question_text(update: Update, context: ContextTypes.DEFAULT_TY
         return
 
     settings: Settings = context.bot_data["settings"]
-    user = context.user_data.get("oraculo_user")
     question = update.message.text
 
     if not question:
         return
 
-    # Recuperar user de DB si se perdió (e.g. tras restart con persistencia)
-    if not user:
-        user = await db_users.get_user(update.effective_user.id)
-        if not user:
-            logger.warning(f"oraculo: user {update.effective_user.id} not in DB, proceeding as guest")
+    # Releer perfil del usuario en cada uso (no se persiste en pickle).
+    user = await db_users.get_user(update.effective_user.id)
 
     context.user_data["oraculo_awaiting_question"] = False
     await _execute_oraculo(update, context, user, question.strip(), settings)
@@ -162,5 +159,3 @@ async def _execute_oraculo(
         record_cooldown(user_id)
     finally:
         release_user(user_id)
-        context.user_data.pop("oraculo_user", None)
-        context.user_data.pop("oraculo_question", None)

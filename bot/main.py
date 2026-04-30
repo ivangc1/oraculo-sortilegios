@@ -95,8 +95,7 @@ async def post_init(application: Application) -> None:
     _AWAITING_KEYS = [
         "tarot_awaiting_question", "oraculo_awaiting_question",
         "numerologia_awaiting_name", "numerologia_awaiting_compat_date",
-        "tarot_variant", "tarot_user", "tarot_smart_mode", "tarot_deck",
-        "oraculo_user",
+        "tarot_variant", "tarot_smart_mode", "tarot_deck",
     ]
     cleaned = 0
     for user_id, user_data in application.user_data.items():
@@ -414,12 +413,16 @@ def main() -> None:
 
     async def dispatch_text_reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Despacha texto libre a handlers que esperan input."""
+        # Channel posts y otros updates sin .message no tienen texto que despachar.
+        if update.message is None:
+            return
+
         from bot.messages import LIMIT_MESSAGES as msgs
         from bot.typing import get_thread_id
 
         user = update.effective_user
         flags = {k: v for k, v in context.user_data.items() if "awaiting" in k}
-        logger.debug(f"dispatch_text_reply: user={user.id if user else None} flags={flags} text={update.message.text[:50] if update.message and update.message.text else None}")
+        logger.debug(f"dispatch_text_reply: user={user.id if user else None} flags={flags} text={update.message.text[:50] if update.message.text else None}")
 
         # Comprobar cada flag con expiración
         for key, handler in [
