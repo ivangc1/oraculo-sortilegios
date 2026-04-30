@@ -64,13 +64,21 @@ def test_help_has_bibliomancia_books():
 # === Mensajes in-character ===
 
 def test_limit_messages_all_keys():
-    """Todos los mensajes esperados existen."""
+    """Todos los mensajes esperados existen y se usan en el código."""
     expected_keys = [
-        "empty_response", "queue_timeout",
+        # Errores técnicos de pipeline LLM
+        "empty_response", "queue_timeout", "api_error", "rate_limit",
+        # Flujo de usuario
         "request_in_progress", "truncated", "not_registered", "off_topic",
-        "admin_only", "nominatim_down", "dm_only_group", "api_error",
-        "rate_limit", "already_registered", "onboarding_timeout",
-        "cancelled", "invalid_date", "invalid_time", "unknown_guardian",
+        "admin_only", "dm_only_group",
+        # Onboarding y control
+        "onboarding_timeout", "cancelled", "awaiting_expired",
+        "invalid_date", "invalid_time",
+        # /reportar
+        "report_sent", "report_no_target", "report_self",
+        "report_admin", "report_error",
+        # /demonio /angel
+        "demon_not_found", "angel_not_found",
     ]
     for key in expected_keys:
         assert key in LIMIT_MESSAGES, f"Falta mensaje: {key}"
