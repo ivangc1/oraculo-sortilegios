@@ -89,7 +89,19 @@ async def run_interpretation(
         )
         return False
 
-    text = response.text
+    text = (response.text or "").strip()
+    if not text:
+        # Respuesta sin error pero vacía: tratar como `empty_response` para
+        # que el usuario reciba un mensaje claro en vez de un BadRequest de
+        # Telegram al intentar enviar texto vacío.
+        await bot.send_message(
+            chat_id,
+            text=LIMIT_MESSAGES["empty_response"],
+            reply_to_message_id=anchor_id,
+            message_thread_id=thread_id,
+        )
+        return False
+
     if response.truncated:
         text += LIMIT_MESSAGES["truncated"]
 
