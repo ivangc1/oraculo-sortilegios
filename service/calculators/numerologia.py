@@ -55,9 +55,12 @@ def _sum_digits(number_str: str) -> int:
 def life_path(birth_date: str) -> int:
     """Calcula camino de vida desde fecha DD/MM/AAAA o AAAA-MM-DD.
 
-    Método: reducir día, mes, año por separado, luego sumar y reducir.
+    Método Decoz: reducir día, mes y año por separado preservando maestros
+    (11/22/33), sumar los tres, reducir el total preservando maestros.
+
+    Pasar el componente entero a `_reduce_to_single` (no `_sum_digits` primero):
+    `_sum_digits("11") == 2` colapsa el maestro antes de poder protegerlo.
     """
-    # Parsear fecha
     if "/" in birth_date:
         parts = birth_date.split("/")
         day, month, year = parts[0], parts[1], parts[2]
@@ -67,9 +70,9 @@ def life_path(birth_date: str) -> int:
     else:
         raise ValueError(f"Formato de fecha no reconocido: {birth_date}")
 
-    day_reduced = _reduce_to_single(_sum_digits(day))
-    month_reduced = _reduce_to_single(_sum_digits(month))
-    year_reduced = _reduce_to_single(_sum_digits(year))
+    day_reduced = _reduce_to_single(int(day))
+    month_reduced = _reduce_to_single(int(month))
+    year_reduced = _reduce_to_single(int(year))
 
     total = day_reduced + month_reduced + year_reduced
     return _reduce_to_single(total)

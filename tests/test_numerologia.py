@@ -89,6 +89,24 @@ def test_life_path_known_value():
     assert life_path("25/12/1990") == 11
 
 
+def test_life_path_master_day_11():
+    """Día 11 es maestro: debe preservarse, no colapsar a 2.
+    11/03/1985 → 11(maestro), 3, 1+9+8+5=23→5 → 11+3+5=19→10→1."""
+    assert life_path("11/03/1985") == 1
+
+
+def test_life_path_master_day_22():
+    """Día 22 es maestro: debe preservarse, no colapsar a 4.
+    22/01/1990 → 22(maestro), 1, 1+9+9+0=19→10→1 → 22+1+1=24→6."""
+    assert life_path("22/01/1990") == 6
+
+
+def test_life_path_master_month_11():
+    """Mes 11 (noviembre) es maestro: debe preservarse, no colapsar a 2.
+    05/11/1990 → 5, 11(maestro), 1+9+9+0=19→10→1 → 5+11+1=17→8."""
+    assert life_path("05/11/1990") == 8
+
+
 # === Números del nombre ===
 
 def test_expression_number():
