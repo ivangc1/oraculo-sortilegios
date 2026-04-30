@@ -72,31 +72,34 @@ class Settings(BaseSettings):
     EFFORT_DEMONIO: str = "high"
     EFFORT_ANGEL: str = "high"
 
-    # max_tokens por modo (configurables sin redeploy)
-    MAX_TOKENS_TAROT_1: int = 700
-    MAX_TOKENS_TAROT_3: int = 1400
-    MAX_TOKENS_TAROT_CRUZ: int = 2800
-    MAX_TOKENS_RUNAS_1: int = 700
-    MAX_TOKENS_RUNAS_3: int = 1400
-    MAX_TOKENS_RUNAS_CRUZ: int = 1600
-    MAX_TOKENS_ICHING: int = 1600
-    MAX_TOKENS_GEOMANCIA_1: int = 700
-    MAX_TOKENS_GEOMANCIA_ESCUDO: int = 2800
-    MAX_TOKENS_NUMEROLOGIA: int = 1600
-    MAX_TOKENS_NUMEROLOGIA_COMPAT: int = 1200
-    MAX_TOKENS_NATAL_TROPICAL: int = 4000
-    MAX_TOKENS_NATAL_VEDICA: int = 4000
-    MAX_TOKENS_TAROT_HERRADURA: int = 2200
-    MAX_TOKENS_TAROT_RELACION: int = 1800
-    MAX_TOKENS_TAROT_ESTRELLA: int = 1800
-    MAX_TOKENS_TAROT_CRUZ_SIMPLE: int = 1600
-    MAX_TOKENS_TAROT_SINO: int = 1000
-    MAX_TOKENS_TAROT_DIA: int = 700
-    MAX_TOKENS_RUNAS_CINCO: int = 1600
-    MAX_TOKENS_RUNAS_SIETE: int = 2200
-    MAX_TOKENS_ORACULO: int = 1000
-    MAX_TOKENS_DEMONIO: int = 1500
-    MAX_TOKENS_ANGEL: int = 1500
+    # max_tokens por modo (configurables sin redeploy).
+    # Subidos tras observar 22% de respuestas truncadas en producción —
+    # margen de ~30-40% sobre el output esperado para evitar cortes y
+    # reducir empty-response retries en lecturas densas con thinking.
+    MAX_TOKENS_TAROT_1: int = 800
+    MAX_TOKENS_TAROT_3: int = 1600
+    MAX_TOKENS_TAROT_CRUZ: int = 3500
+    MAX_TOKENS_RUNAS_1: int = 800
+    MAX_TOKENS_RUNAS_3: int = 1600
+    MAX_TOKENS_RUNAS_CRUZ: int = 2000
+    MAX_TOKENS_ICHING: int = 2000
+    MAX_TOKENS_GEOMANCIA_1: int = 800
+    MAX_TOKENS_GEOMANCIA_ESCUDO: int = 3500
+    MAX_TOKENS_NUMEROLOGIA: int = 2000
+    MAX_TOKENS_NUMEROLOGIA_COMPAT: int = 1500
+    MAX_TOKENS_NATAL_TROPICAL: int = 5000
+    MAX_TOKENS_NATAL_VEDICA: int = 5000
+    MAX_TOKENS_TAROT_HERRADURA: int = 2800
+    MAX_TOKENS_TAROT_RELACION: int = 2400
+    MAX_TOKENS_TAROT_ESTRELLA: int = 2400
+    MAX_TOKENS_TAROT_CRUZ_SIMPLE: int = 2000
+    MAX_TOKENS_TAROT_SINO: int = 1200
+    MAX_TOKENS_TAROT_DIA: int = 800
+    MAX_TOKENS_RUNAS_CINCO: int = 2000
+    MAX_TOKENS_RUNAS_SIETE: int = 2800
+    MAX_TOKENS_ORACULO: int = 1200
+    MAX_TOKENS_DEMONIO: int = 2000
+    MAX_TOKENS_ANGEL: int = 2000
 
     def get_max_tokens(self, mode: str, variant: str) -> int:
         """Devuelve max_tokens para un modo/variante."""
