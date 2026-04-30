@@ -4,23 +4,20 @@ full_birth_name pedido solo la primera vez que se usa /numerologia (ForceReply).
 Compatibilidad solo pide segunda fecha (camino de vida), no nombre.
 """
 
-import asyncio
 import time
 from datetime import datetime, timezone
 
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
-from telegram.error import BadRequest, Forbidden
 from telegram.ext import ContextTypes
 
-from bot.concurrency import is_user_busy, mark_user_busy, release_user, get_semaphore
+from bot.concurrency import is_user_busy, mark_user_busy, release_user
 from bot.config import Settings
-from bot.formatting import format_and_split
-from bot.keyboards import feedback_keyboard, numerologia_keyboard
-from bot.limits import check_limits, record_cooldown
+from bot.handlers._pipeline import run_interpretation
+from bot.keyboards import numerologia_keyboard
+from bot.limits import check_limits
 from bot.messages import LIMIT_MESSAGES
 from bot.middleware import middleware_check
-from bot.typing import get_thread_id, with_typing
-from database import usage as db_usage
+from bot.typing import get_thread_id
 from database import users as db_users
 from service.calculators.numerologia import compatibility, full_report
 from service.interpreter import InterpreterService
@@ -157,56 +154,18 @@ async def _execute_informe(
         )
 
         interpreter: InterpreterService = context.bot_data["interpreter_service"]
-        semaphore = get_semaphore()
-
-        async def _interpret():
-            async with semaphore:
-                return await interpreter.interpret(request)
-
-        try:
-            response = await asyncio.wait_for(
-                with_typing(chat_id, context.bot, _interpret()),
-                timeout=settings.QUEUE_TIMEOUT,
-            )
-        except asyncio.TimeoutError:
-            await context.bot.send_message(chat_id, text=LIMIT_MESSAGES["queue_timeout"],
-                                           message_thread_id=thread_id)
-            return
-
-        if response.error:
-            error_key = {"timeout": "queue_timeout", "rate_limit": "rate_limit",
-                         "empty_response": "empty_response"}.get(response.error, "api_error")
-            await context.bot.send_message(chat_id, text=LIMIT_MESSAGES.get(error_key, LIMIT_MESSAGES["api_error"]),
-                                           message_thread_id=thread_id)
-            return
-
-        text = response.text
-        if response.truncated:
-            text += LIMIT_MESSAGES["truncated"]
-
-        chunks = format_and_split(text, use_blockquote=settings.use_blockquote_for("numerologia", "informe"))
-        text_msg = None
-        for i, chunk in enumerate(chunks):
-            text_msg = await context.bot.send_message(chat_id, text=chunk, parse_mode="HTML",
-                                                      message_thread_id=thread_id)
-
-        usage_id = await db_usage.record_usage(
-            user_id=user_id, mode="numerologia", variant="informe",
-            tokens_input=response.tokens_input, tokens_output=response.tokens_output,
-            cost_usd=response.cost_usd, cached=response.cached, truncated=response.truncated,
+        await run_interpretation(
+            bot=context.bot,
+            chat_id=chat_id,
+            thread_id=thread_id,
+            user_id=user_id,
+            settings=settings,
+            interpreter=interpreter,
+            request=request,
+            mode="numerologia",
+            variant="informe",
             drawn_data=drawn_data,
         )
-
-        if text_msg:
-            try:
-                await context.bot.send_message(chat_id, text="¿Qué te ha parecido la lectura?",
-                                               reply_markup=feedback_keyboard(usage_id),
-                                               reply_to_message_id=text_msg.message_id,
-                                               message_thread_id=thread_id)
-            except (BadRequest, Forbidden):
-                pass
-
-        record_cooldown(user_id)
     finally:
         release_user(user_id)
 
@@ -303,55 +262,17 @@ async def numerologia_compat_date_text(update: Update, context: ContextTypes.DEF
         )
 
         interpreter: InterpreterService = context.bot_data["interpreter_service"]
-        semaphore = get_semaphore()
-
-        async def _interpret():
-            async with semaphore:
-                return await interpreter.interpret(request)
-
-        try:
-            response = await asyncio.wait_for(
-                with_typing(chat_id, context.bot, _interpret()),
-                timeout=settings.QUEUE_TIMEOUT,
-            )
-        except asyncio.TimeoutError:
-            await context.bot.send_message(chat_id, text=LIMIT_MESSAGES["queue_timeout"],
-                                           message_thread_id=thread_id)
-            return
-
-        if response.error:
-            error_key = {"timeout": "queue_timeout", "rate_limit": "rate_limit",
-                         "empty_response": "empty_response"}.get(response.error, "api_error")
-            await context.bot.send_message(chat_id, text=LIMIT_MESSAGES.get(error_key, LIMIT_MESSAGES["api_error"]),
-                                           message_thread_id=thread_id)
-            return
-
-        text = response.text
-        if response.truncated:
-            text += LIMIT_MESSAGES["truncated"]
-
-        chunks = format_and_split(text, use_blockquote=settings.use_blockquote_for("numerologia", "compatibilidad"))
-        text_msg = None
-        for i, chunk in enumerate(chunks):
-            text_msg = await context.bot.send_message(chat_id, text=chunk, parse_mode="HTML",
-                                                      message_thread_id=thread_id)
-
-        usage_id = await db_usage.record_usage(
-            user_id=user_id, mode="numerologia", variant="compatibilidad",
-            tokens_input=response.tokens_input, tokens_output=response.tokens_output,
-            cost_usd=response.cost_usd, cached=response.cached, truncated=response.truncated,
+        await run_interpretation(
+            bot=context.bot,
+            chat_id=chat_id,
+            thread_id=thread_id,
+            user_id=user_id,
+            settings=settings,
+            interpreter=interpreter,
+            request=request,
+            mode="numerologia",
+            variant="compatibilidad",
             drawn_data=compat,
         )
-
-        if text_msg:
-            try:
-                await context.bot.send_message(chat_id, text="¿Qué te ha parecido la lectura?",
-                                               reply_markup=feedback_keyboard(usage_id),
-                                               reply_to_message_id=text_msg.message_id,
-                                               message_thread_id=thread_id)
-            except (BadRequest, Forbidden):
-                pass
-
-        record_cooldown(user_id)
     finally:
         release_user(user_id)
