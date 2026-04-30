@@ -15,25 +15,21 @@ Datos en data/shem_datos.py (72 entradas). Anti-repetición por usuario.
 
 from __future__ import annotations
 
-import asyncio
 import random
 import unicodedata
 from pathlib import Path
 
 from loguru import logger
 from telegram import Update
-from telegram.error import BadRequest, Forbidden
 from telegram.ext import ContextTypes
 
-from bot.concurrency import is_user_busy, mark_user_busy, release_user, get_semaphore
+from bot.concurrency import is_user_busy, mark_user_busy, release_user
 from bot.config import Settings
-from bot.formatting import format_and_split
-from bot.keyboards import feedback_keyboard
-from bot.limits import check_limits, record_cooldown
+from bot.handlers._pipeline import run_interpretation
+from bot.limits import check_limits
 from bot.messages import LIMIT_MESSAGES
 from bot.middleware import middleware_check
-from bot.typing import get_thread_id, with_typing
-from database import usage as db_usage
+from bot.typing import get_thread_id
 from database import users as db_users
 from service.interpreter import InterpreterService
 from service.models import InterpretationRequest, UserProfile
@@ -240,76 +236,26 @@ async def angel_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
         )
 
         interpreter: InterpreterService = context.bot_data["interpreter_service"]
-        semaphore = get_semaphore()
-
-        async def _interpret():
-            async with semaphore:
-                return await interpreter.interpret(request)
-
-        try:
-            response = await asyncio.wait_for(
-                with_typing(chat_id, context.bot, _interpret()),
-                timeout=settings.QUEUE_TIMEOUT,
-            )
-        except asyncio.TimeoutError:
-            await context.bot.send_message(
-                chat_id, text=LIMIT_MESSAGES["queue_timeout"],
-                message_thread_id=thread_id,
-            )
-            return
-
-        if response.error:
-            error_key = {
-                "timeout": "queue_timeout", "rate_limit": "rate_limit",
-                "empty_response": "empty_response",
-            }.get(response.error, "api_error")
-            await context.bot.send_message(
-                chat_id, text=LIMIT_MESSAGES.get(error_key, LIMIT_MESSAGES["api_error"]),
-                message_thread_id=thread_id,
-            )
-            return
-
-        text = response.text
-        if response.truncated:
-            text += LIMIT_MESSAGES["truncated"]
-
-        chunks = format_and_split(
-            text, use_blockquote=settings.use_blockquote_for("angel", "consulta"),
+        delivered = await run_interpretation(
+            bot=context.bot,
+            chat_id=chat_id,
+            thread_id=thread_id,
+            user_id=user_id,
+            settings=settings,
+            interpreter=interpreter,
+            request=request,
+            mode="angel",
+            variant="consulta",
+            drawn_data={
+                "angel_number": angel["number"],
+                "angel_name": angel["name"],
+                "question_length": len(question),
+            },
         )
-        text_msg = None
-        for chunk in chunks:
-            text_msg = await context.bot.send_message(
-                chat_id, text=chunk, parse_mode="HTML",
-                message_thread_id=thread_id,
+        if delivered:
+            logger.info(
+                f"Ángel con pregunta: user={user_id} → {angel['number']} "
+                f"({angel['name']}) | pregunta='{question[:50]}'"
             )
-
-        drawn_data = {
-            "angel_number": angel["number"],
-            "angel_name": angel["name"],
-            "question_length": len(question),
-        }
-        usage_id = await db_usage.record_usage(
-            user_id=user_id, mode="angel", variant="consulta",
-            tokens_input=response.tokens_input, tokens_output=response.tokens_output,
-            cost_usd=response.cost_usd, cached=response.cached, truncated=response.truncated,
-            drawn_data=drawn_data,
-        )
-
-        if text_msg:
-            try:
-                await context.bot.send_message(
-                    chat_id, text="¿Qué te ha parecido la lectura?",
-                    reply_markup=feedback_keyboard(usage_id),
-                    reply_to_message_id=text_msg.message_id,
-                    message_thread_id=thread_id,
-                )
-            except (BadRequest, Forbidden):
-                pass
-
-        record_cooldown(user_id)
-        logger.info(
-            f"Ángel con pregunta: user={user_id} → {angel['number']} "
-            f"({angel['name']}) | pregunta='{question[:50]}'"
-        )
     finally:
         release_user(user_id)
