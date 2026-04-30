@@ -43,8 +43,8 @@ async def stats_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
     uptime_str = f"{hours}h {minutes}m {seconds}s"
 
     lines = [
-        f"📊 Estadísticas del Oráculo",
-        f"",
+        "📊 Estadísticas del Oráculo",
+        "",
         f"Uptime: {uptime_str}",
         f"Total consultas: {stats['total_uses']}",
         f"Coste total: ${stats['total_cost']:.4f}",
@@ -52,8 +52,8 @@ async def stats_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
         f"Coste mes: ${monthly_cost:.4f}",
         f"Cache hit rate: {stats['cache_rate']:.1f}%",
         f"Truncadas: {stats['truncated_count']}",
-        f"",
-        f"Top 5 por coste API (histórico):",
+        "",
+        "Top 5 por coste API (histórico):",
     ]
     for u in stats["top_users"]:
         lines.append(f"  {u['alias']}: {u['uses']} consultas LLM (${u['cost']:.4f})")

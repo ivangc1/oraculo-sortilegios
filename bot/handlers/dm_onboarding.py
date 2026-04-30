@@ -187,7 +187,8 @@ async def dm_ask_city(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int
     try:
         from service.calculators.geocoding import geocode_city_multi
         results = await geocode_city_multi(update.message.text.strip())
-    except Exception:
+    except Exception as e:
+        logger.warning(f"geocode_city_multi failed: {type(e).__name__}: {e}")
         results = []
 
     if not results:
@@ -595,7 +596,7 @@ async def dm_ask_fullname(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
     await db_users.update_profile(user_id, full_birth_name=name)
 
     await update.message.reply_text(
-        f"✅ Nombre registrado. Vuelve a La Taberna y usa /numerologia."
+        "✅ Nombre registrado. Vuelve a La Taberna y usa /numerologia."
     )
     context.user_data.pop("dm_deep_link", None)
     logger.info(f"Fullname set in DM: user_id={user_id}")

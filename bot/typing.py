@@ -2,6 +2,7 @@
 
 import asyncio
 
+from loguru import logger
 from telegram import Bot, Update
 from telegram.error import BadRequest, Forbidden
 from telegram.constants import ChatAction
@@ -26,8 +27,9 @@ async def keep_typing(chat_id: int, bot: Bot) -> None:
             await bot.send_chat_action(chat_id, ChatAction.TYPING)
         except (Forbidden, BadRequest):
             return  # Bot removido o sin permisos
-        except Exception:
-            return  # Cualquier otro error, dejar de intentar
+        except Exception as e:
+            logger.warning(f"keep_typing aborted on chat={chat_id}: {type(e).__name__}: {e}")
+            return
         await asyncio.sleep(4)
 
 

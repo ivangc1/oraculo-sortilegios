@@ -43,7 +43,7 @@ async def miperfil_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -
 
     lines = [
         f"📋 Tu perfil, {user['alias']}:",
-        f"",
+        "",
         f"Fecha de nacimiento: {user['birth_date']}",
     ]
     if user.get("birth_time"):

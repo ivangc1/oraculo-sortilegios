@@ -190,9 +190,9 @@ def compose_celtic_cross(cards: list[dict]) -> BytesIO | None:
         cross_cx = gap + col_w  # col 1
         cross_cy = gap + row_h  # row 1
 
-        # Columna derecha (staff): 4 cartas verticales
+        # Columna derecha (staff): 4 cartas verticales — la `y` se calcula en
+        # el bucle de pintado (línea ~248) desde abajo hacia arriba.
         staff_x = gap + col_w * 3 + gap * 2
-        staff_top = gap
 
         canvas_w = staff_x + cw_s + gap
         canvas_h = max(row_h * 3 + gap, ch_s * 4 + gap * 5 + label_h * 4) + gap
