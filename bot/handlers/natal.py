@@ -3,22 +3,17 @@
 Sin hora → carta simplificada (sin ascendente ni casas).
 """
 
-import asyncio
-
 from loguru import logger
 from telegram import Update
-from telegram.error import BadRequest, Forbidden
 from telegram.ext import ContextTypes
 
-from bot.concurrency import is_user_busy, mark_user_busy, release_user, get_semaphore
+from bot.concurrency import is_user_busy, mark_user_busy, release_user
 from bot.config import Settings
-from bot.formatting import format_and_split
-from bot.keyboards import feedback_keyboard
-from bot.limits import check_limits, record_cooldown
+from bot.handlers._pipeline import run_interpretation
+from bot.limits import check_limits
 from bot.messages import LIMIT_MESSAGES
 from bot.middleware import middleware_check
-from bot.typing import get_thread_id, with_typing
-from database import usage as db_usage
+from bot.typing import get_thread_id
 from database import users as db_users
 from service.interpreter import InterpreterService
 from service.models import InterpretationRequest, UserProfile
@@ -187,58 +182,19 @@ async def _execute_natal(
         )
 
         interpreter: InterpreterService = context.bot_data["interpreter_service"]
-        semaphore = get_semaphore()
-
-        async def _interpret():
-            async with semaphore:
-                return await interpreter.interpret(request)
-
-        try:
-            response = await asyncio.wait_for(
-                with_typing(chat_id, context.bot, _interpret()),
-                timeout=settings.QUEUE_TIMEOUT,
-            )
-        except asyncio.TimeoutError:
-            await context.bot.send_message(chat_id, text=LIMIT_MESSAGES["queue_timeout"],
-                                           message_thread_id=thread_id)
-            return
-
-        if response.error:
-            error_key = {"timeout": "queue_timeout", "rate_limit": "rate_limit",
-                         "empty_response": "empty_response"}.get(response.error, "api_error")
-            await context.bot.send_message(chat_id, text=LIMIT_MESSAGES.get(error_key, LIMIT_MESSAGES["api_error"]),
-                                           message_thread_id=thread_id)
-            return
-
-        text = response.text
-        if response.truncated:
-            text += LIMIT_MESSAGES["truncated"]
-
-        chunks = format_and_split(text, use_blockquote=settings.use_blockquote_for("natal", mode_variant))
-        text_msg = None
-        for i, chunk in enumerate(chunks):
-            reply_to = summary_msg.message_id if i == 0 else (text_msg.message_id if text_msg else None)
-            text_msg = await context.bot.send_message(chat_id, text=chunk, parse_mode="HTML",
-                                                      reply_to_message_id=reply_to,
-                                                      message_thread_id=thread_id)
-
-        usage_id = await db_usage.record_usage(
-            user_id=user_id, mode="natal", variant=mode_variant,
-            tokens_input=response.tokens_input, tokens_output=response.tokens_output,
-            cost_usd=response.cost_usd, cached=response.cached, truncated=response.truncated,
+        await run_interpretation(
+            bot=context.bot,
+            chat_id=chat_id,
+            thread_id=thread_id,
+            user_id=user_id,
+            settings=settings,
+            interpreter=interpreter,
+            request=request,
+            mode="natal",
+            variant=mode_variant,
             drawn_data=drawn_data,
+            anchor_msg=summary_msg,
         )
-
-        if text_msg:
-            try:
-                await context.bot.send_message(chat_id, text="¿Qué te ha parecido la lectura?",
-                                               reply_markup=feedback_keyboard(usage_id),
-                                               reply_to_message_id=text_msg.message_id,
-                                               message_thread_id=thread_id)
-            except (BadRequest, Forbidden):
-                pass
-
-        record_cooldown(user_id)
 
     except Exception as e:
         logger.error(f"Natal calculation error: {e}")
