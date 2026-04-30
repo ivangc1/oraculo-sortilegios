@@ -127,15 +127,6 @@ async def update_last_activity(user_id: int) -> None:
     await db.commit()
 
 
-async def update_full_birth_name(user_id: int, name: str) -> None:
-    db = await Database.get()
-    await db.execute(
-        "UPDATE users SET full_birth_name = ? WHERE telegram_user_id = ?",
-        (name, user_id),
-    )
-    await db.commit()
-
-
 _ALLOWED_PROFILE_COLUMNS = frozenset({
     "birth_time", "birth_city", "birth_lat", "birth_lon",
     "birth_timezone", "sun_sign", "moon_sign", "ascendant",

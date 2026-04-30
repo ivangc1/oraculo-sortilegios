@@ -103,7 +103,7 @@ async def numerologia_name_text(update: Update, context: ContextTypes.DEFAULT_TY
     context.user_data["numerologia_awaiting_name"] = False
 
     # Guardar en DB
-    await db_users.update_full_birth_name(user_id, name)
+    await db_users.update_profile(user_id, full_birth_name=name)
     user = await db_users.get_user(user_id)
 
     await _execute_informe(update, context, user, settings)
