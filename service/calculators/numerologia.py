@@ -14,6 +14,8 @@ sumar los componentes reducidos y reducir el total preservando maestros.
 import unicodedata
 from datetime import datetime, timezone
 
+from service.calculators.dates import parse_birth_date
+
 # Tabla pitagórica: letra → número (1-9)
 _PYTHAGOREAN_TABLE = {
     "a": 1, "b": 2, "c": 3, "d": 4, "e": 5, "f": 6, "g": 7, "h": 8, "i": 9,
@@ -51,23 +53,10 @@ def _reduce_to_single(n: int) -> int:
     return n
 
 
-def _parse_date(birth_date: str) -> tuple[int, int, int]:
-    """Parsea DD/MM/AAAA o AAAA-MM-DD a (day, month, year) enteros."""
-    if "/" in birth_date:
-        parts = birth_date.split("/")
-        day, month, year = parts[0], parts[1], parts[2]
-    elif "-" in birth_date:
-        parts = birth_date.split("-")
-        year, month, day = parts[0], parts[1], parts[2]
-    else:
-        raise ValueError(f"Formato de fecha no reconocido: {birth_date}")
-    return int(day), int(month), int(year)
-
-
 def life_path(birth_date: str) -> int:
     """Camino de vida (Decoz): reducir día/mes/año por separado preservando
     maestros (11/22/33), sumar y reducir el total preservando maestros."""
-    day, month, year = _parse_date(birth_date)
+    day, month, year = parse_birth_date(birth_date)
     total = (
         _reduce_to_single(day)
         + _reduce_to_single(month)
@@ -103,7 +92,7 @@ def personal_year(birth_date: str, current_year: int | None = None) -> int:
     if current_year is None:
         current_year = datetime.now(timezone.utc).year
 
-    day, month, _ = _parse_date(birth_date)
+    day, month, _ = parse_birth_date(birth_date)
     total = (
         _reduce_to_single(day)
         + _reduce_to_single(month)

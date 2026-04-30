@@ -13,6 +13,8 @@ from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 from loguru import logger
 from timezonefinder import TimezoneFinder
 
+from service.calculators.dates import parse_birth_date
+
 _tf = TimezoneFinder()
 
 
@@ -51,24 +53,13 @@ def get_utc_datetime(
     Sin hora: usa mediodía local como aproximación.
     Sin timezone: usa UTC directamente.
     """
-    # Parsear fecha
-    if "/" in birth_date:
-        parts = birth_date.split("/")
-        day, month, year = int(parts[0]), int(parts[1]), int(parts[2])
-    elif "-" in birth_date:
-        parts = birth_date.split("-")
-        year, month, day = int(parts[0]), int(parts[1]), int(parts[2])
-    else:
-        raise ValueError(f"Formato de fecha no reconocido: {birth_date}")
+    day, month, year = parse_birth_date(birth_date)
 
-    # Hora
     if birth_time:
         time_parts = birth_time.split(":")
         hour, minute = int(time_parts[0]), int(time_parts[1])
     else:
         hour, minute = 12, 0  # Mediodía como aproximación sin hora
 
-    # Timezone
     tz_str = timezone_str or "UTC"
-
     return local_to_utc(year, month, day, hour, minute, tz_str)

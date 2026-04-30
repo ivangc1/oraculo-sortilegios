@@ -24,6 +24,7 @@ from telegram.ext import (
 
 from bot.messages import LIMIT_MESSAGES
 from database import users as db_users
+from service.calculators.dates import parse_birth_date
 from service.calculators.numerologia import life_path
 
 # Estados
@@ -313,12 +314,7 @@ async def _complete_dm_onboarding(
     sun_sign = None
     try:
         from service.calculators.sun_sign import get_sun_sign
-        if "/" in birth_date:
-            parts = birth_date.split("/")
-            day, month, year = int(parts[0]), int(parts[1]), int(parts[2])
-        else:
-            parts = birth_date.split("-")
-            year, month, day = int(parts[0]), int(parts[1]), int(parts[2])
+        day, month, year = parse_birth_date(birth_date)
 
         hour, minute = 12, 0
         if birth_time:

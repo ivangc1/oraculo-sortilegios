@@ -15,6 +15,7 @@ from bot.messages import LIMIT_MESSAGES
 from bot.middleware import middleware_check
 from bot.typing import get_thread_id
 from database import users as db_users
+from service.calculators.dates import parse_birth_date
 from service.interpreter import InterpreterService
 from service.models import InterpretationRequest, UserProfile
 
@@ -100,14 +101,7 @@ async def _execute_natal(
 
     mark_user_busy(user_id)
     try:
-        # Parsear fecha
-        bd = user["birth_date"]
-        if "/" in bd:
-            parts = bd.split("/")
-            day, month, year = int(parts[0]), int(parts[1]), int(parts[2])
-        else:
-            parts = bd.split("-")
-            year, month, day = int(parts[0]), int(parts[1]), int(parts[2])
+        day, month, year = parse_birth_date(user["birth_date"])
 
         hour = None
         minute = None
