@@ -15,8 +15,8 @@ _FONT_PATH = Path(__file__).parent.parent / "assets" / "fonts" / "NotoSans-Regul
 
 # Colores
 _BG = (25, 20, 30)
-_YANG_COLOR = (220, 200, 160)
-_YIN_COLOR = (220, 200, 160)
+_YANG_COLOR = (220, 200, 160)  # Yin usa el mismo color: la línea partida ya
+                                # comunica la diferencia visualmente.
 _MUTABLE_COLOR = (200, 100, 80)
 _TEXT_COLOR = (200, 185, 150)
 _ARROW_COLOR = (180, 160, 120)

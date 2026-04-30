@@ -64,13 +64,12 @@ def _generate_nakshatra_table() -> list[dict]:
     return table
 
 
-# Dasha order and years (Vimshottari)
+# Dasha order and years (Vimshottari) — total 120 años por ciclo completo.
 _DASHA_SEQUENCE = [
     ("Ketu", 7), ("Venus", 20), ("Sol", 6), ("Luna", 10),
     ("Marte", 7), ("Rahu", 18), ("Júpiter", 16), ("Saturno", 19),
     ("Mercurio", 17),
 ]
-_TOTAL_DASHA_YEARS = sum(y for _, y in _DASHA_SEQUENCE)  # 120
 
 
 def get_nakshatra(moon_sidereal_pos: float) -> dict:
