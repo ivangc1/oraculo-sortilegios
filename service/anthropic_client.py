@@ -100,19 +100,46 @@ class AnthropicService:
 
         Si la respuesta llega vacía (problema conocido de Sonnet en lecturas
         densas con thinking), reintenta UNA vez antes de devolver error.
+
+        Acumula tokens y coste de TODOS los intentos (incluyendo el empty
+        que precede al retry) para que `/stats` refleje el gasto real
+        contra Anthropic, no solo el del intento exitoso.
         """
+        total_input = 0
+        total_output = 0
+        total_cost = 0.0
+        cached_any = False
+
         for attempt in range(2):
             try:
                 response = await self._create_message(request, user_message, sub_prompt)
             except anthropic.APITimeoutError:
                 logger.warning("Anthropic API timeout")
-                return InterpretationResponse(error="timeout")
+                return InterpretationResponse(
+                    error="timeout",
+                    tokens_input=total_input,
+                    tokens_output=total_output,
+                    cost_usd=total_cost,
+                    cached=cached_any,
+                )
             except anthropic.RateLimitError:
                 logger.warning("Anthropic rate limit")
-                return InterpretationResponse(error="rate_limit")
+                return InterpretationResponse(
+                    error="rate_limit",
+                    tokens_input=total_input,
+                    tokens_output=total_output,
+                    cost_usd=total_cost,
+                    cached=cached_any,
+                )
             except anthropic.APIError as e:
                 logger.error(f"Anthropic API error: {e.status_code}")
-                return InterpretationResponse(error="api_error")
+                return InterpretationResponse(
+                    error="api_error",
+                    tokens_input=total_input,
+                    tokens_output=total_output,
+                    cost_usd=total_cost,
+                    cached=cached_any,
+                )
 
             try:
                 # Con extended thinking, content puede contener ThinkingBlock
@@ -124,17 +151,33 @@ class AnthropicService:
                 stop = response.stop_reason
                 tokens_in = response.usage.input_tokens
                 tokens_out = response.usage.output_tokens
+                attempt_cost = calculate_real_cost(response.usage)
+                attempt_cached = (
+                    (getattr(response.usage, "cache_read_input_tokens", 0) or 0) > 0
+                )
             except (IndexError, AttributeError) as e:
                 logger.error(f"Unexpected response format: {e}")
-                return InterpretationResponse(error="api_format_error")
+                return InterpretationResponse(
+                    error="api_format_error",
+                    tokens_input=total_input,
+                    tokens_output=total_output,
+                    cost_usd=total_cost,
+                    cached=cached_any,
+                )
+
+            # Acumular siempre — éxito o empty.
+            total_input += tokens_in
+            total_output += tokens_out
+            total_cost += attempt_cost
+            cached_any = cached_any or attempt_cached
 
             if text and text.strip():
                 return InterpretationResponse(
                     text=text,
-                    tokens_input=tokens_in,
-                    tokens_output=tokens_out,
-                    cost_usd=calculate_real_cost(response.usage),
-                    cached=(getattr(response.usage, "cache_read_input_tokens", 0) or 0) > 0,
+                    tokens_input=total_input,
+                    tokens_output=total_output,
+                    cost_usd=total_cost,
+                    cached=cached_any,
                     truncated=(stop == "max_tokens"),
                     error=None,
                 )
@@ -144,7 +187,13 @@ class AnthropicService:
             )
 
         logger.error(f"Empty response after retry: {request.mode}/{request.variant}")
-        return InterpretationResponse(error="empty_response")
+        return InterpretationResponse(
+            error="empty_response",
+            tokens_input=total_input,
+            tokens_output=total_output,
+            cost_usd=total_cost,
+            cached=cached_any,
+        )
 
     async def count_tokens(self, text: str) -> int:
         """Cuenta tokens exactos via API (gratis). Para verificar system prompt."""

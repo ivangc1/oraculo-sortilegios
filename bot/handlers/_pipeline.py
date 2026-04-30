@@ -87,6 +87,21 @@ async def run_interpretation(
             reply_to_message_id=anchor_id,
             message_thread_id=thread_id,
         )
+        # Registrar el coste de los intentos fallidos para que `/stats`
+        # refleje el gasto real contra Anthropic. response.cost_usd suma
+        # todos los intentos (incluyendo el empty que precede al retry).
+        if response.cost_usd > 0 or response.tokens_input > 0:
+            await db_usage.record_usage(
+                user_id=user_id,
+                mode=mode,
+                variant=f"{variant}:{response.error}",
+                tokens_input=response.tokens_input,
+                tokens_output=response.tokens_output,
+                cost_usd=response.cost_usd,
+                cached=response.cached,
+                truncated=False,
+                drawn_data={**drawn_data, "error": response.error},
+            )
         return False
 
     text = (response.text or "").strip()
@@ -100,6 +115,18 @@ async def run_interpretation(
             reply_to_message_id=anchor_id,
             message_thread_id=thread_id,
         )
+        if response.cost_usd > 0 or response.tokens_input > 0:
+            await db_usage.record_usage(
+                user_id=user_id,
+                mode=mode,
+                variant=f"{variant}:empty",
+                tokens_input=response.tokens_input,
+                tokens_output=response.tokens_output,
+                cost_usd=response.cost_usd,
+                cached=response.cached,
+                truncated=False,
+                drawn_data={**drawn_data, "error": "empty_after_strip"},
+            )
         return False
 
     if response.truncated:
