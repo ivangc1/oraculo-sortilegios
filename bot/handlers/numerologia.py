@@ -63,7 +63,7 @@ async def numerologia_informe_callback(
 
     # ¿Tiene full_birth_name? → redirigir a DM para privacidad
     if not user.get("full_birth_name"):
-        bot_username = (await context.bot.get_me()).username
+        bot_username = context.bot_data["bot_username"]
         await query.edit_message_text(
             "Para el informe numerológico necesito tu nombre completo de nacimiento.\n"
             "Vamos al privado para que no quede aquí.",

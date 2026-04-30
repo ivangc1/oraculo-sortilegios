@@ -42,8 +42,9 @@ _rng = random.SystemRandom()
 _GOETIA: list | None = None
 _SHEM: list | None = None
 
-# Anti-repetición por usuario
-_LAST_DEMON: dict[int, int] = {}
+# Clave que guarda el último demonio consultado por usuario en context.user_data.
+# PicklePersistence lo serializa → la anti-repetición sobrevive a restarts.
+_LAST_DEMON_KEY = "last_demon"
 
 
 def _load_data() -> None:
@@ -104,18 +105,27 @@ def _find_demon(query: str) -> dict | None:
     return None
 
 
-def _get_random_demon(user_id: int) -> dict:
-    """Devuelve un demonio aleatorio, evitando repetir el último del user."""
+def _get_random_demon(state: dict) -> dict:
+    """Devuelve un demonio aleatorio, evitando repetir el último guardado en
+    `state` (típicamente `context.user_data`).
+
+    Lee y escribe `state[_LAST_DEMON_KEY]`. Pasar un dict vacío `{}` desactiva
+    la anti-repetición (útil para tests ephemeral o flujos sin persistencia).
+    """
     _load_data()
-    last = _LAST_DEMON.get(user_id)
+    last = state.get(_LAST_DEMON_KEY)
     candidates = [d for d in _GOETIA if d["number"] != last]
     chosen = _rng.choice(candidates) if candidates else _rng.choice(_GOETIA)
-    _LAST_DEMON[user_id] = chosen["number"]
+    state[_LAST_DEMON_KEY] = chosen["number"]
     return chosen
 
 
-def _parse_args(args: list[str], user_id: int) -> tuple[dict, str | None]:
+def _parse_args(args: list[str], state: dict) -> tuple[dict, str | None]:
     """Parsea los argumentos del comando.
+
+    Args:
+        args: lista de tokens tras `/demonio`.
+        state: dict mutable para anti-repetición (típicamente `context.user_data`).
 
     Returns:
         (demon, question): el demonio seleccionado y pregunta opcional.
@@ -132,25 +142,25 @@ def _parse_args(args: list[str], user_id: int) -> tuple[dict, str | None]:
     _load_data()
 
     if not args:
-        return _get_random_demon(user_id), None
+        return _get_random_demon(state), None
 
     first = args[0]
 
     # Explícito "aleatorio"
     if _normalize(first) == "aleatorio":
-        demon = _get_random_demon(user_id)
+        demon = _get_random_demon(state)
         question = " ".join(args[1:]).strip() if len(args) > 1 else None
         return demon, question or None
 
     # Probar si el primero es un nombre/número válido
     demon = _find_demon(first)
     if demon is not None:
-        _LAST_DEMON[user_id] = demon["number"]
+        state[_LAST_DEMON_KEY] = demon["number"]
         question = " ".join(args[1:]).strip() if len(args) > 1 else None
         return demon, question or None
 
     # No es un demonio → tratar todo como pregunta, random
-    return _get_random_demon(user_id), " ".join(args).strip()
+    return _get_random_demon(state), " ".join(args).strip()
 
 
 _ASSETS_DIR = Path(__file__).parent.parent.parent / "assets"
@@ -262,7 +272,7 @@ async def demonio_command(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
                     )
                     return
 
-    demon, question = _parse_args(args, user_id)
+    demon, question = _parse_args(args, context.user_data)
 
     # 1. Enviar imagen del demonio (carta completa si existe, si no solo sigilo)
     image_path, image_type = _demon_image_path(demon["number"])

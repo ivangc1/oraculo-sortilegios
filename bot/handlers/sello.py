@@ -52,7 +52,7 @@ async def sello_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
     # Resolver demonio
     demon: dict | None = None
     if not args or _normalize(args[0]) == "aleatorio":
-        demon = _get_random_demon(user_id)
+        demon = _get_random_demon(context.user_data)
     else:
         demon = _find_demon(args[0])
         if demon is None:

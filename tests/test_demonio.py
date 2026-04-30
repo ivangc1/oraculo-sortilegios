@@ -175,26 +175,29 @@ def test_find_demon_not_found():
 # === Aleatorio + anti-repetición ===
 
 def test_random_returns_valid_demon():
-    demon = _get_random_demon(user_id=99999)
+    demon = _get_random_demon({})
     assert demon is not None
     assert "number" in demon
     assert 1 <= demon["number"] <= 72
 
 
 def test_anti_repetition_same_user():
-    """Aleatorio no repite el último para el mismo usuario."""
-    # Hacer varias tiradas y verificar que hubo variación
-    user_id = 88888
-    # Reset
-    demonio_mod._LAST_DEMON.pop(user_id, None)
-
-    first = _get_random_demon(user_id)
-    # La siguiente tirada no debe ser la misma
+    """Aleatorio no repite el último guardado en state."""
+    state = {}
+    first = _get_random_demon(state)
+    # state ahora contiene last_demon=first["number"]; la siguiente no repite.
     for _ in range(10):
-        next_demon = _get_random_demon(user_id)
+        next_demon = _get_random_demon(state)
         assert next_demon["number"] != first["number"] or len(set(
-            [_get_random_demon(user_id)["number"] for _ in range(5)]
+            [_get_random_demon(state)["number"] for _ in range(5)]
         )) > 1
+
+
+def test_state_persists_across_calls():
+    """state se actualiza con cada tirada — el caller puede serializarlo."""
+    state = {}
+    demon = _get_random_demon(state)
+    assert state.get(demonio_mod._LAST_DEMON_KEY) == demon["number"]
 
 
 # === Formato ===
@@ -226,56 +229,56 @@ def test_format_demon_has_markers():
 
 def test_parse_args_empty():
     """Sin args → random, sin pregunta."""
-    demon, q = _parse_args([], user_id=10001)
+    demon, q = _parse_args([], {})
     assert demon is not None
     assert q is None
 
 
 def test_parse_args_aleatorio():
     """['aleatorio'] → random, sin pregunta."""
-    demon, q = _parse_args(["aleatorio"], user_id=10002)
+    demon, q = _parse_args(["aleatorio"], {})
     assert demon is not None
     assert q is None
 
 
 def test_parse_args_aleatorio_with_question():
     """['aleatorio', '¿pregunta?'] → random + pregunta."""
-    demon, q = _parse_args(["aleatorio", "¿cómo", "va?"], user_id=10003)
+    demon, q = _parse_args(["aleatorio", "¿cómo", "va?"], {})
     assert demon is not None
     assert q == "¿cómo va?"
 
 
 def test_parse_args_by_name():
     """['bael'] → Bael, sin pregunta."""
-    demon, q = _parse_args(["bael"], user_id=10004)
+    demon, q = _parse_args(["bael"], {})
     assert demon["number"] == 1
     assert q is None
 
 
 def test_parse_args_by_name_with_question():
     """['bael', '¿pregunta?'] → Bael + pregunta."""
-    demon, q = _parse_args(["bael", "¿me", "conviene?"], user_id=10005)
+    demon, q = _parse_args(["bael", "¿me", "conviene?"], {})
     assert demon["number"] == 1
     assert q == "¿me conviene?"
 
 
 def test_parse_args_by_number():
     """['1'] → Bael por número."""
-    demon, q = _parse_args(["1"], user_id=10006)
+    demon, q = _parse_args(["1"], {})
     assert demon["number"] == 1
     assert q is None
 
 
 def test_parse_args_by_number_with_question():
     """['1', '¿pregunta?'] → Bael por número + pregunta."""
-    demon, q = _parse_args(["32", "¿me", "ayudará?"], user_id=10007)
+    demon, q = _parse_args(["32", "¿me", "ayudará?"], {})
     assert demon["number"] == 32
     assert q == "¿me ayudará?"
 
 
 def test_parse_args_only_question():
     """['palabra', 'que', 'no', 'es', 'demonio'] → random + toda la cadena como pregunta."""
-    demon, q = _parse_args(["¿qué", "me", "depara", "hoy?"], user_id=10008)
+    demon, q = _parse_args(["¿qué", "me", "depara", "hoy?"], {})
     assert demon is not None
     assert q == "¿qué me depara hoy?"
 

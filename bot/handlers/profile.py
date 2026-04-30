@@ -118,7 +118,7 @@ async def actualizarperfil_command(update: Update, context: ContextTypes.DEFAULT
         )
         return
 
-    bot_username = (await context.bot.get_me()).username
+    bot_username = context.bot_data["bot_username"]
     await update.message.reply_text(
         "Vamos al privado. Tus datos no tienen que andar por aquí.",
         reply_markup=InlineKeyboardMarkup([

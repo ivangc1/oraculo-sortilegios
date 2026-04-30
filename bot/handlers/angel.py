@@ -40,7 +40,9 @@ _rng = random.SystemRandom()
 _SHEM: list | None = None
 _GOETIA: list | None = None
 
-_LAST_ANGEL: dict[int, int] = {}
+# Clave que guarda el último ángel consultado por usuario en context.user_data.
+# PicklePersistence lo serializa → la anti-repetición sobrevive a restarts.
+_LAST_ANGEL_KEY = "last_angel"
 
 
 def _load_data() -> None:
@@ -101,37 +103,43 @@ def _find_angel(query: str) -> dict | None:
     return None
 
 
-def _get_random_angel(user_id: int) -> dict:
-    """Devuelve un ángel aleatorio, evitando repetir el último del user."""
+def _get_random_angel(state: dict) -> dict:
+    """Devuelve un ángel aleatorio, evitando repetir el último guardado en
+    `state` (típicamente `context.user_data`).
+
+    Lee y escribe `state[_LAST_ANGEL_KEY]`. Pasar `{}` desactiva la
+    anti-repetición (útil para tests ephemeral o flujos sin persistencia).
+    """
     _load_data()
-    last = _LAST_ANGEL.get(user_id)
+    last = state.get(_LAST_ANGEL_KEY)
     candidates = [a for a in _SHEM if a["number"] != last]
     chosen = _rng.choice(candidates) if candidates else _rng.choice(_SHEM)
-    _LAST_ANGEL[user_id] = chosen["number"]
+    state[_LAST_ANGEL_KEY] = chosen["number"]
     return chosen
 
 
-def _parse_args(args: list[str], user_id: int) -> tuple[dict, str | None]:
-    """Parsea args. Devuelve (angel, pregunta_opcional)."""
+def _parse_args(args: list[str], state: dict) -> tuple[dict, str | None]:
+    """Parsea args. Devuelve (angel, pregunta_opcional). `state` recibe la
+    anti-repetición persistente (`context.user_data` en handlers)."""
     _load_data()
 
     if not args:
-        return _get_random_angel(user_id), None
+        return _get_random_angel(state), None
 
     first = args[0]
 
     if _normalize(first) == "aleatorio":
-        angel = _get_random_angel(user_id)
+        angel = _get_random_angel(state)
         question = " ".join(args[1:]).strip() if len(args) > 1 else None
         return angel, question or None
 
     angel = _find_angel(first)
     if angel is not None:
-        _LAST_ANGEL[user_id] = angel["number"]
+        state[_LAST_ANGEL_KEY] = angel["number"]
         question = " ".join(args[1:]).strip() if len(args) > 1 else None
         return angel, question or None
 
-    return _get_random_angel(user_id), " ".join(args).strip()
+    return _get_random_angel(state), " ".join(args).strip()
 
 
 def _format_angel(angel: dict) -> str:
@@ -186,7 +194,7 @@ async def angel_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
                 )
                 return
 
-    angel, question = _parse_args(args, user_id)
+    angel, question = _parse_args(args, context.user_data)
 
     # 1. Ficha estática siempre
     ficha_text = _format_angel(angel)

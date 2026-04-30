@@ -67,7 +67,7 @@ async def firma_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
     # Resolver ángel
     angel: dict | None = None
     if not args or _normalize(args[0]) == "aleatorio":
-        angel = _get_random_angel(user_id)
+        angel = _get_random_angel(context.user_data)
     else:
         angel = _find_angel(args[0])
         if angel is None:

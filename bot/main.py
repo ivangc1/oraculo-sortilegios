@@ -107,6 +107,13 @@ async def post_init(application: Application) -> None:
     # Inicializar DB
     await Database.get()
 
+    # Cachear el username del bot para evitar `get_me()` repetido en cada
+    # /numerologia, /actualizarperfil, /consulta. bot_data NO se persiste
+    # (se excluye de PicklePersistence) así que esto se recompone cada
+    # arranque, sin riesgo de quedar stale tras un cambio de username.
+    me = await application.bot.get_me()
+    application.bot_data["bot_username"] = me.username
+
     # Alerta de arranque
     await send_alert(
         application.bot,

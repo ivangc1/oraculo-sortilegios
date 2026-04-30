@@ -119,21 +119,25 @@ def test_find_angel_not_found():
 # === Aleatorio + anti-repetición ===
 
 def test_random_returns_valid_angel():
-    angel = _get_random_angel(user_id=99998)
+    angel = _get_random_angel({})
     assert angel is not None
     assert "number" in angel
     assert 1 <= angel["number"] <= 72
 
 
-def test_anti_repetition_angel_same_user():
-    """Aleatorio no repite el último para el mismo usuario."""
-    user_id = 88887
-    angel_mod._LAST_ANGEL.pop(user_id, None)
-
-    first = _get_random_angel(user_id)
-    second = _get_random_angel(user_id)
-    # El segundo debe ser distinto al primero
+def test_anti_repetition_angel_same_state():
+    """Aleatorio no repite el último guardado en state."""
+    state = {}
+    first = _get_random_angel(state)
+    second = _get_random_angel(state)
     assert second["number"] != first["number"]
+
+
+def test_state_persists_across_calls_angel():
+    """state se actualiza con cada tirada — el caller puede serializarlo."""
+    state = {}
+    angel = _get_random_angel(state)
+    assert state.get(angel_mod._LAST_ANGEL_KEY) == angel["number"]
 
 
 # === Formato ===
@@ -165,34 +169,34 @@ def test_format_angel_has_markers():
 
 def test_parse_args_angel_empty():
     """Sin args → random, sin pregunta."""
-    angel, q = _parse_args([], user_id=20001)
+    angel, q = _parse_args([], {})
     assert angel is not None
     assert q is None
 
 
 def test_parse_args_angel_by_name():
     """['vehuiah'] → Vehuiah."""
-    angel, q = _parse_args(["vehuiah"], user_id=20002)
+    angel, q = _parse_args(["vehuiah"], {})
     assert angel["number"] == 1
     assert q is None
 
 
 def test_parse_args_angel_by_name_with_question():
     """['vehuiah', '¿pregunta?'] → Vehuiah + pregunta."""
-    angel, q = _parse_args(["vehuiah", "¿cómo", "empezar?"], user_id=20003)
+    angel, q = _parse_args(["vehuiah", "¿cómo", "empezar?"], {})
     assert angel["number"] == 1
     assert q == "¿cómo empezar?"
 
 
 def test_parse_args_angel_by_number():
     """['1'] → Vehuiah por número."""
-    angel, q = _parse_args(["1"], user_id=20004)
+    angel, q = _parse_args(["1"], {})
     assert angel["number"] == 1
 
 
 def test_parse_args_angel_only_question():
     """['pregunta libre'] → random + pregunta."""
-    angel, q = _parse_args(["¿qué", "necesito", "hoy?"], user_id=20005)
+    angel, q = _parse_args(["¿qué", "necesito", "hoy?"], {})
     assert angel is not None
     assert q == "¿qué necesito hoy?"
 

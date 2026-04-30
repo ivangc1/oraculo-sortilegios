@@ -43,7 +43,7 @@ async def consulta_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -
         )
         return
 
-    bot_username = (await context.bot.get_me()).username
+    bot_username = context.bot_data["bot_username"]
     await update.message.reply_text(
         "Puedes usar las tiradas directamente sin registrarte.\n\n"
         "🃏 /tirartarot · ᚱ /runa · ☯ /iching · ⊕ /geomancia\n"
