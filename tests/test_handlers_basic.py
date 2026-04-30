@@ -25,11 +25,22 @@ def test_start_registered_has_alias():
 # === /ayudaoraculo content ===
 
 def test_help_has_all_commands():
-    """Verifica que /ayudaoraculo incluye todos los comandos."""
+    """Verifica que /ayudaoraculo incluye todos los comandos del bot.
+
+    Lista derivada de los CommandHandler registrados en `bot/main.py`.
+    Si añades un comando, añádelo aquí también para detectar drift en
+    la documentación de /ayudaoraculo.
+    """
     commands = [
-        "/consulta", "/tirartarot", "/runa", "/iching", "/geomancia", "/numerologia",
+        # Tiradas y modos
+        "/tirartarot", "/runa", "/iching", "/geomancia", "/numerologia",
         "/natal", "/vedica", "/oraculo", "/bibliomancia",
-        "/miperfil", "/actualizarperfil", "/borrarme", "/cancelaroraculo", "/ayudaoraculo",
+        # Demonio/ángel + estampas
+        "/demonio", "/angel", "/sello", "/firma",
+        # Perfil + onboarding
+        "/consulta", "/miperfil", "/actualizarperfil", "/borrarme",
+        # Control + ayuda + reporte
+        "/cancelaroraculo", "/ayudaoraculo", "/reportar",
     ]
     for cmd in commands:
         assert cmd in _HELP_TEXT, f"Falta {cmd} en /ayudaoraculo"
