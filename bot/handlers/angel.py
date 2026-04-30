@@ -25,6 +25,7 @@ from telegram.ext import ContextTypes
 
 from bot.concurrency import is_user_busy, mark_user_busy, release_user
 from bot.config import Settings
+from bot.formatting import format_and_split
 from bot.handlers._pipeline import run_interpretation
 from bot.limits import check_limits
 from bot.messages import LIMIT_MESSAGES
