@@ -55,7 +55,9 @@ async def run_interpretation(
     variant: str,
     drawn_data: dict,
     anchor_msg=None,
-) -> None:
+) -> bool:
+    """Ejecuta la pipeline. Devuelve True si la interpretación se entregó al
+    usuario (éxito), False si se cortó por timeout o error de la API."""
     semaphore = get_semaphore()
     anchor_id = anchor_msg.message_id if anchor_msg else None
 
@@ -75,7 +77,7 @@ async def run_interpretation(
             reply_to_message_id=anchor_id,
             message_thread_id=thread_id,
         )
-        return
+        return False
 
     if response.error:
         error_key = _ERROR_KEY_MAP.get(response.error, "api_error")
@@ -85,7 +87,7 @@ async def run_interpretation(
             reply_to_message_id=anchor_id,
             message_thread_id=thread_id,
         )
-        return
+        return False
 
     text = response.text
     if response.truncated:
@@ -131,3 +133,4 @@ async def run_interpretation(
             pass
 
     record_cooldown(user_id)
+    return True
