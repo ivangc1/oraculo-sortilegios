@@ -25,8 +25,13 @@ _STRUCTURAL_TAGS = (
     "instrucciones_modo", "perfil_consultante", "tirada",
     "datos_extra", "pregunta", "sin_pregunta",
 )
+# Match `<tag>` y variantes con atributos / espacios / self-closing /
+# cierre `</tag>`. `\b` ancla al final del nombre del tag para no matchear
+# substrings (`<preguntar>` no debe escapar). `[^<>]*` consume atributos
+# eventuales y para en el siguiente `<` o `>` para no comerse contenido.
 _TAG_PATTERN = re.compile(
-    r"</?(" + "|".join(_STRUCTURAL_TAGS) + r")\s*>", re.IGNORECASE,
+    r"</?\s*(" + "|".join(_STRUCTURAL_TAGS) + r")\b[^<>]*>?",
+    re.IGNORECASE,
 )
 
 
