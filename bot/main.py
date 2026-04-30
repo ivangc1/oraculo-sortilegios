@@ -190,18 +190,16 @@ def main() -> None:
     # 1. Migración grupo → supergrupo (máxima prioridad)
     app.add_handler(MessageHandler(filters.StatusUpdate.MIGRATE, handle_migration))
 
-    # 2. ConversationHandlers (onboarding grupo + DM + actualizar perfil)
+    # 2. ConversationHandlers (onboarding grupo + DM)
     from bot.handlers.onboarding import build_onboarding_handler
     from bot.handlers.dm_onboarding import build_dm_onboarding_handler
-    from bot.handlers.profile import build_update_profile_handler
     app.add_handler(build_dm_onboarding_handler())  # DM primero (mas especifico)
     app.add_handler(build_onboarding_handler())     # Grupo
-    app.add_handler(build_update_profile_handler())
 
     # 3. Comandos simples
     from bot.handlers.start import start_command
     from bot.handlers.help import help_command
-    from bot.handlers.profile import miperfil_command, borrarme_command
+    from bot.handlers.profile import miperfil_command, borrarme_command, actualizarperfil_command
     from bot.handlers.admin import stats_command, version_command
     from bot.handlers.report import reportar_command
     from bot.handlers.tarot import tarot_command
@@ -221,6 +219,7 @@ def main() -> None:
     app.add_handler(CommandHandler("startoraculo", start_command))
     app.add_handler(CommandHandler("ayudaoraculo", help_command))
     app.add_handler(CommandHandler("miperfil", miperfil_command))
+    app.add_handler(CommandHandler("actualizarperfil", actualizarperfil_command))
     app.add_handler(CommandHandler("borrarme", borrarme_command))
     app.add_handler(CommandHandler("stats", stats_command))
     app.add_handler(CommandHandler("version", version_command))

@@ -1,30 +1,17 @@
 """Handlers de perfil: /miperfil, /actualizarperfil, /borrarme.
 
-/actualizarperfil: ConversationHandler para actualizar hora y/o ciudad.
-ForceReply en cada paso. Geocoding con Nominatim caido -> salida limpia.
+`/actualizarperfil` redirige al privado y el flujo real (elegir qué
+actualizar, validar hora, geocoding de ciudad, etc.) está en
+`bot/handlers/dm_onboarding.py` con sus propios estados DM_UPD_*.
 """
 
-import re
-
-from telegram import ForceReply, InlineKeyboardButton, InlineKeyboardMarkup, Update
-from telegram.ext import (
-    CallbackQueryHandler,
-    CommandHandler,
-    ContextTypes,
-    ConversationHandler,
-    MessageHandler,
-    filters,
-)
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
+from telegram.ext import ContextTypes
 
 from bot.config import Settings
 from bot.messages import LIMIT_MESSAGES
 from bot.middleware import middleware_check
 from database import users as db_users
-
-# Estados para /actualizarperfil
-UPD_CHOOSE, UPD_TIME, UPD_CITY, UPD_CONFIRM_CITY = range(4)
-
-_TIME_RE = re.compile(r"^(\d{1,2}):(\d{2})$")
 
 
 async def miperfil_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -112,11 +99,16 @@ async def borrarme_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -
 
 # === /actualizarperfil ===
 
-async def actualizarperfil_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    """/actualizarperfil — elige qué actualizar."""
+async def actualizarperfil_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """`/actualizarperfil` — redirige al DM (el flujo real está en
+    `dm_onboarding.py`).
+
+    Se queda como CommandHandler simple porque el botón apunta a un deep
+    link `?start=update_profile` que arranca el ConversationHandler de DM.
+    """
     settings: Settings = context.bot_data["settings"]
     if not await middleware_check(update, context, settings):
-        return ConversationHandler.END
+        return
 
     user = await db_users.get_user(update.effective_user.id)
     if not user or not user["onboarding_complete"]:
@@ -124,9 +116,8 @@ async def actualizarperfil_command(update: Update, context: ContextTypes.DEFAULT
             LIMIT_MESSAGES["not_registered"],
             reply_to_message_id=update.message.message_id,
         )
-        return ConversationHandler.END
+        return
 
-    # Redirigir a DM para privacidad
     bot_username = (await context.bot.get_me()).username
     await update.message.reply_text(
         "Vamos al privado. Tus datos no tienen que andar por aquí.",
@@ -137,219 +128,4 @@ async def actualizarperfil_command(update: Update, context: ContextTypes.DEFAULT
             )],
         ]),
         reply_to_message_id=update.message.message_id,
-    )
-    return ConversationHandler.END
-
-
-async def upd_choose_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    query = update.callback_query
-    await query.answer()
-
-    if query.data == "upd:time":
-        try:
-            await query.edit_message_text(
-                "¿A qué hora naciste? (HH:MM en formato 24h)")
-        except Exception:
-            pass
-        await query.message.reply_text(
-            "Escribe tu hora de nacimiento (HH:MM):",
-            reply_markup=ForceReply(selective=True),
-        )
-        return UPD_TIME
-
-    if query.data == "upd:city":
-        try:
-            await query.edit_message_text(
-                "¿En qué ciudad naciste?")
-        except Exception:
-            pass
-        await query.message.reply_text(
-            "Escribe tu ciudad de nacimiento:",
-            reply_markup=ForceReply(selective=True),
-        )
-        return UPD_CITY
-
-    return ConversationHandler.END
-
-
-async def upd_time(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    """Recibe nueva hora."""
-    text = update.message.text.strip()
-    match = _TIME_RE.match(text)
-    if not match:
-        await update.message.reply_text(
-            LIMIT_MESSAGES["invalid_time"],
-            reply_markup=ForceReply(selective=True),
-        )
-        return UPD_TIME
-
-    hour, minute = int(match.group(1)), int(match.group(2))
-    if hour > 23 or minute > 59:
-        await update.message.reply_text(
-            LIMIT_MESSAGES["invalid_time"],
-            reply_markup=ForceReply(selective=True),
-        )
-        return UPD_TIME
-
-    user_id = update.effective_user.id  # Siempre ID real
-    new_time = f"{hour:02d}:{minute:02d}"
-    await db_users.update_profile(user_id, birth_time=new_time)
-
-    await update.message.reply_text(
-        f"Hora actualizada a {new_time}.",
-        reply_to_message_id=update.message.message_id,
-    )
-    return ConversationHandler.END
-
-
-async def upd_city(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    """Recibe nueva ciudad. Geocoding con Nominatim."""
-    text = update.message.text.strip()
-
-    try:
-        from service.calculators.geocoding import geocode_city_multi
-        results = await geocode_city_multi(text)
-    except Exception:
-        results = []
-
-    if not results:
-        await update.message.reply_text(
-            LIMIT_MESSAGES["nominatim_down"],
-            reply_markup=ForceReply(selective=True),
-        )
-        return UPD_CITY
-
-    context.user_data["upd_city_input"] = text
-
-    if len(results) == 1:
-        r = results[0]
-        context.user_data["upd_city_result"] = {
-            "city_name": r.city_name, "lat": r.lat,
-            "lon": r.lon, "timezone": r.timezone,
-        }
-        await update.message.reply_text(
-            f"¿Te refieres a {r.city_name}?",
-            reply_markup=InlineKeyboardMarkup([
-                [
-                    InlineKeyboardButton("Sí", callback_data="upd:city_yes"),
-                    InlineKeyboardButton("No, otra ciudad", callback_data="upd:city_no"),
-                ],
-            ]),
-        )
-    else:
-        context.user_data["upd_city_options"] = [
-            {"city_name": r.city_name, "lat": r.lat,
-             "lon": r.lon, "timezone": r.timezone}
-            for r in results
-        ]
-        buttons = []
-        for i, r in enumerate(results):
-            short = r.city_name if len(r.city_name) <= 45 else r.city_name[:42] + "..."
-            buttons.append([InlineKeyboardButton(short, callback_data=f"upd:city_{i}")])
-        buttons.append([InlineKeyboardButton("Ninguna, otra ciudad", callback_data="upd:city_no")])
-        await update.message.reply_text(
-            "He encontrado varias opciones. ¿Cuál es tu ciudad?",
-            reply_markup=InlineKeyboardMarkup(buttons),
-        )
-    return UPD_CONFIRM_CITY
-
-
-async def upd_confirm_city(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    query = update.callback_query
-    await query.answer()
-
-    # Selección por índice
-    if query.data.startswith("upd:city_") and query.data not in ("upd:city_yes", "upd:city_no"):
-        idx = int(query.data.split("_")[-1])
-        options = context.user_data.get("upd_city_options", [])
-        if 0 <= idx < len(options):
-            context.user_data["upd_city_result"] = options[idx]
-            city_input = context.user_data.get("upd_city_input", "")
-            if city_input:
-                from service.calculators.geocoding import cache_geocoding_result, GeocodingResult
-                r = options[idx]
-                await cache_geocoding_result(city_input, GeocodingResult(
-                    r["city_name"], r["lat"], r["lon"], r["timezone"],
-                ))
-        context.user_data.pop("upd_city_options", None)
-
-    if query.data == "upd:city_yes" or (query.data.startswith("upd:city_") and query.data not in ("upd:city_no",)):
-        city = context.user_data.get("upd_city_result", {})
-        if not city:
-            return UPD_CITY
-        user_id = query.from_user.id
-        await db_users.update_profile(
-            user_id,
-            birth_city=city.get("city_name"),
-            birth_lat=city.get("lat"),
-            birth_lon=city.get("lon"),
-            birth_timezone=city.get("timezone"),
-        )
-        # Cachear si fue confirmación directa
-        if query.data == "upd:city_yes":
-            city_input = context.user_data.get("upd_city_input", "")
-            if city_input:
-                from service.calculators.geocoding import cache_geocoding_result, GeocodingResult
-                await cache_geocoding_result(city_input, GeocodingResult(
-                    city["city_name"], city["lat"], city["lon"], city["timezone"],
-                ))
-        try:
-            await query.edit_message_text("Ciudad actualizada.")
-        except Exception:
-            pass
-        context.user_data.pop("upd_city_result", None)
-        context.user_data.pop("upd_city_options", None)
-        return ConversationHandler.END
-
-    # No, otra ciudad
-    try:
-        await query.edit_message_text(
-            "Escribe la ciudad con mas detalle (ej: Santiago de Chile).")
-    except Exception:
-        pass
-    await query.message.reply_text(
-        "Escribe tu ciudad de nacimiento:",
-        reply_markup=ForceReply(selective=True),
-    )
-    return UPD_CITY
-
-
-async def upd_cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    await update.message.reply_text(
-        LIMIT_MESSAGES["cancelled"],
-        reply_to_message_id=update.message.message_id,
-    )
-    context.user_data.pop("upd_city_result", None)
-    return ConversationHandler.END
-
-
-def build_update_profile_handler() -> ConversationHandler:
-    """Construye ConversationHandler para /actualizarperfil."""
-    return ConversationHandler(
-        entry_points=[
-            CommandHandler("actualizarperfil", actualizarperfil_command),
-        ],
-        states={
-            UPD_CHOOSE: [
-                CallbackQueryHandler(upd_choose_callback, pattern=r"^upd:(time|city)$"),
-            ],
-            UPD_TIME: [
-                MessageHandler(filters.TEXT & ~filters.COMMAND, upd_time),
-            ],
-            UPD_CITY: [
-                MessageHandler(filters.TEXT & ~filters.COMMAND, upd_city),
-            ],
-            UPD_CONFIRM_CITY: [
-                CallbackQueryHandler(upd_confirm_city, pattern=r"^upd:city_"),
-            ],
-        },
-        fallbacks=[
-            CommandHandler("cancelaroraculo", upd_cancel),
-        ],
-        conversation_timeout=300,
-        name="update_profile",
-        persistent=True,
-        per_user=True,
-        per_chat=True,
-        per_message=False,
     )
