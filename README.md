@@ -118,7 +118,7 @@ Tests de natales con kerykeion se saltan en Windows (necesitan pyswisseph compil
 bot/                    # Capa 1: Telegram
   handlers/             # Handlers por modo (+ dm_onboarding.py para flujos DM)
   main.py               # Entry point, signals, persistence
-  config.py             # Settings (pydantic-settings, 47 variables)
+  config.py             # Settings (pydantic-settings)
   middleware.py          # Edits, DM whitelist, chat_id, membresia, migracion
 service/                # Capa 2: Interpretacion
   anthropic_client.py   # AsyncAnthropic singleton, adaptive thinking, cache
@@ -133,7 +133,7 @@ assets/                 # Imagenes estaticas
   goetia_cards/         # 72 cartas (retrato + sigilo esquina sup. derecha)
   goetia_portraits_lebreton/  # 32 grabados originales Le Breton 1863 (PD)
   shem_firmas/          # 72 firmas hebreas sobre pergamino
-tests/                  # 464+ tests
+tests/                  # 475+ tests
 ```
 
 ### Pipeline Goetia (72 cartas)
@@ -189,7 +189,7 @@ Activado en cada llamada via `thinking={"type": "enabled", "budget_tokens": N}`.
 
 ## Prompt caching
 
-Aprovecha hasta 2 cache breakpoints simultaneos del SDK Anthropic 0.97:
+Aprovecha el sistema multi-bloque de cache del SDK Anthropic 0.97 (hasta 4 breakpoints; el bot usa 2):
 
 1. `MASTER_SYSTEM_PROMPT` (~5k tokens, comun a todos los modos) — siempre cacheado.
 2. Sub-prompt del modo (tarot/runas/iching/etc.) — cacheado por modo. Demonio/angel quedan inline porque su sub-prompt depende de la entidad consultada.

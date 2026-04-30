@@ -456,35 +456,10 @@ Código existente migrado desde `/opt/evangelio/` (evangeliobot.py + datos.py ~6
 
 ### 7.11 /admins — ELIMINADO
 
-El comando `/admins` fue eliminado. El directorio de admins ya no es funcionalidad del bot.
-
-```json
-// admins_private.example.json (en repo)
-[
-  {
-    "key": "tam",
-    "telegram_user_id": 000000000,
-    "display_name": "REDACTED-USER",
-    "username": "REDACTED-USER",
-    "bio": "Bio del admin aquí..."
-  }
-]
-
-// admins_private.json (en .gitignore, NUNCA en repo)
-[
-  {
-    "key": "tam",
-    "telegram_user_id": 987654321,
-    "display_name": "REDACTED-USER",
-    "username": "REDACTED-USER",
-    "bio": "REDACTED-BIO..."
-  }
-]
-```
-
-**Auto-captura fallback:** Si un admin no tiene `telegram_user_id` en el JSON (valor 0 o null), cuando escriba en el grupo el bot captura su user_id por username match y lo loguea. El admin del bot puede actualizarlo manualmente en el JSON.
-
-**NO consume API de Anthropic.**
+El comando `/admins` y su directorio externo (`admins_private.json`)
+fueron eliminados — el bot ya no lleva un directorio de guardianes.
+La funcionalidad equivalente (avisar a moderadores) se cubre con
+`/reportar` (ver 7.X) que envía DM a los IDs de `REPORT_ADMIN_IDS_RAW`.
 
 ### 7.12 /start — Presentación in-character (€0 API)
 
