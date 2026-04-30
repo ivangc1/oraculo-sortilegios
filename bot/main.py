@@ -26,7 +26,7 @@ from bot.alerts import set_admin_user_id, set_fallback_chat_id, send_alert
 from bot.concurrency import init_semaphore
 from bot.feedback import handle_feedback
 from bot.jobs import cleanup_membership_cache_job, send_weekly_summary
-from bot.middleware import handle_migration
+from bot.middleware import ANON_ADMIN_ID, handle_migration
 from database.connection import Database
 from service.anthropic_client import AnthropicService
 from service.interpreter import InterpreterService
@@ -262,10 +262,9 @@ def main() -> None:
         data = query.data
 
         # Anti-ajeno: solo el usuario que inició el comando puede pulsar los botones.
-        # Excepto feedback (tiene su propia verificación) y admins anónimos (1087968824).
+        # Excepto feedback (tiene su propia verificación) y admins anónimos.
         # Si el mensaje no tiene reply_to_message no podemos verificar al iniciador,
         # así que solo aceptamos al admin para evitar fail-open silencioso.
-        ANON_ADMIN_ID = 1087968824
         if not data.startswith("fb:"):
             reply_msg = getattr(query.message, "reply_to_message", None)
             clicker_id = query.from_user.id

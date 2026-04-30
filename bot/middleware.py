@@ -10,6 +10,13 @@ from telegram.ext import ContextTypes
 from bot.config import Settings
 from database import users as db_users
 
+# ID que Telegram asigna al "Group Anonymous Bot" cuando un admin publica
+# anónimamente firmando como el grupo (config "Remain Anonymous" en su rol).
+# No es un usuario real — los updates con este id provienen siempre de
+# admins legítimos del propio grupo, así que se les permite saltarse la
+# verificación de membresía y la verificación anti-ajeno de callbacks.
+ANON_ADMIN_ID = 1087968824
+
 # Caché de membresía: {user_id: timestamp}
 _membership_cache: dict[int, float] = {}
 _MEMBERSHIP_TTL = 3600  # 1 hora
@@ -44,8 +51,8 @@ async def middleware_check(update: Update, context: ContextTypes.DEFAULT_TYPE, s
     user = update.effective_user
     if user is None:
         return False
-    # Permitir admins anónimos (id=1087968824, is_bot=True)
-    if user.is_bot and user.id != 1087968824:
+    # Permitir admins anónimos (Group Anonymous Bot)
+    if user.is_bot and user.id != ANON_ADMIN_ID:
         return False
 
     chat = update.effective_chat
@@ -82,7 +89,7 @@ async def middleware_check(update: Update, context: ContextTypes.DEFAULT_TYPE, s
             return False
 
     # 6. Membresía (caché 1h) — admins anónimos siempre pasan
-    if user.id != 1087968824 and not await _check_membership(user.id, chat.id, context, settings):
+    if user.id != ANON_ADMIN_ID and not await _check_membership(user.id, chat.id, context, settings):
         return False
 
     # 7. Actualizar username si cambió
