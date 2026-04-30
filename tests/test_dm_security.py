@@ -71,10 +71,20 @@ class TestMiddlewareDM:
     """Verificar que el middleware bloquea tiradas en DM."""
 
     def test_allowed_commands_in_dm(self):
-        """Solo /start, /startoraculo, /cancelaroraculo en DM."""
+        """Solo /start, /startoraculo, /cancelaroraculo en DM (admins también
+        pueden /stats y /version, validado dentro del middleware por
+        ADMIN_USER_ID)."""
         allowed = {"/start", "/startoraculo", "/cancelaroraculo"}
-        blocked = {"/tarot", "/runa", "/iching", "/geomancia",
-                   "/numerologia", "/natal", "/vedica", "/oraculo",
-                   "/bibliomancia", "/admins", "/consulta"}
+        blocked = {
+            # Tiradas
+            "/tirartarot", "/runa", "/iching", "/geomancia",
+            "/numerologia", "/natal", "/vedica", "/oraculo", "/bibliomancia",
+            # Demonio/ángel + estampas
+            "/demonio", "/angel", "/sello", "/firma",
+            # Perfil + reporte
+            "/consulta", "/miperfil", "/actualizarperfil", "/borrarme", "/reportar",
+            # Ayuda
+            "/ayudaoraculo",
+        }
         for cmd in blocked:
             assert cmd not in allowed
