@@ -725,7 +725,7 @@ Limitación documentada: para nacimientos pre-1900 (fecha mínima), zonas horari
 
 ## 10. Límites y Control de Uso
 
-### 10.1 Límites — DESACTIVADOS desde v1.197
+### 10.1 Límites — DESACTIVADOS desde v1.199
 
 El bot tuvo en su día 5 tiradas/día pool, 2 numerología, 1 natal, 3 oráculo,
 60s cooldown y 200 chars máximo. Todas estas limitaciones se eliminaron
@@ -1605,7 +1605,7 @@ Antes de lanzar, ejecutar manualmente y evaluar calidad narrativa:
 > Items marcados [x] = implementado en código y/o verificado con tests automatizados.
 > Items marcados [ ] = requiere verificación manual en grupo real (post-despliegue).
 
-- [~] Límites + cooldown — DESACTIVADOS desde v1.197. `bot/limits.py` queda como stub no-op preparado para reintroducirlos. test_queue_timeout.py cubre solo el timeout y semáforo, que sí están activos.
+- [~] Límites + cooldown — DESACTIVADOS desde v1.199. `bot/limits.py` queda como stub no-op preparado para reintroducirlos. test_queue_timeout.py cubre solo el timeout y semáforo, que sí están activos.
 - [x] /borrarme cascade (ON DELETE CASCADE en schema SQL)
 - [x] Onboarding: completo / sin hora / incompleto / timeout / post-restart (ConversationHandler + SQLite partial)
 - [x] Petición en curso + nuevo comando → "aún en proceso" (bot/concurrency.py)

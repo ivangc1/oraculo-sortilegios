@@ -1,6 +1,6 @@
 startoraculo - Presentacion del oraculo
 consulta - Registrarte o empezar una consulta
-tarot - Consulta las cartas del Tarot
+tirartarot - Consulta las cartas del Tarot (Rider-Waite o Marsella)
 runa - Consulta las runas del Elder Futhark
 iching - Consulta el I Ching
 geomancia - Consulta las figuras geomanticas
